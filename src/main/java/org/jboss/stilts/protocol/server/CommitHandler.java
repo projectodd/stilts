@@ -1,0 +1,25 @@
+package org.jboss.stilts.protocol.server;
+
+import org.jboss.netty.channel.ChannelHandlerContext;
+import org.jboss.stilts.StompException;
+import org.jboss.stilts.protocol.StompFrame;
+import org.jboss.stilts.protocol.StompFrame.Command;
+import org.jboss.stilts.protocol.StompFrame.Header;
+import org.jboss.stilts.spi.StompServer;
+
+public class CommitHandler extends AbstractControlFrameHandler {
+
+    public CommitHandler(StompServer server, ConnectionContext context) {
+        super( server, context, Command.COMMIT );
+    }
+
+    public void handleControlFrame(ChannelHandlerContext channelContext, StompFrame frame) {
+        String transactionId = frame.getHeader( Header.TRANSACTION );
+        try {
+            getClientAgent().commit( transactionId, frame.getHeaders() );
+        } catch (StompException e) {
+            sendError( channelContext, "Unable to commit transaction: " + e.getMessage() );
+        }
+    }
+
+}
