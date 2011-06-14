@@ -5,11 +5,11 @@ import org.jboss.stilts.StompException;
 import org.jboss.stilts.protocol.StompFrame;
 import org.jboss.stilts.protocol.StompFrame.Command;
 import org.jboss.stilts.protocol.StompFrame.Header;
-import org.jboss.stilts.spi.StompServer;
+import org.jboss.stilts.spi.StompProvider;
 
 public class AbortHandler extends AbstractControlFrameHandler {
 
-    public AbortHandler(StompServer server, ConnectionContext context) {
+    public AbortHandler(StompProvider server, ConnectionContext context) {
         super( server, context, Command.ABORT );
     }
 
@@ -18,7 +18,7 @@ public class AbortHandler extends AbstractControlFrameHandler {
         try {
             getClientAgent().abort( transactionId, frame.getHeaders() );
         } catch (StompException e) {
-            sendError( channelContext, "Unable to abort transaction: " + e.getMessage() );
+            sendError( channelContext, "Unable to abort transaction: " + e.getMessage(), frame );
         }
     }
 

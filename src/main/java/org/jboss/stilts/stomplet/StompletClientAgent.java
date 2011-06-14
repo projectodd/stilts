@@ -6,7 +6,7 @@ import org.jboss.stilts.base.AbstractClientAgent;
 
 public class StompletClientAgent extends AbstractClientAgent {
 
-    public StompletClientAgent(StompletServer server, MessageSink messageSink, String sessionId) throws StompException {
+    public StompletClientAgent(StompletStompProvider server, MessageSink messageSink, String sessionId) throws StompException {
         super( server, messageSink, sessionId );
     }
 
@@ -14,8 +14,8 @@ public class StompletClientAgent extends AbstractClientAgent {
         return new StompletTransaction( this, transactionId );
     }
 
-    public StompletServer getServer() {
-        return (StompletServer) super.getServer();
+    public StompletStompProvider getServer() {
+        return (StompletStompProvider) super.getServer();
     }
 
 }

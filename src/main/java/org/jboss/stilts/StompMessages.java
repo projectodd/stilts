@@ -15,6 +15,7 @@ public class StompMessages {
     
     public static StompMessage createStompMessage(String destination, String content) {
         DefaultStompServerMessage message = new DefaultStompServerMessage();
+        message.setContent( content );
         message.setDestination( destination );
         message.setContent( content );
         return message;

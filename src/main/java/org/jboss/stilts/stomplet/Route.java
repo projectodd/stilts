@@ -61,6 +61,10 @@ public class Route {
     public Stomplet getStomplet() {
         return this.stomplet;
     }
+    
+    public String toString() {
+        return "[Route: pattern=" + this.pattern + "]";
+    }
 
     private String pattern;
     private Stomplet stomplet;

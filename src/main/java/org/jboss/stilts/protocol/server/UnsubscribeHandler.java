@@ -5,11 +5,11 @@ import org.jboss.stilts.StompException;
 import org.jboss.stilts.protocol.StompFrame;
 import org.jboss.stilts.protocol.StompFrame.Command;
 import org.jboss.stilts.protocol.StompFrame.Header;
-import org.jboss.stilts.spi.StompServer;
+import org.jboss.stilts.spi.StompProvider;
 
 public class UnsubscribeHandler extends AbstractControlFrameHandler {
 
-    public UnsubscribeHandler(StompServer server, ConnectionContext context) {
+    public UnsubscribeHandler(StompProvider server, ConnectionContext context) {
         super( server, context, Command.UNSUBSCRIBE );
     }
 
@@ -21,14 +21,14 @@ public class UnsubscribeHandler extends AbstractControlFrameHandler {
         }
         
         if ( destinationOrId == null ) {
-            sendError( channelContext, "Must supply 'destination' or 'id' header for UNSUBSCRIBE" );
+            sendError( channelContext, "Must supply 'destination' or 'id' header for UNSUBSCRIBE", frame );
             return;
         }
         
         try {
             getClientAgent().unsubscribe( destinationOrId, frame.getHeaders() );
         } catch (StompException e) {
-            sendError( channelContext, e.getMessage() );
+            sendError( channelContext, e.getMessage(), frame );
         }
     }
     

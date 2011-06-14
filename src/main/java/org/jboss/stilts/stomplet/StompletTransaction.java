@@ -25,12 +25,13 @@ public class StompletTransaction extends AbstractTransaction<StompletClientAgent
 
     @Override
     public Subscription createSubscription(String destination, String subscriptionId, Headers headers) throws StompException {
-        RouteMatch match = getClientAgent().getServer().getMessageRouter().match( destination );
+        RouteMatch match = getClientAgent().getServer().getStompletContainer().match( destination );
         if (match == null) {
             return null;
         }
+        
+        Subscriber subscriber = new DefaultSubscriber( subscriptionId, destination, getClientAgent().getMessageSink() );
 
-        MessageSink subscriber = getClientAgent().getMessageSink();
         Stomplet stomplet = match.getRoute().getStomplet();
         stomplet.onSubscribe( subscriber );
         return new StompletSubscription( stomplet, subscriber );
@@ -43,7 +44,7 @@ public class StompletTransaction extends AbstractTransaction<StompletClientAgent
 
     @Override
     public void send(StompMessage message) throws StompException {
-        getClientAgent().getServer().send( message );
+        getClientAgent().getServer().getStompletContainer().send( message );
     }
 
 }

@@ -8,6 +8,6 @@ public interface Headers {
     Set<String> getHeaderNames();
 	String get(String headerName);
 	String put(String headerName, String headerValue);
-		
-
+	
+	Headers duplicate();
 }

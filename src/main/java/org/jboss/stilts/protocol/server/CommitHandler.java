@@ -5,11 +5,11 @@ import org.jboss.stilts.StompException;
 import org.jboss.stilts.protocol.StompFrame;
 import org.jboss.stilts.protocol.StompFrame.Command;
 import org.jboss.stilts.protocol.StompFrame.Header;
-import org.jboss.stilts.spi.StompServer;
+import org.jboss.stilts.spi.StompProvider;
 
 public class CommitHandler extends AbstractControlFrameHandler {
 
-    public CommitHandler(StompServer server, ConnectionContext context) {
+    public CommitHandler(StompProvider server, ConnectionContext context) {
         super( server, context, Command.COMMIT );
     }
 
@@ -18,7 +18,7 @@ public class CommitHandler extends AbstractControlFrameHandler {
         try {
             getClientAgent().commit( transactionId, frame.getHeaders() );
         } catch (StompException e) {
-            sendError( channelContext, "Unable to commit transaction: " + e.getMessage() );
+            sendError( channelContext, "Unable to commit transaction: " + e.getMessage(), frame );
         }
     }
 

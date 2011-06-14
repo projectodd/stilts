@@ -9,7 +9,7 @@ import org.jboss.stilts.base.AbstractClientAgent;
 
 public class JMSClientAgent extends AbstractClientAgent {
 
-    public JMSClientAgent(JMSStompServer server, MessageSink messageSink, String sessionId) throws StompException {
+    public JMSClientAgent(JMSStompProvider server, MessageSink messageSink, String sessionId) throws StompException {
         super( server, messageSink, sessionId );
     }
 
@@ -18,8 +18,8 @@ public class JMSClientAgent extends AbstractClientAgent {
         return new JMSTransaction( this, session, transactionId );
     }
 
-    public JMSStompServer getServer() {
-        return (JMSStompServer) super.getServer();
+    public JMSStompProvider getServer() {
+        return (JMSStompProvider) super.getServer();
     }
 
     protected Connection getConnection() {

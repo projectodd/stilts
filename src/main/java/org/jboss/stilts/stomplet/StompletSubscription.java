@@ -1,12 +1,11 @@
 package org.jboss.stilts.stomplet;
 
-import org.jboss.stilts.MessageSink;
 import org.jboss.stilts.StompException;
 import org.jboss.stilts.spi.Subscription;
 
 public class StompletSubscription implements Subscription {
 
-    public StompletSubscription(Stomplet stomplet, MessageSink subscriber) {
+    public StompletSubscription(Stomplet stomplet, Subscriber subscriber) {
         this.stomplet = stomplet;
         this.subscriber = subscriber;
     }
@@ -22,6 +21,6 @@ public class StompletSubscription implements Subscription {
     }
 
     private Stomplet stomplet;
-    private MessageSink subscriber;
+    private Subscriber subscriber;
 
 }

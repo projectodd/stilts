@@ -5,11 +5,11 @@ import org.jboss.stilts.StompException;
 import org.jboss.stilts.protocol.StompFrame;
 import org.jboss.stilts.protocol.StompFrame.Command;
 import org.jboss.stilts.protocol.StompFrame.Header;
-import org.jboss.stilts.spi.StompServer;
+import org.jboss.stilts.spi.StompProvider;
 
 public class BeginHandler extends AbstractControlFrameHandler {
 
-    public BeginHandler(StompServer server, ConnectionContext context) {
+    public BeginHandler(StompProvider server, ConnectionContext context) {
         super( server, context, Command.BEGIN );
     }
 
@@ -19,7 +19,7 @@ public class BeginHandler extends AbstractControlFrameHandler {
         try {
             getClientAgent().begin( transactionId, frame.getHeaders() );
         } catch (StompException e) {
-            sendError( channelContext, "Unable to begin transaction: " + e.getMessage() );
+            sendError( channelContext, "Unable to begin transaction: " + e.getMessage(), frame );
         }
     }
 

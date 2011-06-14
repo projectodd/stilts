@@ -1,49 +1,63 @@
 package org.jboss.stilts.protocol;
 
-import org.jboss.netty.channel.ChannelHandler;
 import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.ChannelPipelineFactory;
-import org.jboss.stilts.protocol.server.ServerCommandPipeline;
-import org.jboss.stilts.protocol.transport.BufferTransportPipeline;
-import org.jboss.stilts.spi.StompServer;
+import org.jboss.netty.channel.DefaultChannelPipeline;
+import org.jboss.stilts.logging.Logger;
+import org.jboss.stilts.logging.LoggerManager;
+import org.jboss.stilts.protocol.server.AbortHandler;
+import org.jboss.stilts.protocol.server.BeginHandler;
+import org.jboss.stilts.protocol.server.CommitHandler;
+import org.jboss.stilts.protocol.server.ConnectHandler;
+import org.jboss.stilts.protocol.server.ConnectionContext;
+import org.jboss.stilts.protocol.server.DisconnectHandler;
+import org.jboss.stilts.protocol.server.ReceiptHandler;
+import org.jboss.stilts.protocol.server.SendHandler;
+import org.jboss.stilts.protocol.server.SubscribeHandler;
+import org.jboss.stilts.protocol.server.UnsubscribeHandler;
+import org.jboss.stilts.spi.StompProvider;
 
 public class StompPipelineFactory implements ChannelPipelineFactory {
 
-    private Class<? extends ChannelHandler> transportHandlerClass = BufferTransportPipeline.class;
-    private Class<? extends StompServerChannelHandler> commandHandlerClass = ServerCommandPipeline.class;
-
-    public StompPipelineFactory(StompServer server) {
-        this.server = server;
+    public StompPipelineFactory(StompProvider provider, LoggerManager loggerManager) {
+        this.provider = provider;
+        this.loggerManager = loggerManager;
     }
     
-    public void setTransportHandler(Class< ? extends ChannelHandler> handlerClass) {
-        this.transportHandlerClass = handlerClass;
-    }
-    
-    public void setCommandHandler(Class<? extends StompServerChannelHandler> handlerClass) {
-        this.commandHandlerClass = handlerClass;
-    }
-    
-
     @Override
     public ChannelPipeline getPipeline() throws Exception {
-        StompPipeline pipeline = new StompPipeline( this.server );
+        DefaultChannelPipeline pipeline = new DefaultChannelPipeline();
+        pipeline.addLast( "debug-head", new DebugHandler( log( "DEBUG.head" ) ) );
+        pipeline.addLast( "stomp-frame-encoder", new StompFrameEncoder( log( "frame.encoder") ) );
+        pipeline.addLast( "stomp-frame-decoder", new StompFrameDecoder( log( "frame.decode" ) ) );
         
-        if ( this.transportHandlerClass != null ) {
-            ChannelHandler handler = (ChannelHandler) this.transportHandlerClass.newInstance();
-            pipeline.addLast( "server-transport", handler );
-        }
+        ConnectionContext context = new ConnectionContext( this.loggerManager );
+        pipeline.addLast( "stomp-server-connect", new ConnectHandler( provider, context ) );
+        pipeline.addLast( "stomp-server-disconnect", new DisconnectHandler( provider, context ) );
+
+        pipeline.addLast( "stomp-server-subscribe", new SubscribeHandler( provider, context ) );
+        pipeline.addLast( "stomp-server-unsubscribe", new UnsubscribeHandler( provider, context ) );
+
+        pipeline.addLast( "stomp-server-begin", new BeginHandler( provider, context ) );
+        pipeline.addLast( "stomp-server-commit", new CommitHandler( provider, context ) );
+        pipeline.addLast( "stomp-server-abort", new AbortHandler( provider, context ) );
         
-        if ( this.commandHandlerClass != null ) {
-            StompServerChannelHandler handler = (StompServerChannelHandler) this.transportHandlerClass.newInstance();
-            handler.setServer( this.server );
-            pipeline.addLast( "server-command", handler );
-        }
+        pipeline.addLast( "stomp-server-receipt", new ReceiptHandler( provider, context ) );
+        
+        pipeline.addLast( "stomp-message-encoder", new StompMessageEncoder( log( "message.encoder") ) );
+        pipeline.addLast( "stomp-message-decoder", new StompMessageDecoder( log( "message.decode" ) ) );
+        
+        pipeline.addLast( "stomp-server-send", new SendHandler( provider, context ) );
+        pipeline.addLast( "debug-tail", new DebugHandler( log( "DEBUG.tail" ) ) );
         
         return pipeline;
-        
+    }
+    
+    Logger log(String name) {
+        return this.loggerManager.getLogger( "pipeline.stomp." + name );
     }
 
-    private StompServer server;
+    private StompProvider provider;
+    private LoggerManager loggerManager;
 
 }

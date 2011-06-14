@@ -83,6 +83,11 @@
       <version>${version.jms-api}</version>
     </dependency>
     <dependency>
+      <groupId>org.jboss.logging</groupId>
+      <artifactId>jboss-logging</artifactId>
+      <version>${version.jboss-logging}</version>
+    </dependency>
+    <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-log4j12</artifactId>
       <version>${version.org.slf4j}</version>
@@ -108,6 +113,7 @@
   </dependencies>
 
   <properties>
+    <version.jboss-logging>3.0.0.Beta5</version.jboss-logging>
     <version.hornetq>2.2.2.Final</version.hornetq>
     <version.jms-api>1.1-rev-1</version.jms-api>
     <version.junit>4.7</version.junit>

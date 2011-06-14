@@ -1,6 +1,7 @@
 package org.jboss.stilts.base;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 import org.jboss.stilts.spi.Headers;
@@ -23,6 +24,13 @@ public class DefaultHeaders extends HashMap<String, String> implements Headers {
     @Override
     public Set<String> getHeaderNames() {
         return keySet();
+    }
+
+    @Override
+    public Headers duplicate() {
+        DefaultHeaders dupe = new DefaultHeaders();
+        dupe.putAll(  (Map<String,String>) this  );
+        return dupe;
     }
 
 }

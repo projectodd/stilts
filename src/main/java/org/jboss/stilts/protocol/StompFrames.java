@@ -12,8 +12,14 @@ public class StompFrames {
         return frame;
     }
     
-    public static StompFrame newErrorFrame(String message) {
+    public static StompFrame newErrorFrame(String message, StompFrame inReplyTo) {
         StompContentFrame frame = new StompContentFrame( Command.ERROR );
+        if ( inReplyTo != null ) {
+            String receiptId = inReplyTo.getHeader( Header.RECEIPT );
+            if ( receiptId != null ) {
+                frame.setHeader( Header.RECEIPT_ID, receiptId );
+            }
+        }
         frame.setContent( ChannelBuffers.copiedBuffer( message.getBytes() ) );
         return frame;
     }

@@ -14,18 +14,30 @@ public class DefaultStompServerMessage implements StompServerMessage, StompMessa
     private static final Charset UTF_8 = Charset.forName( "UTF-8" );
     
     public DefaultStompServerMessage() {
-        this.headers = new DefaultHeaders();
-        this.content = ChannelBuffers.EMPTY_BUFFER;
+        this( new DefaultHeaders(), ChannelBuffers.EMPTY_BUFFER );
     }
     
     public DefaultStompServerMessage(Headers headers, ChannelBuffer content) {
-        this.headers = headers;
-        this.content = content;
+        this( headers, content, false );
     }
     
     public DefaultStompServerMessage(Headers headers, String content) {
+        this( headers, ChannelBuffers.copiedBuffer( content.getBytes() ), false );
+    }
+    
+    public DefaultStompServerMessage(Headers headers, String content, boolean isError) {
+        this( headers, ChannelBuffers.copiedBuffer( content.getBytes() ), isError );
+    }
+    
+    public DefaultStompServerMessage(Headers headers, ChannelBuffer content, boolean isError) {
         this.headers = headers;
-        this.content = ChannelBuffers.copiedBuffer( content.getBytes() );
+        this.content = content;
+        this.isError = isError;
+    }
+    
+    @Override
+    public boolean isError() {
+        return this.isError;
     }
     
     @Override
@@ -64,10 +76,21 @@ public class DefaultStompServerMessage implements StompServerMessage, StompMessa
     }
     
     public void setContent(String content) {
-        ChannelBuffers.copiedBuffer( content.getBytes() );
+        this.content = ChannelBuffers.copiedBuffer( content.getBytes() );
     }
+    
+    public String toString() {
+        return "[StompMessage: headers=" + this.headers + "\n  content=" + getContent() + "]";
+    }
+    
+    @Override
+    public StompMessage duplicate() {
+        return new DefaultStompServerMessage( headers.duplicate(), ChannelBuffers.wrappedBuffer( content ), isError );
+    }
+
     
     private Headers headers;
     private ChannelBuffer content;
+    private boolean isError = false;
 
 }

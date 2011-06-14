@@ -59,6 +59,10 @@ public class FrameHeader {
 
         return Integer.parseInt( value );
     }
+    
+    public String toString() {
+        return "[FrameHeader: command=" + this.command + "; headers=" + this.headers + "]";
+    }
 
     private Command command;
     private DefaultHeaders headers = new DefaultHeaders();

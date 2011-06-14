@@ -9,6 +9,8 @@ import org.jboss.stilts.MessageSink;
 import org.jboss.stilts.NotConnectedException;
 import org.jboss.stilts.StompException;
 import org.jboss.stilts.StompMessage;
+import org.jboss.stilts.client.DefaultSubscriptionBuilder;
+import org.jboss.stilts.client.SubscriptionBuilder;
 import org.jboss.stilts.protocol.StompFrame.Header;
 import org.jboss.stilts.spi.ClientAgent;
 import org.jboss.stilts.spi.Headers;
@@ -17,7 +19,7 @@ import org.jboss.stilts.spi.Transaction;
 
 public abstract class AbstractClientAgent implements ClientAgent {
 
-    public AbstractClientAgent(AbstractStompServer<?> server, MessageSink messageSink, String sessionId) throws StompException {
+    public AbstractClientAgent(AbstractStompProvider<?> server, MessageSink messageSink, String sessionId) throws StompException {
         this.server = server;
         this.messageSink = messageSink;
         this.sessionId = sessionId;
@@ -37,7 +39,7 @@ public abstract class AbstractClientAgent implements ClientAgent {
         return this.messageSink;
     }
 
-    public AbstractStompServer<?> getServer() {
+    public AbstractStompProvider<?> getServer() {
         return this.server;
     }
 
@@ -46,6 +48,7 @@ public abstract class AbstractClientAgent implements ClientAgent {
     }
 
     public void send(StompMessage message) throws StompException {
+        System.err.println( "CA.send: " + message );
         getTransaction( message.getHeaders() ).send( message );
     }
 
@@ -139,7 +142,7 @@ public abstract class AbstractClientAgent implements ClientAgent {
             e.printStackTrace();
         }
     }
-
+    
     /**
      * Create an implementation-specific transaction.
      * 
@@ -152,7 +155,7 @@ public abstract class AbstractClientAgent implements ClientAgent {
     private Transaction globalTransaction;
     private Map<String, Transaction> namedTransactions = new HashMap<String, Transaction>();
 
-    private AbstractStompServer<?> server;
+    private AbstractStompProvider<?> server;
     private String sessionId;
     private MessageSink messageSink;
     private AtomicInteger transactionCounter = new AtomicInteger( 1 );

@@ -19,17 +19,21 @@ public class StompFrame {
         public static final String SESSION = "session";
         public static final String DESTINATION = "destination";
         public static final String ID = "id";
+        public static final String RECEIPT = "receipt";
         public static final String RECEIPT_ID = "receipt-id";
         public static final String ACK = "ack";
         public static final String SELECTOR = "selector";
         public static final String TRANSACTION = "transaction";
+        public static final String SUBSCRIPTION = "subscription";
     }
 
     public static class Command {
         public static Map<String,Command> commands = new HashMap<String,Command>();
         
         public static Command valueOf(String text) {
-            return Command.commands.get( text.toLowerCase() );
+            text = text.toLowerCase();
+            Command c = Command.commands.get( text );
+            return c;
         }
         
         private String name;
@@ -85,11 +89,16 @@ public class StompFrame {
     public StompFrame(Command command) {
         this.header = new FrameHeader( command );
     }
-
+    
+    public StompFrame(Command command, Headers headers) {
+        this.header = new FrameHeader( command, headers );
+    }
+    
     public StompFrame(FrameHeader header) {
         this.header = header;
     }
     
+
     public Command getCommand() {
         return this.header.getCommand();
     }
@@ -108,6 +117,10 @@ public class StompFrame {
     
     public Headers getHeaders() {
         return this.header.getMap();
+    }
+    
+    public String toString() {
+        return "[StompFrame: header=" + this.header + "]";
     }
     
     private FrameHeader header;

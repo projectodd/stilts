@@ -14,6 +14,10 @@ public abstract class AbstractStomplet implements Stomplet {
         // override me in your subclass.
     }
     
+    @Override
+    public void destroy() throws StompException {
+    }
+    
     public StompletConfig getStompletConfig() {
         return this.config;
     }

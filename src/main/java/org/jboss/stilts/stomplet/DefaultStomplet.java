@@ -11,11 +11,12 @@ public class DefaultStomplet extends AbstractStomplet implements Stomplet {
     }
 
     @Override
-    public void onSubscribe(MessageSink consumer) throws StompException {
+    public void onSubscribe(Subscriber subscriber) throws StompException {
     }
 
     @Override
-    public void onUnsubscribe(MessageSink consumer) throws StompException {
+    public void onUnsubscribe(Subscriber subscriber) throws StompException {
     }
+
 
 }

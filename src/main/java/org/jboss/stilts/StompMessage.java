@@ -15,4 +15,8 @@ public interface StompMessage {
     String getContent();
     void setContent(String content);
     
+    boolean isError();
+    
+    StompMessage duplicate();
+    
 }
