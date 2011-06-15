@@ -5,11 +5,15 @@ import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.handler.codec.oneone.OneToOneDecoder;
 import org.jboss.stilts.logging.Logger;
 import org.jboss.stilts.protocol.StompFrame.Command;
+import org.jboss.stilts.spi.StompMessageFactory;
 
 public class StompMessageDecoder extends OneToOneDecoder {
     
-    public StompMessageDecoder(Logger log) {
+    private StompMessageFactory messageFactory;
+
+    public StompMessageDecoder(Logger log, StompMessageFactory messageFactory) {
         this.log = log;
+        this.messageFactory = messageFactory;
     }
 
     @Override
@@ -21,7 +25,7 @@ public class StompMessageDecoder extends OneToOneDecoder {
             if (frame.getCommand() == Command.ERROR) {
                 isError = true;
             }
-            return new DefaultStompServerMessage( frame.getHeaders(), frame.getContent(), isError );
+            return this.messageFactory.createMessage( frame.getHeaders(), frame.getContent(), isError );
         }
         return null;
     }

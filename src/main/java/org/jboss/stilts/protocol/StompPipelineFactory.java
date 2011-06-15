@@ -1,5 +1,7 @@
 package org.jboss.stilts.protocol;
 
+import javax.xml.soap.MessageFactory;
+
 import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.jboss.netty.channel.DefaultChannelPipeline;
@@ -10,11 +12,13 @@ import org.jboss.stilts.protocol.server.BeginHandler;
 import org.jboss.stilts.protocol.server.CommitHandler;
 import org.jboss.stilts.protocol.server.ConnectHandler;
 import org.jboss.stilts.protocol.server.ConnectionContext;
+import org.jboss.stilts.protocol.server.DefaultStompMessageFactory;
 import org.jboss.stilts.protocol.server.DisconnectHandler;
 import org.jboss.stilts.protocol.server.ReceiptHandler;
 import org.jboss.stilts.protocol.server.SendHandler;
 import org.jboss.stilts.protocol.server.SubscribeHandler;
 import org.jboss.stilts.protocol.server.UnsubscribeHandler;
+import org.jboss.stilts.spi.StompMessageFactory;
 import org.jboss.stilts.spi.StompProvider;
 
 public class StompPipelineFactory implements ChannelPipelineFactory {
@@ -27,6 +31,7 @@ public class StompPipelineFactory implements ChannelPipelineFactory {
     @Override
     public ChannelPipeline getPipeline() throws Exception {
         DefaultChannelPipeline pipeline = new DefaultChannelPipeline();
+        
         pipeline.addLast( "debug-head", new DebugHandler( log( "DEBUG.head" ) ) );
         pipeline.addLast( "stomp-frame-encoder", new StompFrameEncoder( log( "frame.encoder") ) );
         pipeline.addLast( "stomp-frame-decoder", new StompFrameDecoder( log( "frame.decode" ) ) );
@@ -45,7 +50,7 @@ public class StompPipelineFactory implements ChannelPipelineFactory {
         pipeline.addLast( "stomp-server-receipt", new ReceiptHandler( provider, context ) );
         
         pipeline.addLast( "stomp-message-encoder", new StompMessageEncoder( log( "message.encoder") ) );
-        pipeline.addLast( "stomp-message-decoder", new StompMessageDecoder( log( "message.decode" ) ) );
+        pipeline.addLast( "stomp-message-decoder", new StompMessageDecoder( log( "message.decode" ), DefaultStompMessageFactory.INSTANCE ) ); 
         
         pipeline.addLast( "stomp-server-send", new SendHandler( provider, context ) );
         pipeline.addLast( "debug-tail", new DebugHandler( log( "DEBUG.tail" ) ) );

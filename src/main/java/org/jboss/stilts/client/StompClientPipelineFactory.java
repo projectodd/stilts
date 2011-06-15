@@ -34,7 +34,7 @@ public class StompClientPipelineFactory implements ChannelPipelineFactory {
         pipeline.addLast( "stomp-client-receipt", new ClientReceiptHandler( clientContext ) );
 
         pipeline.addLast( "stomp-message-encoder", new StompMessageEncoder( log( "message.encoder" ) ) );
-        pipeline.addLast( "stomp-message-decoder", new StompMessageDecoder( log( "message.decoder" ) ) );
+        pipeline.addLast( "stomp-message-decoder", new StompMessageDecoder( log( "message.decoder" ), ClientStompMessageFactory.INSTANCE ) );
         pipeline.addLast( "debug-message-encoders", new DebugHandler( log( "DEBUG.message-encoders" ) ) );
 
         pipeline.addLast( "stomp-client-message-handler", new ClientMessageHandler( clientContext ) );

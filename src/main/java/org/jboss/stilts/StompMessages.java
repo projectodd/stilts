@@ -1,6 +1,6 @@
 package org.jboss.stilts;
 
-import org.jboss.stilts.protocol.DefaultStompServerMessage;
+import org.jboss.stilts.protocol.DefaultStompMessage;
 import org.jboss.stilts.spi.Headers;
 
 public class StompMessages {
@@ -10,19 +10,18 @@ public class StompMessages {
     }
     
     public static StompMessage createStompMessage() {
-        return new DefaultStompServerMessage();
+        return new DefaultStompMessage();
     }
     
     public static StompMessage createStompMessage(String destination, String content) {
-        DefaultStompServerMessage message = new DefaultStompServerMessage();
-        message.setContent( content );
+        DefaultStompMessage message = new DefaultStompMessage();
         message.setDestination( destination );
-        message.setContent( content );
+        message.setContentAsString( content );
         return message;
     }
     
     public static StompMessage createStompMessage(String destination, Headers headers, String content) {
-        DefaultStompServerMessage message = new DefaultStompServerMessage( headers, content );
+        DefaultStompMessage message = new DefaultStompMessage( headers, content );
         message.setDestination( destination );
         return message;
     }

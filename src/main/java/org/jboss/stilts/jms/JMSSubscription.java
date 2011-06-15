@@ -13,7 +13,7 @@ import org.jboss.netty.buffer.ChannelBuffers;
 import org.jboss.stilts.StompException;
 import org.jboss.stilts.StompMessage;
 import org.jboss.stilts.base.DefaultHeaders;
-import org.jboss.stilts.protocol.DefaultStompServerMessage;
+import org.jboss.stilts.protocol.DefaultStompMessage;
 import org.jboss.stilts.spi.Headers;
 import org.jboss.stilts.spi.Subscription;
 
@@ -89,7 +89,7 @@ public class JMSSubscription implements Subscription, MessageListener {
         }
 
         if (buffer != null) {
-            return new DefaultStompServerMessage( headers, buffer );
+            return new DefaultStompMessage( headers, buffer );
         }
 
         return null;

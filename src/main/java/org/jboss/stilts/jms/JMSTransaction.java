@@ -40,7 +40,7 @@ public class JMSTransaction extends AbstractTransaction<JMSClientAgent> {
     
     protected Message translate(StompMessage message) throws JMSException {
         TextMessage jmsMessage = this.session.createTextMessage();
-        jmsMessage.setText( message.getContent() );
+        jmsMessage.setText( message.getContentAsString() );
         return jmsMessage;
     }
 

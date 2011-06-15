@@ -25,6 +25,7 @@ public class StompFrame {
         public static final String SELECTOR = "selector";
         public static final String TRANSACTION = "transaction";
         public static final String SUBSCRIPTION = "subscription";
+        public static final String MESSAGE_ID = "message-id";
     }
 
     public static class Command {
