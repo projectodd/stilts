@@ -20,6 +20,10 @@ public class DefaultHeaders extends HashMap<String, String> implements Headers {
             put( name, headers.get( name ) );
         }
     }
+    
+    public void remove(String headerName) {
+        super.remove( headerName );
+    }
 
     @Override
     public Set<String> getHeaderNames() {

@@ -93,8 +93,13 @@ public class DefaultStompMessage implements StompMessage {
     }
     
     @Override
-    public void acknowledge() throws StompException {
-        throw new UnsupportedOperationException("acknowledge");
+    public void ack() throws StompException {
+        throw new UnsupportedOperationException("ACK");
+    }
+    
+    @Override
+    public void nack() throws StompException {
+        throw new UnsupportedOperationException("NACK");
     }
     
     @Override

@@ -17,15 +17,28 @@ public class ClientStompMessage extends DefaultStompMessage {
     }
 
     @Override
-    public void acknowledge() throws StompException {
+    public void ack() throws StompException {
         if ( this.acknowledger != null ) {
             try {
-                //this.acknowledger.acknowledge();
+                this.acknowledger.ack();
             } catch (Exception e) {
                 throw new StompException( e );
             }
         } else {
-            super.acknowledge();
+            super.ack();
+        }
+    }
+    
+    @Override
+    public void nack() throws StompException {
+        if ( this.acknowledger != null ) {
+            try {
+                this.acknowledger.nack();
+            } catch (Exception e) {
+                throw new StompException( e );
+            }
+        } else {
+            super.ack();
         }
     }
 

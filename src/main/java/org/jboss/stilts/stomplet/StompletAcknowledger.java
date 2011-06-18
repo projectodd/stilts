@@ -10,6 +10,7 @@ public class StompletAcknowledger implements Acknowledger {
         this.stomplet = stomplet;
         this.subscriber = subscriber;
         this.message = message;
+        System.err.println( "CREATE ACK FOR : " + message );
     }
     
     @Override
@@ -19,7 +20,7 @@ public class StompletAcknowledger implements Acknowledger {
 
     @Override
     public void nack() throws Exception {
-        this.stomplet.nak( this.subscriber, this.message );
+        this.stomplet.nack( this.subscriber, this.message );
     }
     
     private AcknowledgeableStomplet stomplet;

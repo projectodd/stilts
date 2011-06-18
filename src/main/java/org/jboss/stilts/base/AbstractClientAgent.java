@@ -61,10 +61,10 @@ public abstract class AbstractClientAgent implements ClientAgent {
     @Override
     public void ack(Acknowledger acknowledger, String transactionId) throws StompException {
         if (transactionId != null) {
-            System.err.println( "ClientAgent.send to transaction: " + transactionId );
+            System.err.println( "ClientAgent.ack to transaction: " + transactionId );
             getTransaction( transactionId ).ack( acknowledger );
         } else {
-            System.err.println( "ClientAgent.send to provider" );
+            System.err.println( "ClientAgent.ack to provider" );
             try {
                 acknowledger.ack();
             } catch (Exception e) {

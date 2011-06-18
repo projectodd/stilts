@@ -75,15 +75,19 @@ public class AbstractClientServerTest {
     public void stopServer() {
         this.server.stop();
     }
-
-    public MessageAccumulator accumulator(String name) {
+    
+    public MessageAccumulator accumulator(String name, boolean shouldAck, boolean shouldNack) {
         MessageAccumulator accumulator = this.accumulators.get( name );
         if (accumulator == null) {
-            accumulator = new MessageAccumulator();
+            accumulator = new MessageAccumulator( shouldAck, shouldNack );
             this.accumulators.put( name, accumulator );
         }
 
         return accumulator;
+    }
+
+    public MessageAccumulator accumulator(String name) {
+        return accumulator( name, false, false );
     }
 
 }

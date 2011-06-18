@@ -75,6 +75,7 @@ public class StompFrame {
         public static final Command BEGIN = new Command("BEGIN", false);
         public static final Command COMMIT = new Command("COMMIT", false);
         public static final Command ACK = new Command("ACK", false);
+        public static final Command NACK = new Command("NACK", false);
         public static final Command ABORT = new Command("ABORT", false);
         
         public static final Command RECEIPT = new Command("RECEIPT", false);

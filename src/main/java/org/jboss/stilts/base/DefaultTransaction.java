@@ -9,6 +9,7 @@ import javax.transaction.xa.XAResource;
 
 import org.jboss.stilts.StompException;
 import org.jboss.stilts.StompMessage;
+import org.jboss.stilts.protocol.StompFrame.Header;
 import org.jboss.stilts.spi.Acknowledger;
 import org.jboss.stilts.spi.StompProvider;
 import org.jboss.stilts.spi.StompTransaction;
@@ -73,6 +74,7 @@ public class DefaultTransaction implements StompTransaction {
                 XAResource xaResource = ((XAStompProvider)provider).getXAResource();
                 this.clientAgent.getTransactionManager().getTransaction().enlistResource( xaResource );
             }
+            message.getHeaders().remove( Header.TRANSACTION );
             getClientAgent().getStompProvider().send( message );
             this.clientAgent.getTransactionManager().suspend();
         } catch (StompException e) {

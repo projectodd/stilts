@@ -18,7 +18,7 @@ public class ConnectHandler extends AbstractControlFrameHandler {
     @Override
     public void handleControlFrame(ChannelHandlerContext channelContext, StompFrame frame) {
         try {
-            ClientAgent clientAgent = getStompProvider().connect( new ChannelMessageSink( channelContext.getChannel() ), frame.getHeaders() );
+            ClientAgent clientAgent = getStompProvider().connect( new ChannelMessageSink( channelContext.getChannel(), getContext().getAckManager() ), frame.getHeaders() );
             if (clientAgent != null) {
                 getContext().setClientAgent( clientAgent );
                 log.info( "Set client-agent: " + getClientAgent() );

@@ -28,13 +28,13 @@ public class SubscriberList {
 
     protected synchronized void sendToAllSubscribers(StompMessage message) throws StompException {
         for (Subscriber each : this.subscribers) {
-            each.send( message, null );
+            each.send( message );
         }
     }
 
     protected synchronized void sendToOneSubscriber(StompMessage message) throws StompException {
         int luckyWinner = this.random.nextInt( this.subscribers.size() );
-        this.subscribers.get( luckyWinner ).send( message, null );
+        this.subscribers.get( luckyWinner ).send( message );
     }
 
     private final List<Subscriber> subscribers = new ArrayList<Subscriber>();

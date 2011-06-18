@@ -12,8 +12,10 @@ public class XAAcknowledger implements Acknowledger {
     public void ack() throws Exception {
         XATransaction tx = StompProviderResourceManager.currentTransaction();
         if (tx != null) {
+            System.err.println( "Transactional ack" );
             tx.addAck( this.acknowledger );
         } else {
+            System.err.println( "Direct ack" );
             this.acknowledger.ack();
         }
     }
@@ -22,9 +24,11 @@ public class XAAcknowledger implements Acknowledger {
     public void nack() throws Exception {
         XATransaction tx = StompProviderResourceManager.currentTransaction();
         if (tx != null) {
-            tx.addAck( this.acknowledger );
+            System.err.println( "Transactional nack" );
+            tx.addNack(  this.acknowledger );
         } else {
-            this.acknowledger.ack();
+            System.err.println( "Direct nack: " + this.acknowledger );
+            this.acknowledger.nack();
         }
     }
     

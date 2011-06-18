@@ -21,7 +21,8 @@ public interface StompMessage {
     void setContent(ChannelBuffer content);
     
     boolean isError();
-    void acknowledge() throws StompException;
+    void ack() throws StompException;
+    void nack() throws StompException;
     
     StompMessage duplicate();
     

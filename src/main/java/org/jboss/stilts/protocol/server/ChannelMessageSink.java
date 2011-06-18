@@ -11,8 +11,9 @@ import org.jboss.stilts.spi.Acknowledger;
 
 public class ChannelMessageSink implements AcknowledgeableMessageSink {
 
-    public ChannelMessageSink(Channel channel) {
+    public ChannelMessageSink(Channel channel, AckManager ackManager) {
         this.channel = channel;
+        this.ackManager = ackManager;
     }
 
     @Override
@@ -22,17 +23,22 @@ public class ChannelMessageSink implements AcknowledgeableMessageSink {
 
     @Override
     public void send(StompMessage message, Acknowledger acknowledger) throws StompException {
-        StompMessage dupe = message.duplicate();
-        String messageId = getNextMessageId();
-        dupe.getHeaders().put( Header.MESSAGE_ID, messageId );
-        this.channel.write( dupe );
+        if ( message.getId() == null ) {
+            message.getHeaders().put( Header.MESSAGE_ID, getNextMessageId() );
+        }
+        if (acknowledger != null) {
+            this.ackManager.registerAcknowledger( message.getId(), acknowledger );
+        }
+        this.channel.write( message );
+    }
+    
+    private static String getNextMessageId() {
+        return "message-" + MESSAGE_COUNTER.getAndIncrement();
     }
 
-    protected String getNextMessageId() {
-        return "message-" + this.messageCounter.getAndIncrement();
-    }
-
-    private AtomicLong messageCounter = new AtomicLong();
     private Channel channel;
+    private AckManager ackManager;
+    
+    private static final AtomicLong MESSAGE_COUNTER = new AtomicLong();
 
 }

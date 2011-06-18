@@ -21,7 +21,6 @@ import org.jboss.stilts.StompMessage;
 import org.jboss.stilts.logging.Logger;
 import org.jboss.stilts.logging.LoggerManager;
 import org.jboss.stilts.logging.SimpleLoggerManager;
-import org.jboss.stilts.protocol.StompContentFrame;
 import org.jboss.stilts.protocol.StompControlFrame;
 import org.jboss.stilts.protocol.StompFrame;
 import org.jboss.stilts.protocol.StompFrame.Command;
@@ -295,7 +294,7 @@ public class AbstractStompClient implements StompClient {
     }
 
     protected ChannelPipelineFactory createPipelineFactory() {
-        return new StompClientPipelineFactory( new DefaultClientContext( this ) );
+        return new StompClientPipelineFactory( this, new DefaultClientContext( this ) );
     }
 
     protected ClientSocketChannelFactory createChannelFactory() {

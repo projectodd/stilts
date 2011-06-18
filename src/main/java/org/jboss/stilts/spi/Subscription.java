@@ -5,9 +5,19 @@ import org.jboss.stilts.StompException;
 public interface Subscription {
     
     public static enum AckMode {
-        AUTO,
-        CLIENT,
-        CLIENT_INDIVIDUAL,
+        AUTO("auto"),
+        CLIENT("client"),
+        CLIENT_INDIVIDUAL("client-individual"),;
+        
+        private String str;
+
+        AckMode(String str) {
+            this.str = str;
+        }
+        
+        public String toString() {
+            return this.str;
+        }
     }
     
     String getId();

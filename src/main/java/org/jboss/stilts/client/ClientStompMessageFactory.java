@@ -7,11 +7,17 @@ import org.jboss.stilts.spi.StompMessageFactory;
 
 public class ClientStompMessageFactory implements StompMessageFactory {
     
-    public static final ClientStompMessageFactory INSTANCE = new ClientStompMessageFactory();
-    
+    private AbstractStompClient client;
+
+    public ClientStompMessageFactory(AbstractStompClient client) {
+        this.client = client;
+    }
+
     @Override
     public StompMessage createMessage(Headers headers, ChannelBuffer content, boolean isError) {
-        return new ClientStompMessage( headers, content, isError );
+        ClientStompMessage message = new ClientStompMessage( headers, content, isError );
+        message.setAcknowledger( new ClientMessageAcknowledger( this.client, message.getHeaders() ) );
+        return message;
     }
     
 }

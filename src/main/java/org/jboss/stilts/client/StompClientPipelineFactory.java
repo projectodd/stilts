@@ -16,7 +16,8 @@ import org.jboss.stilts.protocol.client.ConnectedHandler;
 
 public class StompClientPipelineFactory implements ChannelPipelineFactory {
 
-    public StompClientPipelineFactory(ClientContext clientContext) {
+    public StompClientPipelineFactory(AbstractStompClient client, ClientContext clientContext) {
+        this.client = client;
         this.clientContext = clientContext;
     }
 
@@ -34,7 +35,7 @@ public class StompClientPipelineFactory implements ChannelPipelineFactory {
         pipeline.addLast( "stomp-client-receipt", new ClientReceiptHandler( clientContext ) );
 
         pipeline.addLast( "stomp-message-encoder", new StompMessageEncoder( log( "message.encoder" ) ) );
-        pipeline.addLast( "stomp-message-decoder", new StompMessageDecoder( log( "message.decoder" ), ClientStompMessageFactory.INSTANCE ) );
+        pipeline.addLast( "stomp-message-decoder", new StompMessageDecoder( log( "message.decoder" ), new ClientStompMessageFactory( this.client ) ) );
         pipeline.addLast( "debug-message-encoders", new DebugHandler( log( "DEBUG.message-encoders" ) ) );
 
         pipeline.addLast( "stomp-client-message-handler", new ClientMessageHandler( clientContext ) );
@@ -46,6 +47,7 @@ public class StompClientPipelineFactory implements ChannelPipelineFactory {
         return this.clientContext.getLoggerManager().getLogger( "pipeline.stomp." + name );
     }
 
+    private AbstractStompClient client;
     private ClientContext clientContext;
 
 }

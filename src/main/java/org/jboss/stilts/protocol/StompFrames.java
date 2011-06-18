@@ -4,8 +4,32 @@ import org.jboss.netty.buffer.ChannelBuffers;
 import org.jboss.stilts.StompMessage;
 import org.jboss.stilts.protocol.StompFrame.Command;
 import org.jboss.stilts.protocol.StompFrame.Header;
+import org.jboss.stilts.spi.Headers;
 
 public class StompFrames {
+    
+    public static StompFrame newAckFrame(Headers headers) {
+        StompControlFrame frame = new StompControlFrame( Command.ACK );
+        frame.setHeader( Header.MESSAGE_ID, headers.get( Header.MESSAGE_ID ) );
+        frame.setHeader( Header.SUBSCRIPTION, headers.get( Header.SUBSCRIPTION ) );
+        String transactionId = headers.get( Header.TRANSACTION );
+        if ( transactionId != null ) {
+            frame.setHeader( Header.TRANSACTION, transactionId );
+        }
+        return frame;
+    }
+    
+    public static StompFrame newNackFrame(Headers headers) {
+        StompControlFrame frame = new StompControlFrame( Command.NACK );
+        frame.setHeader( Header.MESSAGE_ID, headers.get( Header.MESSAGE_ID ) );
+        frame.setHeader( Header.SUBSCRIPTION, headers.get( Header.SUBSCRIPTION ) );
+        String transactionId = headers.get( Header.TRANSACTION );
+        if ( transactionId != null ) {
+            frame.setHeader( Header.TRANSACTION, transactionId );
+        }
+        return frame;
+    }
+    
     
     public static StompFrame newSendFrame(StompMessage message) {
         StompContentFrame frame = new StompContentFrame( Command.SEND, message.getHeaders() );

@@ -6,6 +6,7 @@ import org.jboss.stilts.StompException;
 import org.jboss.stilts.base.DefaultHeaders;
 import org.jboss.stilts.protocol.StompFrame.Header;
 import org.jboss.stilts.spi.Headers;
+import org.jboss.stilts.spi.Subscription.AckMode;
 
 public class DefaultSubscriptionBuilder implements SubscriptionBuilder {
     
@@ -34,6 +35,12 @@ public class DefaultSubscriptionBuilder implements SubscriptionBuilder {
     @Override
     public SubscriptionBuilder withHeader(String headerName, String headerValue) {
         this.headers.put( headerName, headerValue );
+        return this;
+    }
+    
+    @Override
+    public SubscriptionBuilder withAckMode(AckMode ackMode) {
+        this.headers.put( Header.ACK, ackMode.toString() );
         return this;
     }
 

@@ -14,13 +14,17 @@ public class AckHandler extends AbstractControlFrameHandler {
     }
 
     public void handleControlFrame(ChannelHandlerContext channelContext, StompFrame frame) {
-        String transactionId = frame.getHeader( Header.TRANSACTION );
-        String subscriptionId = frame.getHeader( Header.SUBSCRIPTION );
         String messageId = frame.getHeader( Header.MESSAGE_ID );
-        Acknowledger acknowledger = getContext().getAckManager().removeAcknowledger( transactionId, subscriptionId, messageId );
+        Acknowledger acknowledger = getContext().getAckManager().removeAcknowledger( messageId );
+        String transactionId = frame.getHeader( Header.TRANSACTION );
+        System.err.println( "--------" );
+        System.err.println( "A: " + acknowledger );
+        System.err.println( "M: " + messageId );
+        System.err.println( "T: " + transactionId );
+        System.err.println( "--------" );
         if ( acknowledger != null ) {
             try {
-                acknowledger.ack();
+                getClientAgent().ack( acknowledger, transactionId );
             } catch (Exception e) {
                 sendError( channelContext, "Unable to ACK", frame );
             }
