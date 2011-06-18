@@ -1,16 +1,15 @@
 package org.jboss.stilts.client;
 
+import org.jboss.stilts.StompException;
 import org.jboss.stilts.StompMessage;
 
 public interface ClientTransaction {
     
     String getId();
     
-    SubscriptionBuilder subscribe(String destination);
+    void send(StompMessage message) throws StompException;
     
-    void send(StompMessage message);
-    
-    void commit();
-    void abort();
+    void commit() throws StompException;
+    void abort() throws StompException;
 
 }

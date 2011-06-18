@@ -1,10 +1,10 @@
 package org.jboss.stilts.spi;
 
-import org.jboss.stilts.MessageSink;
 import org.jboss.stilts.StompException;
+import org.jboss.stilts.StompMessage;
 
 public interface StompProvider {
     
-    ClientAgent connect(MessageSink messageSink, Headers headers) throws StompException;
-
+    ClientAgent connect(AcknowledgeableMessageSink messageSink, Headers headers) throws StompException;
+    void send(StompMessage message) throws StompException;
 }

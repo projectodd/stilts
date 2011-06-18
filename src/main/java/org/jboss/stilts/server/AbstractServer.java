@@ -4,16 +4,20 @@ import java.net.InetSocketAddress;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
+import javax.transaction.TransactionManager;
+
 import org.jboss.netty.bootstrap.ServerBootstrap;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.socket.ServerSocketChannelFactory;
 import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
 import org.jboss.netty.util.VirtualExecutorService;
+import org.jboss.stilts.base.DefaultServerEnvironment;
 import org.jboss.stilts.logging.Logger;
 import org.jboss.stilts.logging.LoggerManager;
 import org.jboss.stilts.logging.SimpleLoggerManager;
 import org.jboss.stilts.protocol.StompPipelineFactory;
 import org.jboss.stilts.spi.StompProvider;
+import org.jboss.stilts.spi.StompServerEnvironment;
 
 public abstract class AbstractServer {
 
@@ -51,6 +55,29 @@ public abstract class AbstractServer {
         return this.loggerManager;
     }
     
+    public void setTransactionManager(TransactionManager transactionManager) {
+        this.transactionManager = transactionManager;
+    }
+    
+    public TransactionManager getTransactionManager() {
+        return this.transactionManager;
+    }
+    
+    public void setStompProvider(StompProvider stompProvider) {
+        this.stompProvider = stompProvider;
+    }
+    
+    public  StompProvider getStompProvider() throws Exception {
+        return this.stompProvider;
+    }
+
+    
+    protected StompServerEnvironment getServerEnvironment() {
+        DefaultServerEnvironment env = new DefaultServerEnvironment();
+        env.setTransactionManager( this.transactionManager );
+        return env;
+    }
+    
     /**
      * Start this server.
      * 
@@ -70,15 +97,14 @@ public abstract class AbstractServer {
         this.channel = bootstrap.bind( new InetSocketAddress( this.port ) );
     }
 
-    public abstract StompProvider getStompProvider() throws Exception;
-
     protected ServerBootstrap createServerBootstrap() throws Exception {
         ServerBootstrap bootstrap = new ServerBootstrap( createChannelFactory() );
         bootstrap.setOption( "reuseAddress", true );
+        
         bootstrap.setPipelineFactory( new StompPipelineFactory( getStompProvider(), this.loggerManager ) );
         return bootstrap;
     }
-
+    
     protected ServerSocketChannelFactory createChannelFactory() {
         VirtualExecutorService bossExecutor = new VirtualExecutorService( this.executor );
         VirtualExecutorService workerExecutor = new VirtualExecutorService( this.executor );
@@ -95,6 +121,8 @@ public abstract class AbstractServer {
 
     private int port;
 
+    private StompProvider stompProvider;
+    private TransactionManager transactionManager;
     private LoggerManager loggerManager;
     private Logger log;
     private Executor executor;

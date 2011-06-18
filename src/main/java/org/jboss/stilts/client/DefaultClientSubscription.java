@@ -7,8 +7,8 @@ import org.jboss.stilts.StompMessage;
 
 public class DefaultClientSubscription implements ClientSubscription {
     
-    public DefaultClientSubscription(DefaultClientTransaction transaction, String id, MessageHandler messageHandler) {
-        this.transaction = transaction;
+    public DefaultClientSubscription(AbstractStompClient client, String id, MessageHandler messageHandler) {
+        this.client = client;
         this.id = id;
         this.messageHandler = messageHandler;
         this.active = true;
@@ -23,11 +23,6 @@ public class DefaultClientSubscription implements ClientSubscription {
         this.active = active;
     }
     
-    @Override
-    public DefaultClientTransaction getTransaction() {
-        return this.transaction;
-    }
-
     @Override
     public String getId() {
         return this.id;
@@ -47,7 +42,7 @@ public class DefaultClientSubscription implements ClientSubscription {
     @Override
     public void unsubscribe() throws StompException {
         try {
-            this.transaction.unsubscribe( this );
+            this.client.unsubscribe( this );
         } catch (InterruptedException e) {
             throw new StompException( e );
         } catch (ExecutionException e) {
@@ -55,11 +50,9 @@ public class DefaultClientSubscription implements ClientSubscription {
         }
     }
     
-    private DefaultClientTransaction transaction;
+    private AbstractStompClient client;
     private MessageHandler messageHandler;
     private String id;
     private boolean active;
-
-
 
 }

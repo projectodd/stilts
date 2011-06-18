@@ -121,7 +121,7 @@ public class StompFrame {
     }
     
     public String toString() {
-        return "[StompFrame: header=" + this.header + "]";
+        return "[" + getClass().getSimpleName() + ": header=" + this.header + "]";
     }
     
     private FrameHeader header;

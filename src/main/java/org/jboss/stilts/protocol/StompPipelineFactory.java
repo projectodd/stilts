@@ -1,24 +1,23 @@
 package org.jboss.stilts.protocol;
 
-import javax.xml.soap.MessageFactory;
-
 import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.jboss.netty.channel.DefaultChannelPipeline;
 import org.jboss.stilts.logging.Logger;
 import org.jboss.stilts.logging.LoggerManager;
 import org.jboss.stilts.protocol.server.AbortHandler;
+import org.jboss.stilts.protocol.server.AckHandler;
 import org.jboss.stilts.protocol.server.BeginHandler;
 import org.jboss.stilts.protocol.server.CommitHandler;
 import org.jboss.stilts.protocol.server.ConnectHandler;
 import org.jboss.stilts.protocol.server.ConnectionContext;
 import org.jboss.stilts.protocol.server.DefaultStompMessageFactory;
 import org.jboss.stilts.protocol.server.DisconnectHandler;
+import org.jboss.stilts.protocol.server.NackHandler;
 import org.jboss.stilts.protocol.server.ReceiptHandler;
 import org.jboss.stilts.protocol.server.SendHandler;
 import org.jboss.stilts.protocol.server.SubscribeHandler;
 import org.jboss.stilts.protocol.server.UnsubscribeHandler;
-import org.jboss.stilts.spi.StompMessageFactory;
 import org.jboss.stilts.spi.StompProvider;
 
 public class StompPipelineFactory implements ChannelPipelineFactory {
@@ -46,6 +45,9 @@ public class StompPipelineFactory implements ChannelPipelineFactory {
         pipeline.addLast( "stomp-server-begin", new BeginHandler( provider, context ) );
         pipeline.addLast( "stomp-server-commit", new CommitHandler( provider, context ) );
         pipeline.addLast( "stomp-server-abort", new AbortHandler( provider, context ) );
+        
+        pipeline.addLast( "stomp-server-ack", new AckHandler( provider, context ) );
+        pipeline.addLast( "stomp-server-nack", new NackHandler( provider, context ) );
         
         pipeline.addLast( "stomp-server-receipt", new ReceiptHandler( provider, context ) );
         

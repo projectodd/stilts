@@ -7,6 +7,11 @@ public class ConnectionContext {
     
     public ConnectionContext(LoggerManager loggerManager) {
         this.loggerManager = loggerManager;
+        this.ackManager = new AckManager();
+    }
+    
+    AckManager getAckManager() {
+        return this.ackManager;
     }
     
     public LoggerManager getLoggerManager() {
@@ -29,6 +34,7 @@ public class ConnectionContext {
         this.active = active;
     }
     
+    private AckManager ackManager;
     private LoggerManager loggerManager;
     private ClientAgent clientAgent;
     private boolean active = true;

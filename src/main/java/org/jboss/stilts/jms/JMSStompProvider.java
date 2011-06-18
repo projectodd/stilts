@@ -2,21 +2,27 @@ package org.jboss.stilts.jms;
 
 import javax.jms.Connection;
 import javax.jms.JMSException;
+import javax.transaction.TransactionManager;
 
-import org.jboss.stilts.MessageSink;
+import org.jboss.stilts.StompException;
+import org.jboss.stilts.StompMessage;
 import org.jboss.stilts.base.AbstractStompProvider;
+import org.jboss.stilts.spi.AcknowledgeableMessageSink;
 import org.jboss.stilts.spi.Authenticator;
-import org.jboss.stilts.spi.ClientAgent;
 import org.jboss.stilts.spi.Headers;
 
-public class JMSStompProvider extends AbstractStompProvider<JMSClientAgent> {
+public class JMSStompProvider extends AbstractStompProvider {
     
-    public JMSStompProvider() {
-        
+    public JMSStompProvider(TransactionManager transactionManager) {
+        super( transactionManager );
     }
     
-    public JMSStompProvider(Authenticator authenticator, DestinationMapper destinationMapper) {
-        super( authenticator );
+    public JMSStompProvider(TransactionManager transactionManager, Authenticator authenticator) {
+        super( transactionManager, authenticator );
+    }
+    
+    public JMSStompProvider(TransactionManager transactionManager, Authenticator authenticator, DestinationMapper destinationMapper) {
+        super( transactionManager, authenticator );
         this.destinationMapper = destinationMapper;
     }
     
@@ -45,8 +51,13 @@ public class JMSStompProvider extends AbstractStompProvider<JMSClientAgent> {
     }
 
     @Override
-    protected ClientAgent createClientAgent(MessageSink messageSink, String sessionId, Headers headers) throws Exception {
-        return new JMSClientAgent(this, messageSink, sessionId );
+    protected JMSClientAgent createClientAgent(TransactionManager transactionManager, AcknowledgeableMessageSink messageSink, String sessionId, Headers headers) throws Exception {
+        return new JMSClientAgent( transactionManager, this, messageSink, sessionId );
+    }
+    
+    @Override
+    public void send(StompMessage message) throws StompException {
+        // TODO Auto-generated method stub
     }
 
     private DestinationMapper destinationMapper;

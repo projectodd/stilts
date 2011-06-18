@@ -9,18 +9,10 @@ import org.jboss.stilts.spi.Headers;
 
 public class DefaultSubscriptionBuilder implements SubscriptionBuilder {
     
-    private DefaultClientTransaction transaction;
-    private Headers headers;
-    private MessageHandler messageHandler;
-
-    public DefaultSubscriptionBuilder(DefaultClientTransaction transaction, String destination) {
-        this.transaction = transaction;
+    public DefaultSubscriptionBuilder(AbstractStompClient client, String destination) {
+        this.client = client;
         this.headers = new DefaultHeaders();
         this.headers.put( Header.DESTINATION, destination );
-    }
-    
-    DefaultClientTransaction getClientTransaction() {
-        return this.transaction;
     }
     
     @Override
@@ -48,7 +40,7 @@ public class DefaultSubscriptionBuilder implements SubscriptionBuilder {
     @Override
     public ClientSubscription start() throws StompException {
         try {
-            return this.transaction.subscribe( this );
+            return this.client.subscribe( this );
         } catch (InterruptedException e) {
             throw new StompException( e );
         } catch (ExecutionException e) {
@@ -59,5 +51,9 @@ public class DefaultSubscriptionBuilder implements SubscriptionBuilder {
     public Headers getHeaders() {
         return this.headers;
     }
+
+    private AbstractStompClient client;
+    private Headers headers;
+    private MessageHandler messageHandler;
 
 }

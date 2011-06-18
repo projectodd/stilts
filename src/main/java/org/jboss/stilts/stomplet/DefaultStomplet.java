@@ -7,7 +7,7 @@ import org.jboss.stilts.StompMessage;
 public class DefaultStomplet extends AbstractStomplet implements Stomplet {
 
     @Override
-    public void onMessage(MessageRouter router, StompMessage message) throws StompException {
+    public void onMessage(StompMessage message) throws StompException {
     }
 
     @Override

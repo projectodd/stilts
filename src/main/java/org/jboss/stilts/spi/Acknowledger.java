@@ -2,7 +2,7 @@ package org.jboss.stilts.spi;
 
 public interface Acknowledger {
     
-    String getId();
-    void acknowledge() throws Exception;
+    void ack() throws Exception;
+    void nack() throws Exception;
 
 }

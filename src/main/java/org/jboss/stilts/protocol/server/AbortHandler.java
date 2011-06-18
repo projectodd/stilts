@@ -16,7 +16,7 @@ public class AbortHandler extends AbstractControlFrameHandler {
     public void handleControlFrame(ChannelHandlerContext channelContext, StompFrame frame) {
         String transactionId = frame.getHeader( Header.TRANSACTION );
         try {
-            getClientAgent().abort( transactionId, frame.getHeaders() );
+            getClientAgent().abort( transactionId );
         } catch (StompException e) {
             sendError( channelContext, "Unable to abort transaction: " + e.getMessage(), frame );
         }

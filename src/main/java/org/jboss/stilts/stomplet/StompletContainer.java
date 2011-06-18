@@ -48,10 +48,9 @@ public class StompletContainer implements MessageRouter {
 
     @Override
     public void send(StompMessage message) throws StompException {
-        System.err.println( "**** Container sending: " + message );
+        System.err.println( "%%% container.send: " + message);
         RouteMatch match = match( message.getDestination() );
-        
-        System.err.println( "Match: " + match );
+        System.err.println( "%%% container.send.match: " + match );
 
         if (match != null) {
             Stomplet stomplet = match.getRoute().getStomplet();
@@ -60,9 +59,10 @@ public class StompletContainer implements MessageRouter {
             for (String name : matches.keySet()) {
                 headers.put( "stomplet." + name, matches.get( name ) );
             }
-            stomplet.onMessage( this, message );
+            stomplet.onMessage( message );
         }
     }
+    
 
     public void addRoute(RouteConfig routeConfig) {
         this.routeConfigs.add( routeConfig );

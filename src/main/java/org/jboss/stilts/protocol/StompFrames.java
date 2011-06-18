@@ -1,10 +1,17 @@
 package org.jboss.stilts.protocol;
 
 import org.jboss.netty.buffer.ChannelBuffers;
+import org.jboss.stilts.StompMessage;
 import org.jboss.stilts.protocol.StompFrame.Command;
 import org.jboss.stilts.protocol.StompFrame.Header;
 
 public class StompFrames {
+    
+    public static StompFrame newSendFrame(StompMessage message) {
+        StompContentFrame frame = new StompContentFrame( Command.SEND, message.getHeaders() );
+        frame.setContent( ChannelBuffers.copiedBuffer( message.getContent() ) );
+        return frame;
+    }
     
     public static StompFrame newConnectedFrame(String sessionId) {
         StompControlFrame frame = new StompControlFrame( Command.CONNECTED );

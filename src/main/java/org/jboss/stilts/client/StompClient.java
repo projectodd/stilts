@@ -20,4 +20,8 @@ public interface StompClient {
     SubscriptionBuilder subscribe(String destination);
     void send(StompMessage message) throws StompException;
     
+    ClientTransaction begin() throws StompException;
+    void commit(String transactionId) throws StompException;
+    void abort(String transactionId) throws StompException;
+    
 }

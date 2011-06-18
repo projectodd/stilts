@@ -16,14 +16,17 @@ import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.jboss.netty.channel.socket.ClientSocketChannelFactory;
 import org.jboss.netty.channel.socket.nio.NioClientSocketChannelFactory;
 import org.jboss.netty.util.VirtualExecutorService;
+import org.jboss.stilts.StompException;
 import org.jboss.stilts.StompMessage;
 import org.jboss.stilts.logging.Logger;
 import org.jboss.stilts.logging.LoggerManager;
 import org.jboss.stilts.logging.SimpleLoggerManager;
+import org.jboss.stilts.protocol.StompContentFrame;
 import org.jboss.stilts.protocol.StompControlFrame;
 import org.jboss.stilts.protocol.StompFrame;
 import org.jboss.stilts.protocol.StompFrame.Command;
 import org.jboss.stilts.protocol.StompFrame.Header;
+import org.jboss.stilts.protocol.StompFrames;
 
 public class AbstractStompClient implements StompClient {
 
@@ -87,7 +90,21 @@ public class AbstractStompClient implements StompClient {
 
     void messageReceived(StompMessage message) {
         log.info( "received message: " + message );
-        this.globalTransaction.messageReceived( message );
+        boolean handled = false;
+        String subscriptionId = message.getHeaders().get( Header.SUBSCRIPTION );
+        if (subscriptionId != null) {
+            DefaultClientSubscription subscription = this.subscriptions.get( subscriptionId );
+            if (subscription != null) {
+                MessageHandler handler = subscription.getMessageHandler();
+                if (handler != null) {
+                    handler.handle( message );
+                    handled = true;
+                }
+            }
+        }
+        if (!handled) {
+            // TODO dispatch to global client handler.
+        }
     }
 
     void errorReceived(StompMessage message) {
@@ -131,7 +148,6 @@ public class AbstractStompClient implements StompClient {
 
         if (this.connectionState == State.CONNECTED) {
             log.info( "Connected" );
-            this.globalTransaction = new DefaultClientTransaction( this, getNextTransactionId(), true );
             if (this.clientListener != null) {
                 this.clientListener.connected( this );
             }
@@ -141,7 +157,7 @@ public class AbstractStompClient implements StompClient {
     }
 
     String getNextTransactionId() {
-        return "" + this.transactionCounter.getAndIncrement();
+        return "transaction-" + this.transactionCounter.getAndIncrement();
     }
 
     public void disconnect() throws InterruptedException {
@@ -158,12 +174,13 @@ public class AbstractStompClient implements StompClient {
     }
 
     public SubscriptionBuilder subscribe(String destination) {
-        return new DefaultSubscriptionBuilder( this.globalTransaction, destination );
+        return new DefaultSubscriptionBuilder( this, destination );
     }
 
     public void send(StompMessage message) {
         log.debug( "Sending outbound message: " + message );
-        this.channel.write( message );
+        StompFrame frame = StompFrames.newSendFrame( message );
+        sendFrame( frame );
     }
 
     DefaultClientSubscription subscribe(DefaultSubscriptionBuilder builder) throws InterruptedException, ExecutionException {
@@ -175,7 +192,9 @@ public class AbstractStompClient implements StompClient {
         if (future.isError()) {
             return null;
         } else {
-            return new DefaultClientSubscription( builder.getClientTransaction(), subscriptionId, builder.getMessageHandler() );
+            DefaultClientSubscription subscription = new DefaultClientSubscription( this, subscriptionId, builder.getMessageHandler() );
+            this.subscriptions.put( subscription.getId(), subscription );
+            return subscription;
         }
     }
 
@@ -187,7 +206,7 @@ public class AbstractStompClient implements StompClient {
     }
 
     String getNextSubscriptionId() {
-        return "" + this.subscriptionCounter.getAndIncrement();
+        return "subscription-" + this.subscriptionCounter.getAndIncrement();
     }
 
     ReceiptFuture sendFrame(StompFrame frame) {
@@ -205,13 +224,13 @@ public class AbstractStompClient implements StompClient {
     }
 
     String getNextReceiptId() {
-        return "" + this.receiptCounter.getAndIncrement();
+        return "receipt-" + this.receiptCounter.getAndIncrement();
     }
 
     public void receiptReceived(String receiptId) {
         receiptReceived( receiptId, null );
     }
-    
+
     public void receiptReceived(String receiptId, StompMessage message) {
         ReceiptFuture future = this.receiptHandlers.remove( receiptId );
 
@@ -221,6 +240,57 @@ public class AbstractStompClient implements StompClient {
             } catch (Exception e) {
                 log.error( "Error during receipt of '" + receiptId + "'", e );
             }
+        }
+    }
+
+    @Override
+    public ClientTransaction begin() throws StompException {
+        String transactionId = getNextTransactionId();
+        StompControlFrame frame = new StompControlFrame( Command.BEGIN );
+        frame.setHeader( Header.TRANSACTION, transactionId );
+        ReceiptFuture future = sendFrame( frame );
+        try {
+            future.await();
+            if (future.isError()) {
+                return null;
+            } else {
+                DefaultClientTransaction transaction = new DefaultClientTransaction( this, transactionId );
+                this.transactions.put( transaction.getId(), transaction );
+                return transaction;
+            }
+        } catch (InterruptedException e) {
+            throw new StompException( e );
+        } catch (ExecutionException e) {
+            throw new StompException( e );
+        }
+    }
+    
+    
+    @Override
+    public void abort(String transactionId) throws StompException {
+        StompControlFrame frame = new StompControlFrame( Command.ABORT );
+        frame.setHeader( Header.TRANSACTION, transactionId );
+        ReceiptFuture future = sendFrame( frame );
+        try {
+            future.await();
+        } catch (InterruptedException e) {
+            throw new StompException( e );
+        } catch (ExecutionException e) {
+            throw new StompException( e );
+        }
+    }
+    
+    @Override
+    public void commit(String transactionId) throws StompException {
+        StompControlFrame frame = new StompControlFrame( Command.COMMIT );
+        frame.setHeader( Header.TRANSACTION, transactionId );
+        ReceiptFuture future = sendFrame( frame );
+        try {
+            future.await();
+        } catch (InterruptedException e) {
+            throw new StompException( e );
+        } catch (ExecutionException e) {
+            throw new StompException( e );
         }
     }
 
@@ -250,10 +320,10 @@ public class AbstractStompClient implements StompClient {
     private ConcurrentHashMap<String, ReceiptFuture> receiptHandlers = new ConcurrentHashMap<String, ReceiptFuture>( 20 );
 
     private AtomicInteger transactionCounter = new AtomicInteger();
-    private DefaultClientTransaction globalTransaction;
     private Map<String, DefaultClientTransaction> transactions = new HashMap<String, DefaultClientTransaction>();
 
     private AtomicInteger subscriptionCounter = new AtomicInteger();
+    private final Map<String, DefaultClientSubscription> subscriptions = new HashMap<String, DefaultClientSubscription>();
 
     private final Object stateLock = new Object();
     private State connectionState;
