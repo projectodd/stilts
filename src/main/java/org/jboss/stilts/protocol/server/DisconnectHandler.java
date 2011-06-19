@@ -19,7 +19,7 @@ public class DisconnectHandler extends AbstractControlFrameHandler {
     @Override
     public void handleControlFrame(ChannelHandlerContext channelContext, StompFrame frame) {
         try {
-            getClientAgent().disconnect();
+            getStompConnection().disconnect();
         } catch (NotConnectedException e) {
             // ignore, we're shutting down anyhow
         }

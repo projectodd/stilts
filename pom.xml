@@ -116,16 +116,17 @@
       </exclusions>
     </dependency>
 
-<!--
-    <dependency>
-      <groupId>com.atomikos</groupId>
-      <artifactId>transactions-jta</artifactId>
-      <version>${version.atomikos}</version>
+
+   <dependency>
+      <groupId>org.hornetq</groupId>
+      <artifactId>hornetq-core</artifactId>
+      <version>${version.hornetq}</version>
     </dependency>
--->
-
-
-<!--
+    <dependency>
+      <groupId>org.hornetq</groupId>
+      <artifactId>hornetq-jms</artifactId>
+      <version>${version.hornetq}</version>
+    </dependency>
     <dependency>
       <groupId>org.hornetq</groupId>
       <artifactId>hornetq-jms-client</artifactId>
@@ -136,7 +137,6 @@
       <artifactId>hornetq-logging</artifactId>
       <version>${version.hornetq}</version>
     </dependency>
--->
     <dependency>
       <groupId>javax.jms</groupId>
       <artifactId>jms-api</artifactId>

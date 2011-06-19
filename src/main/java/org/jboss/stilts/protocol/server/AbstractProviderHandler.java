@@ -8,7 +8,7 @@ import org.jboss.netty.channel.SimpleChannelUpstreamHandler;
 import org.jboss.stilts.logging.Logger;
 import org.jboss.stilts.protocol.StompFrame;
 import org.jboss.stilts.protocol.StompFrames;
-import org.jboss.stilts.spi.ClientAgent;
+import org.jboss.stilts.spi.StompConnection;
 import org.jboss.stilts.spi.StompProvider;
 
 public abstract class AbstractProviderHandler extends SimpleChannelUpstreamHandler {
@@ -27,8 +27,8 @@ public abstract class AbstractProviderHandler extends SimpleChannelUpstreamHandl
         return this.context;
     }
     
-    public ClientAgent getClientAgent() {
-        return this.context.getClientAgent();
+    public StompConnection getStompConnection() {
+        return this.context.getStompConnection();
     }
     
     protected ChannelFuture sendFrame(ChannelHandlerContext channelContext, StompFrame frame) {

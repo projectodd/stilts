@@ -1,7 +1,7 @@
 package org.jboss.stilts.protocol.server;
 
 import org.jboss.stilts.logging.LoggerManager;
-import org.jboss.stilts.spi.ClientAgent;
+import org.jboss.stilts.spi.StompConnection;
 
 public class ConnectionContext {
     
@@ -18,12 +18,12 @@ public class ConnectionContext {
         return this.loggerManager;
     }
     
-    public void setClientAgent(ClientAgent clientAgent) {
-        this.clientAgent = clientAgent;
+    public void setStompConnection(StompConnection clientAgent) {
+        this.stompConnection = clientAgent;
     }
     
-    public ClientAgent getClientAgent() {
-        return this.clientAgent;
+    public StompConnection getStompConnection() {
+        return this.stompConnection;
     }
     
     public boolean isActive() {
@@ -36,7 +36,7 @@ public class ConnectionContext {
     
     private AckManager ackManager;
     private LoggerManager loggerManager;
-    private ClientAgent clientAgent;
+    private StompConnection stompConnection;
     private boolean active = true;
 
 }

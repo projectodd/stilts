@@ -1,9 +1,7 @@
 package org.jboss.stilts.spi;
 
-import javax.transaction.xa.XAResource;
+import org.jboss.stilts.StompException;
 
 public interface XAStompProvider extends StompProvider {
-    
-    XAResource getXAResource();
-
+    XAStompConnection createXAConnection(AcknowledgeableMessageSink messageSink, Headers headers) throws StompException;
 }

@@ -5,7 +5,7 @@ import org.jboss.stilts.StompException;
 import org.jboss.stilts.protocol.StompFrame;
 import org.jboss.stilts.protocol.StompFrame.Command;
 import org.jboss.stilts.protocol.StompFrames;
-import org.jboss.stilts.spi.ClientAgent;
+import org.jboss.stilts.spi.StompConnection;
 import org.jboss.stilts.spi.StompProvider;
 
 public class ConnectHandler extends AbstractControlFrameHandler {
@@ -18,10 +18,10 @@ public class ConnectHandler extends AbstractControlFrameHandler {
     @Override
     public void handleControlFrame(ChannelHandlerContext channelContext, StompFrame frame) {
         try {
-            ClientAgent clientAgent = getStompProvider().connect( new ChannelMessageSink( channelContext.getChannel(), getContext().getAckManager() ), frame.getHeaders() );
+            StompConnection clientAgent = getStompProvider().createConnection( new ChannelMessageSink( channelContext.getChannel(), getContext().getAckManager() ), frame.getHeaders() );
             if (clientAgent != null) {
-                getContext().setClientAgent( clientAgent );
-                log.info( "Set client-agent: " + getClientAgent() );
+                getContext().setStompConnection( clientAgent );
+                log.info( "Set client-agent: " + getStompConnection() );
                 StompFrame connected = StompFrames.newConnectedFrame( clientAgent.getSessionId() );
                 log.info( "Replying with CONNECTED" );
                 sendFrame( channelContext, connected );

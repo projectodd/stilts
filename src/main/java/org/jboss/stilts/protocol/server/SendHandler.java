@@ -17,10 +17,10 @@ public class SendHandler extends AbstractProviderHandler {
         log.info( "SEND: " + e.getMessage() );
         if (e.getMessage() instanceof StompMessage) {
             log.info( "SEND: " + e.getMessage() + " via " + getContext()  );
-            log.info( "SEND: " + e.getMessage() + " via " + getContext().getClientAgent()  );
+            log.info( "SEND: " + e.getMessage() + " via " + getContext().getStompConnection()  );
             StompMessage message = (StompMessage) e.getMessage();
             String transactionId = message.getHeaders().get( Header.TRANSACTION );
-            getContext().getClientAgent().send( (StompMessage) e.getMessage(), transactionId );
+            getContext().getStompConnection().send( (StompMessage) e.getMessage(), transactionId );
         }
         super.messageReceived( ctx, e );
     }

@@ -24,7 +24,7 @@ public class NackHandler extends AbstractControlFrameHandler {
         System.err.println( "--------" );
         if ( acknowledger != null ) {
             try {
-                getClientAgent().nack( acknowledger, transactionId );
+                getStompConnection().nack( acknowledger, transactionId );
             } catch (Exception e) {
                 sendError( channelContext, "Unable to NACK", frame );
             }

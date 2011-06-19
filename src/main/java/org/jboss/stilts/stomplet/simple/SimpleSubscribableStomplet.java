@@ -6,8 +6,8 @@ import java.util.Map;
 import org.jboss.stilts.MessageSink;
 import org.jboss.stilts.StompException;
 import org.jboss.stilts.StompMessage;
-import org.jboss.stilts.stomplet.AbstractStomplet;
 import org.jboss.stilts.stomplet.Subscriber;
+import org.jboss.stilts.stomplet.helpers.AbstractStomplet;
 
 public abstract class SimpleSubscribableStomplet extends AbstractStomplet implements MessageSink {
 
@@ -19,6 +19,7 @@ public abstract class SimpleSubscribableStomplet extends AbstractStomplet implem
     @Override
     public void onSubscribe(Subscriber subscriber) throws StompException {
         synchronized ( this.destinations ) {
+            System.err.println( "ADD SUBSCRIBER: " + subscriber );
             SubscriberList destinationSubscribers = this.destinations.get( subscriber.getDestination() );
             if ( destinationSubscribers == null ) {
                 destinationSubscribers = new SubscriberList();
@@ -40,6 +41,7 @@ public abstract class SimpleSubscribableStomplet extends AbstractStomplet implem
     
     protected void sendToAllSubscribers(StompMessage message) throws StompException {
         synchronized ( this.destinations ) {
+            System.err.println( this.destinations );
             SubscriberList destinationSubscribers = this.destinations.get( message.getDestination() );
             if ( destinationSubscribers != null ) {
                 destinationSubscribers.sendToAllSubscribers( message );

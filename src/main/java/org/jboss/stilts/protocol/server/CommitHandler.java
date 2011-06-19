@@ -16,7 +16,7 @@ public class CommitHandler extends AbstractControlFrameHandler {
     public void handleControlFrame(ChannelHandlerContext channelContext, StompFrame frame) {
         String transactionId = frame.getHeader( Header.TRANSACTION );
         try {
-            getClientAgent().commit( transactionId );
+            getStompConnection().commit( transactionId );
         } catch (StompException e) {
             sendError( channelContext, "Unable to commit transaction: " + e.getMessage(), frame );
         }

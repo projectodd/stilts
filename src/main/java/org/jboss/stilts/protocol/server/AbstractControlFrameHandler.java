@@ -26,7 +26,7 @@ public abstract class AbstractControlFrameHandler extends AbstractProviderHandle
             return;
         }
 
-        if (this.requiresClientIdentification && getContext().getClientAgent() == null) {
+        if (this.requiresClientIdentification && getContext().getStompConnection() == null) {
             log.info( "Client not CONNECTED, closing connection" );
             sendErrorAndClose( channelContext, "Must CONNECT first", frame );
             return;

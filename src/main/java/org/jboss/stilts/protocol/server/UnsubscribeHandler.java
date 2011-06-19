@@ -26,7 +26,7 @@ public class UnsubscribeHandler extends AbstractControlFrameHandler {
         }
         
         try {
-            getClientAgent().unsubscribe( destinationOrId, frame.getHeaders() );
+            getStompConnection().unsubscribe( destinationOrId, frame.getHeaders() );
         } catch (StompException e) {
             sendError( channelContext, e.getMessage(), frame );
         }

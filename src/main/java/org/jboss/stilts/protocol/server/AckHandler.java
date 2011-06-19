@@ -24,7 +24,7 @@ public class AckHandler extends AbstractControlFrameHandler {
         System.err.println( "--------" );
         if ( acknowledger != null ) {
             try {
-                getClientAgent().ack( acknowledger, transactionId );
+                getStompConnection().ack( acknowledger, transactionId );
             } catch (Exception e) {
                 sendError( channelContext, "Unable to ACK", frame );
             }
