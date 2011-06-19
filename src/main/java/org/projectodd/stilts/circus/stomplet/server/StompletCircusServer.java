@@ -17,8 +17,9 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.projectodd.stilts.circus.server;
+package org.projectodd.stilts.circus.stomplet.server;
 
+import org.projectodd.stilts.circus.server.AbstractCircusServer;
 import org.projectodd.stilts.circus.stomplet.StompletContainer;
 import org.projectodd.stilts.circus.stomplet.StompletMessageConduitFactory;
 import org.projectodd.stilts.circus.xa.psuedo.PsuedoXAMessageConduitFactory;
@@ -32,7 +33,7 @@ public class StompletCircusServer extends AbstractCircusServer {
         super( port );
     }
     
-    public void start() throws Exception {
+    public void start() throws Throwable {
         startConduitFactory();
         this.stompletContainer.start();
         super.start();

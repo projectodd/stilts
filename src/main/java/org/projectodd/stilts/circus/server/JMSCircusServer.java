@@ -34,7 +34,7 @@ public class JMSCircusServer extends AbstractCircusServer {
         super( port );
     }
     
-    public void start() throws Exception {
+    public void start() throws Throwable {
         startConduitFactory();
         super.start();
     }

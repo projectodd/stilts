@@ -30,7 +30,11 @@
     <version.netty>3.2.1.Final</version.netty>
 
     <version.jbossts>4.15.1.Final</version.jbossts>
-    <version.atomikos>3.6.6</version.atomikos>
+    <version.ironjacamar>1.0.0.CR2</version.ironjacamar>
+    <version.shrinkwrap>1.0.0-beta-1</version.shrinkwrap>
+    <version.jboss-naming>5.0.6.CR1</version.jboss-naming>
+    <version.jboss-stdio>1.0.0.CR3</version.jboss-stdio>
+    <version.hibernate-validator>4.2.0.CR1</version.hibernate-validator>
 
     <version.jboss-logging>3.0.0.CR1</version.jboss-logging>
 
@@ -45,11 +49,10 @@
 
   <repositories>
     <repository>
-      <id>atomikos maven-repos</id>
-      <url>http://repo.atomikos.com/</url>
+      <id>fungal repo</id>
+      <url>http://jesperpedersen.github.com/fungal/maven2</url>
     </repository>
   </repositories>
-
 
   <profiles>
     <profile>
@@ -99,14 +102,20 @@
     </dependency>
 
     <dependency>
-      <groupId>com.atomikos</groupId>
-      <artifactId>transactions</artifactId>
-      <version>${version.atomikos}</version>
+      <groupId>org.jboss.jbossts</groupId>
+      <artifactId>jbossjta</artifactId>
+      <version>${version.jbossts}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.jboss.logging</groupId>
+          <artifactId>jboss-logging-spi</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
 
     <dependency>
       <groupId>org.jboss.jbossts</groupId>
-      <artifactId>jbossjta</artifactId>
+      <artifactId>jbossjta-integration</artifactId>
       <version>${version.jbossts}</version>
       <exclusions>
         <exclusion>
@@ -142,19 +151,63 @@
       <artifactId>jms-api</artifactId>
       <version>${version.jms-api}</version>
     </dependency>
-<!--
-    <dependency>
-      <groupId>org.jboss.logging</groupId>
-      <artifactId>jboss-logging</artifactId>
-      <version>${version.jboss-logging}</version>
-    </dependency>
--->
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-simple</artifactId>
       <version>${version.org.slf4j}</version>
     </dependency>
 
+    <dependency>
+      <groupId>org.jboss.ironjacamar</groupId>
+      <artifactId>ironjacamar-core-impl</artifactId>
+      <version>${version.ironjacamar}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.jboss.ironjacamar</groupId>
+      <artifactId>ironjacamar-deployers-common</artifactId>
+      <version>${version.ironjacamar}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.jboss.ironjacamar</groupId>
+      <artifactId>ironjacamar-common-impl-papaki</artifactId>
+      <version>${version.ironjacamar}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.jboss.shrinkwrap</groupId>
+      <artifactId>shrinkwrap-api</artifactId>
+      <version>${version.shrinkwrap}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.jboss.shrinkwrap.descriptors</groupId>
+      <artifactId>shrinkwrap-descriptors-api</artifactId>
+      <version>${version.shrinkwrap}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.jboss.ironjacamar</groupId>
+      <artifactId>ironjacamar-deployers-fungal</artifactId>
+      <version>${version.ironjacamar}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.jboss.ironjacamar</groupId>
+      <artifactId>ironjacamar-embedded</artifactId>
+      <version>${version.ironjacamar}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.jboss.stdio</groupId>
+      <artifactId>jboss-stdio</artifactId>
+      <version>${version.jboss-stdio}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.hibernate</groupId>
+      <artifactId>hibernate-validator</artifactId>
+      <version>${version.hibernate-validator}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.jboss.naming</groupId>
+      <artifactId>jnpserver</artifactId>
+      <version>${version.jboss-naming}</version>
+    </dependency>
 
     <dependency>
       <groupId>junit</groupId>

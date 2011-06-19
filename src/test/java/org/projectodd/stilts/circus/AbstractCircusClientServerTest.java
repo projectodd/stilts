@@ -55,7 +55,7 @@ public abstract class AbstractCircusClientServerTest<T extends AbstractCircusSer
     }
 
     @Before
-    public void startServer() throws Exception {
+    public void startServer() throws Throwable {
         setUpServerLoggerManager();
         setUpTransactionManager();
         this.server = createServer();
@@ -98,7 +98,7 @@ public abstract class AbstractCircusClientServerTest<T extends AbstractCircusSer
     }
 
     @After
-    public void stopServer() throws Exception {
+    public void stopServer() throws Throwable {
         this.server.stop();
     }
     

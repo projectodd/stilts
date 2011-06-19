@@ -96,9 +96,10 @@ public class BasicStompServer {
     
     /**
      * Start this server.
+     * @throws Throwable 
      * 
      */
-    public void start() throws Exception {
+    public void start() throws Throwable {
         if ( this.loggerManager == null ) {
             this.loggerManager = SimpleLoggerManager.DEFAULT_INSTANCE;
         }
@@ -130,8 +131,9 @@ public class BasicStompServer {
     /**
      * Stop this server.
      * @throws Exception 
+     * @throws Throwable 
      */
-    public void stop() throws Exception {
+    public void stop() throws Throwable {
         this.channel.close();
         this.channel = null;
     }

@@ -59,7 +59,7 @@ public abstract class AbstractCircusServer extends BasicStompServer {
     }
     
     @Override
-    public void start() throws Exception {
+    public void start() throws Throwable {
         MessageConduitFactory factory = this.messageConduitFactory;
         XAMessageConduitFactory xaFactory = null;
         

@@ -44,7 +44,7 @@ public class HornetQCircusServer extends JMSCircusServer {
         super( port );
     }
     
-    public void start() throws Exception {
+    public void start() throws Throwable {
         startHornetQ();
         super.start();
     }
@@ -60,7 +60,7 @@ public class HornetQCircusServer extends JMSCircusServer {
         setConnection( connection );
     }
     
-    public void stop() throws Exception {
+    public void stop() throws Throwable {
         super.stop();
         stopHornetQ();
     }

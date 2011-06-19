@@ -25,11 +25,11 @@ import org.projectodd.stilts.circus.stomplet.StompletContainer;
 import org.projectodd.stilts.stomplet.simple.SimpleQueueStomplet;
 import org.projectodd.stilts.stomplet.simple.SimpleTopicStomplet;
 
-public abstract class AbstractStompletClientServerTest extends AbstractCircusClientServerTest<StompletCircusServer> {
+public abstract class AbstractJCAStompletClientServerTest extends AbstractCircusClientServerTest<StompletCircusServer> {
 
     @Override
     public StompletCircusServer createServer() throws Exception {
-        StompletCircusServer server = new StompletCircusServer();
+        JCAStompletCircusServer server = new JCAStompletCircusServer();
         server.setLoggerManager( this.serverLoggerManager );
 
         StompletContainer container = new StompletContainer( getClass().getClassLoader() );
