@@ -71,7 +71,6 @@ public class JMSMessageConduit implements XAMessageConduit {
         String selector = headers.get( Header.SELECTOR );
 
         MessageConsumer consumer = this.session.createConsumer( jmsDestination, selector );
-        System.err.println( "JMS CONSUMER: " + jmsDestination + " // " + consumer );
         return new JMSSubscription( subscriptionId, destination, consumer, messageSink );
     }
 

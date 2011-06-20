@@ -51,6 +51,7 @@ public class PsuedoXAResourceManager implements XAResource {
 
     @Override
     public void start(Xid xid, int flags) throws XAException {
+        System.err.println( "BOB: START " + xid + " // " + flags );
         PsuedoXATransaction tx = null;
         System.err.println( "START: " + xid + " // " + flags );
         if (flags == XAResource.TMNOFLAGS || flags == XAResource.TMJOIN) {
@@ -70,6 +71,7 @@ public class PsuedoXAResourceManager implements XAResource {
 
     @Override
     public void end(Xid xid, int flags) throws XAException {
+        System.err.println( "BOB: END" );
         PsuedoXATransaction tx = this.transactions.get( xid );
         if (tx == null) {
             throw new XAException( "No such transaction: " + xid );
@@ -84,6 +86,7 @@ public class PsuedoXAResourceManager implements XAResource {
 
     @Override
     public int prepare(Xid xid) throws XAException {
+        System.err.println( "BOB: PREPARE" );
         PsuedoXATransaction tx = this.transactions.get( xid );
         
         if (tx == null) {
@@ -99,6 +102,7 @@ public class PsuedoXAResourceManager implements XAResource {
 
     @Override
     public void commit(Xid xid, boolean onePhase) throws XAException {
+        System.err.println( "BOB: COMMIT" );
         PsuedoXATransaction tx = this.transactions.get( xid );
         
         if (tx == null) {
@@ -110,6 +114,7 @@ public class PsuedoXAResourceManager implements XAResource {
 
     @Override
     public void rollback(Xid xid) throws XAException {
+        System.err.println( "BOB: ROLLBACK" );
         PsuedoXATransaction tx = this.transactions.get( xid );
         
         if (tx == null) {
@@ -121,7 +126,7 @@ public class PsuedoXAResourceManager implements XAResource {
 
     @Override
     public void forget(Xid xid) throws XAException {
-
+        System.err.println( "BOB: FORGET" );
     }
 
     @Override
@@ -132,6 +137,7 @@ public class PsuedoXAResourceManager implements XAResource {
 
     @Override
     public Xid[] recover(int flag) throws XAException {
+        System.err.println( "BOB: RECOVER" );
         return null;
     }
     

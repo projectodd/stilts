@@ -80,10 +80,8 @@ public class CircusStompConnection implements StompConnection {
     @Override
     public void ack(Acknowledger acknowledger, String transactionId) throws StompException {
         if (transactionId != null) {
-            System.err.println( "ClientAgent.ack to transaction: " + transactionId );
             getTransaction( transactionId ).ack( acknowledger );
         } else {
-            System.err.println( "ClientAgent.ack to provider" );
             try {
                 acknowledger.ack();
             } catch (Exception e) {
@@ -95,10 +93,8 @@ public class CircusStompConnection implements StompConnection {
     @Override
     public void nack(Acknowledger acknowledger, String transactionId) throws StompException {
         if (transactionId != null) {
-            System.err.println( "ClientAgent.send to transaction: " + transactionId );
             getTransaction( transactionId ).nack( acknowledger );
         } else {
-            System.err.println( "ClientAgent.send to provider" );
             try {
                 acknowledger.nack();
             } catch (Exception e) {
@@ -107,7 +103,7 @@ public class CircusStompConnection implements StompConnection {
         }
     }
 
-    CircusTransaction getTransaction(String transactionId) throws InvalidTransactionException {
+    synchronized CircusTransaction getTransaction(String transactionId) throws InvalidTransactionException {
 
         CircusTransaction transaction = this.namedTransactions.get( transactionId );
 
@@ -118,12 +114,12 @@ public class CircusStompConnection implements StompConnection {
         return transaction;
     }
 
-    CircusTransaction removeTransaction(String transactionId) {
+    synchronized CircusTransaction removeTransaction(String transactionId) {
         return this.namedTransactions.remove( transactionId );
     }
 
     @Override
-    public void begin(String transactionId, Headers headers) throws StompException {
+    public synchronized void begin(String transactionId, Headers headers) throws StompException {
 
         Transaction jtaTransaction = null;
         TransactionManager tm = getStompProvider().getTransactionManager();
@@ -139,7 +135,6 @@ public class CircusStompConnection implements StompConnection {
 
         try {
             CircusTransaction transaction = createTransaction( jtaTransaction, transactionId );
-            System.err.println( "NAMED TX: " + transaction );
             this.namedTransactions.put( transactionId, transaction );
         } catch (Exception e) {
             throw new StompException( e );
@@ -147,7 +142,7 @@ public class CircusStompConnection implements StompConnection {
     }
 
     @Override
-    public void commit(String transactionId) throws StompException {
+    public synchronized void commit(String transactionId) throws StompException {
         StompTransaction transaction = removeTransaction( transactionId );
         if (transaction == null) {
             throw new InvalidTransactionException( transactionId );
@@ -156,7 +151,7 @@ public class CircusStompConnection implements StompConnection {
     }
 
     @Override
-    public void abort(String transactionId) throws StompException {
+    public synchronized void abort(String transactionId) throws StompException {
         StompTransaction transaction = removeTransaction( transactionId );
         if (transaction == null) {
             throw new InvalidTransactionException( transactionId );
@@ -199,6 +194,7 @@ public class CircusStompConnection implements StompConnection {
                 e.printStackTrace();
             }
         }
+        this.stompProvider.unregister( this );
     }
 
     protected CircusTransaction createTransaction(Transaction jtaTransaction, String transactionId) throws Exception {

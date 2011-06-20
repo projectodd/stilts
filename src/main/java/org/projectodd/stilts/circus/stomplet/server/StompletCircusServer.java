@@ -19,12 +19,13 @@
 
 package org.projectodd.stilts.circus.stomplet.server;
 
-import org.projectodd.stilts.circus.server.AbstractCircusServer;
+import org.projectodd.stilts.circus.server.CircusServer;
+import org.projectodd.stilts.circus.stomplet.SimpleStompletContainer;
 import org.projectodd.stilts.circus.stomplet.StompletContainer;
 import org.projectodd.stilts.circus.stomplet.StompletMessageConduitFactory;
 import org.projectodd.stilts.circus.xa.psuedo.PsuedoXAMessageConduitFactory;
 
-public class StompletCircusServer extends AbstractCircusServer {
+public class StompletCircusServer extends CircusServer {
 
     public StompletCircusServer() {
     }
@@ -37,6 +38,11 @@ public class StompletCircusServer extends AbstractCircusServer {
         startConduitFactory();
         this.stompletContainer.start();
         super.start();
+    }
+    
+    public void stop() throws Throwable {
+        super.stop();
+        this.stompletContainer.stop();
     }
     
     protected void startConduitFactory() {

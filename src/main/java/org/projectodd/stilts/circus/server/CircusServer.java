@@ -25,11 +25,11 @@ import org.projectodd.stilts.circus.CircusStompProvider;
 import org.projectodd.stilts.circus.MessageConduitFactory;
 import org.projectodd.stilts.circus.xa.XAMessageConduitFactory;
 import org.projectodd.stilts.circus.xa.psuedo.PsuedoXAMessageConduitFactory;
-import org.projectodd.stilts.server.BasicStompServer;
+import org.projectodd.stilts.server.SimpleStompServer;
 
-public abstract class AbstractCircusServer extends BasicStompServer {
+public class CircusServer extends SimpleStompServer<CircusStompProvider> {
 
-    public AbstractCircusServer() {
+    public CircusServer() {
         super();
     }
     
@@ -38,7 +38,7 @@ public abstract class AbstractCircusServer extends BasicStompServer {
      * 
      * @param port The listen port to bind to.
      */
-    public AbstractCircusServer(int port) {
+    public CircusServer(int port) {
         super( port );
     }
 
@@ -73,8 +73,11 @@ public abstract class AbstractCircusServer extends BasicStompServer {
         setStompProvider( provider );
         super.start();
     }
-
-
+    
+    public void stop() throws Throwable {
+        super.stop();
+        getStompProvider().stop();
+    }
 
     private TransactionManager transactionManager;
     private XAMessageConduitFactory messageConduitFactory;

@@ -26,7 +26,6 @@ public class SimpleTopicStomplet extends SimpleSubscribableStomplet {
 
     @Override
     public void onMessage(StompMessage message) throws StompException {
-        System.err.println( "+++++++ onMessage(" + message + ")" );
         sendToAllSubscribers( message );
     }
 

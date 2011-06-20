@@ -33,6 +33,7 @@ import org.hornetq.core.server.HornetQServer;
 import org.hornetq.core.server.HornetQServers;
 import org.hornetq.jms.client.HornetQXAConnectionFactory;
 import org.hornetq.jms.server.impl.JMSServerManagerImpl;
+import org.projectodd.stilts.circus.jms.server.JMSCircusServer;
 
 public class HornetQCircusServer extends JMSCircusServer {
 

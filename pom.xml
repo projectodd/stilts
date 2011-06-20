@@ -37,6 +37,11 @@
     <version.hibernate-validator>4.2.0.CR1</version.hibernate-validator>
 
     <version.jboss-logging>3.0.0.CR1</version.jboss-logging>
+    <version.log4j>1.2.16</version.log4j>
+
+    <version.weld-core>1.1.1.Final</version.weld-core>
+    <version.weld-spi>1.1.Final</version.weld-spi>
+    <version.el-api>2.2</version.el-api>
 
     <version.hornetq>2.2.2.Final</version.hornetq>
     <version.jms-api>1.1-rev-1</version.jms-api>
@@ -114,6 +119,17 @@
     </dependency>
 
     <dependency>
+      <groupId>org.jboss.logging</groupId>
+      <artifactId>jboss-logging</artifactId>
+      <version>${version.jboss-logging}</version>
+    </dependency>
+    <dependency>
+      <groupId>log4j</groupId>
+      <artifactId>log4j</artifactId>
+      <version>${version.log4j}</version>
+    </dependency>
+
+    <dependency>
       <groupId>org.jboss.jbossts</groupId>
       <artifactId>jbossjta-integration</artifactId>
       <version>${version.jbossts}</version>
@@ -178,6 +194,11 @@
       <version>${version.shrinkwrap}</version>
     </dependency>
     <dependency>
+      <groupId>org.jboss.shrinkwrap</groupId>
+      <artifactId>shrinkwrap-impl-base</artifactId>
+      <version>${version.shrinkwrap}</version>
+    </dependency>
+    <dependency>
       <groupId>org.jboss.shrinkwrap.descriptors</groupId>
       <artifactId>shrinkwrap-descriptors-api</artifactId>
       <version>${version.shrinkwrap}</version>
@@ -186,11 +207,23 @@
       <groupId>org.jboss.ironjacamar</groupId>
       <artifactId>ironjacamar-deployers-fungal</artifactId>
       <version>${version.ironjacamar}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>com.github.fungal</groupId>
+          <artifactId>fungal</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.jboss.ironjacamar</groupId>
       <artifactId>ironjacamar-embedded</artifactId>
       <version>${version.ironjacamar}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>com.github.fungal</groupId>
+          <artifactId>fungal</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.jboss.stdio</groupId>
@@ -201,6 +234,22 @@
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate-validator</artifactId>
       <version>${version.hibernate-validator}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.jboss.weld</groupId>
+      <artifactId>weld-spi</artifactId>
+      <version>${version.weld-spi}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.jboss.weld</groupId>
+      <artifactId>weld-core</artifactId>
+      <version>${version.weld-core}</version>
+    </dependency>
+    <dependency>
+      <groupId>javax.el</groupId>
+      <artifactId>el-api</artifactId>
+      <version>${version.el-api}</version>
     </dependency>
 
     <dependency>
@@ -244,14 +293,6 @@
 -->
 
   <build>
-    <testResources>
-      <testResource>
-        <directory>src/test/java</directory>
-        <includes>
-          <include>**/*.msg</include>
-        </includes>
-      </testResource>
-    </testResources>
 
     <extensions>
       <extension>
@@ -269,11 +310,22 @@
       <resource> 
         <directory>src/main/java</directory> 
         <includes>
+          <include>**/*.conf</include>
+          <include>**/*.xml</include>
           <include>**/*.rb</include>
           <include>**/*.properties</include>
         </includes>
       </resource> 
     </resources>
+    <testResources>
+      <testResource>
+        <directory>src/test/java</directory>
+        <includes>
+          <include>**/*.msg</include>
+          <include>**/*.conf</include>
+        </includes>
+      </testResource>
+    </testResources>
     <plugins>
       <plugin>
         <artifactId>maven-resources-plugin</artifactId>

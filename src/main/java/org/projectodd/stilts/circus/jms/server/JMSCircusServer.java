@@ -17,14 +17,15 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.projectodd.stilts.circus.server;
+package org.projectodd.stilts.circus.jms.server;
 
 import javax.jms.XAConnection;
 
 import org.projectodd.stilts.circus.jms.DestinationMapper;
 import org.projectodd.stilts.circus.jms.JMSMessageConduitFactory;
+import org.projectodd.stilts.circus.server.CircusServer;
 
-public class JMSCircusServer extends AbstractCircusServer {
+public class JMSCircusServer extends CircusServer {
 
     public JMSCircusServer() {
         super();

@@ -21,6 +21,7 @@ package org.projectodd.stilts.circus.jms;
 
 import static org.junit.Assert.*;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.projectodd.stilts.MessageAccumulator;
 import org.projectodd.stilts.StompMessages;
@@ -28,6 +29,7 @@ import org.projectodd.stilts.client.ClientSubscription;
 import org.projectodd.stilts.client.ClientTransaction;
 import org.projectodd.stilts.logging.SimpleLoggerManager.Level;
 
+@Ignore
 public class BasicHornetQClientServerTest extends AbstractHornetQClientServerTest {
 
     static {

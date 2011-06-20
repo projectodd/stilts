@@ -21,6 +21,7 @@ package org.projectodd.stilts.circus;
 
 import javax.transaction.HeuristicMixedException;
 import javax.transaction.HeuristicRollbackException;
+import javax.transaction.InvalidTransactionException;
 import javax.transaction.RollbackException;
 import javax.transaction.SystemException;
 import javax.transaction.Transaction;
@@ -56,7 +57,9 @@ public class CircusTransaction implements StompTransaction {
     @Override
     public void commit() throws StompException {
         try {
-            this.transaction.commit();
+            TransactionManager tm = this.stompConnection.getStompProvider().getTransactionManager();
+            tm.resume( this.transaction );
+            tm.commit();
         } catch (SecurityException e) {
             throw new StompException( e );
         } catch (IllegalStateException e) {
@@ -69,29 +72,36 @@ public class CircusTransaction implements StompTransaction {
             throw new StompException( e );
         } catch (SystemException e) {
             throw new StompException( e );
+        } catch (InvalidTransactionException e) {
+            throw new StompException( e );
         }
     }
 
     @Override
     public void abort() throws StompException {
         try {
-            this.transaction.rollback();
+            TransactionManager tm = this.stompConnection.getStompProvider().getTransactionManager();
+            tm.resume( this.transaction );
+            tm.rollback();
         } catch (IllegalStateException e) {
             throw new StompException( e );
         } catch (SystemException e) {
+            throw new StompException( e );
+        } catch (InvalidTransactionException e) {
             throw new StompException( e );
         }
     }
 
     @Override
     public void send(StompMessage message) throws StompException {
+        XAResource xaResource = this.stompConnection.getMessageConduit().getXAResource();
         try {
             TransactionManager tm = this.stompConnection.getStompProvider().getTransactionManager();
             tm.resume( this.transaction );
-            XAResource xaResource = this.stompConnection.getMessageConduit().getXAResource();
             this.transaction.enlistResource( xaResource );
             message.getHeaders().remove( Header.TRANSACTION );
             this.stompConnection.send( message );
+            this.transaction.delistResource( xaResource, XAResource.TMSUSPEND );
             tm.suspend();
         } catch (StompException e) {
             throw e;
@@ -101,12 +111,13 @@ public class CircusTransaction implements StompTransaction {
     }
 
     public void ack(Acknowledger acknowledger) throws StompException {
+        XAResource xaResource = this.stompConnection.getMessageConduit().getXAResource();
         try {
             TransactionManager tm = this.stompConnection.getStompProvider().getTransactionManager();
             tm.resume( this.transaction );
-            XAResource xaResource = this.stompConnection.getMessageConduit().getXAResource();
             this.transaction.enlistResource( xaResource );
             acknowledger.ack();
+            this.transaction.delistResource( xaResource, XAResource.TMSUSPEND );
             tm.suspend();
         } catch (Exception e) {
             throw new StompException( e );
@@ -114,10 +125,10 @@ public class CircusTransaction implements StompTransaction {
     }
 
     public void nack(Acknowledger acknowledger) throws StompException {
+        XAResource xaResource = this.stompConnection.getMessageConduit().getXAResource();
         try {
             TransactionManager tm = this.stompConnection.getStompProvider().getTransactionManager();
             tm.resume( this.transaction );
-            XAResource xaResource = this.stompConnection.getMessageConduit().getXAResource();
             this.transaction.enlistResource( xaResource );
             acknowledger.nack();
             tm.suspend();

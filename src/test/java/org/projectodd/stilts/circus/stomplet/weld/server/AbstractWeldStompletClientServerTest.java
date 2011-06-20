@@ -17,30 +17,31 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.projectodd.stilts.circus.stomplet.server;
+package org.projectodd.stilts.circus.stomplet.weld.server;
 
 import org.projectodd.stilts.circus.AbstractStandaloneClientServerTest;
 import org.projectodd.stilts.circus.server.StandaloneCircusServer;
-import org.projectodd.stilts.circus.stomplet.SimpleStompletContainer;
-import org.projectodd.stilts.stomplet.simple.SimpleQueueStomplet;
-import org.projectodd.stilts.stomplet.simple.SimpleTopicStomplet;
+import org.projectodd.stilts.circus.stomplet.server.StompletCircusServer;
+import org.projectodd.stilts.circus.stomplet.weld.CircusBeanDeploymentArchive;
 
-public abstract class AbstractStompletClientServerTest extends AbstractStandaloneClientServerTest<StompletCircusServer> {
+public abstract class AbstractWeldStompletClientServerTest extends AbstractStandaloneClientServerTest<StompletCircusServer> {
 
     @Override
     public StandaloneCircusServer<StompletCircusServer> createServer() throws Exception {
         StompletCircusServer server = new StompletCircusServer();
-        return new StandaloneStompletCircusServer( server );
+        StandaloneWeldStompletCircusServer standalone = new StandaloneWeldStompletCircusServer( server );
+        standalone.addBeanDeploymentArchive( getBeanDeploymentArchive() );
+        return standalone;
     }
     
-    protected SimpleStompletContainer getStompletContainer() {
-        return (SimpleStompletContainer) getServer().getStompletContainer();
-    }
+    public abstract CircusBeanDeploymentArchive getBeanDeploymentArchive() throws Exception;
     
+    /*
     public void prepareServer() throws Exception {
         super.prepareServer();
-        getStompletContainer().addStomplet( "/queues/:destination", new SimpleQueueStomplet() );
-        getStompletContainer().addStomplet( "/topics/:destination", new SimpleTopicStomplet() );
+        getServer().getStompletContainer().addStomplet( "/queues/:destination", new SimpleQueueStomplet() );
+        getServer().getStompletContainer().addStomplet( "/topics/:destination", new SimpleTopicStomplet() );
     }
+    */
 
 }

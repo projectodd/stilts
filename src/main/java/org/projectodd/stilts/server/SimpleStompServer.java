@@ -38,11 +38,11 @@ import org.projectodd.stilts.protocol.StompPipelineFactory;
 import org.projectodd.stilts.spi.StompProvider;
 import org.projectodd.stilts.spi.StompServerEnvironment;
 
-public class BasicStompServer {
+public class SimpleStompServer<T extends StompProvider> {
     
     public static final int DEFAULT_PORT = 8675;
 
-    public BasicStompServer() {
+    public SimpleStompServer() {
         this( DEFAULT_PORT );
     }
     
@@ -51,7 +51,7 @@ public class BasicStompServer {
      * 
      * @param port The listen port to bind to.
      */
-    public BasicStompServer(int port) {
+    public SimpleStompServer(int port) {
         this.port = port;
     }
 
@@ -80,11 +80,11 @@ public class BasicStompServer {
         return this.loggerManager;
     }
     
-    public void setStompProvider(StompProvider stompProvider) {
+    public void setStompProvider(T stompProvider) {
         this.stompProvider = stompProvider;
     }
     
-    public  StompProvider getStompProvider() throws Exception {
+    public  T getStompProvider() throws Exception {
         return this.stompProvider;
     }
 
@@ -140,7 +140,7 @@ public class BasicStompServer {
 
     private int port;
 
-    private StompProvider stompProvider;
+    private T stompProvider;
     private TransactionManager transactionManager;
     private LoggerManager loggerManager;
     private Logger log;

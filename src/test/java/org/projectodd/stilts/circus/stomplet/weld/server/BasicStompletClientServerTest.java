@@ -17,22 +17,47 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.projectodd.stilts.circus.stomplet.server;
+package org.projectodd.stilts.circus.stomplet.weld.server;
 
 import static org.junit.Assert.*;
 
+import org.jboss.shrinkwrap.api.ShrinkWrap;
+import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.junit.Test;
 import org.projectodd.stilts.MessageAccumulator;
 import org.projectodd.stilts.StompMessages;
+import org.projectodd.stilts.circus.stomplet.weld.CircusBeanDeploymentArchive;
+import org.projectodd.stilts.circus.stomplet.weld.ShrinkwrapBeanDeploymentArchive;
+import org.projectodd.stilts.circus.stomplet.weld.TacoStomplet;
+import org.projectodd.stilts.circus.stomplet.weld.WeldStompletContainer;
 import org.projectodd.stilts.client.ClientSubscription;
 import org.projectodd.stilts.client.ClientTransaction;
 import org.projectodd.stilts.logging.SimpleLoggerManager.Level;
+import org.projectodd.stilts.stomplet.simple.SimpleQueueStomplet;
+import org.projectodd.stilts.stomplet.simple.SimpleTopicStomplet;
 
-public class BasicJCAStompletClientServerTest extends AbstractJCAStompletClientServerTest {
+public class BasicStompletClientServerTest extends AbstractWeldStompletClientServerTest {
 
     static {
         SERVER_ROOT_LEVEL = Level.TRACE;
         CLIENT_ROOT_LEVEL = Level.TRACE;
+    }
+
+    @Override
+    public CircusBeanDeploymentArchive getBeanDeploymentArchive() throws Exception {
+        JavaArchive archive = ShrinkWrap.create( JavaArchive.class );
+        archive.addClass( TacoStomplet.class );
+        return new ShrinkwrapBeanDeploymentArchive( archive, getClass().getClassLoader() );
+    }
+    
+    protected WeldStompletContainer getStompletContainer() {
+        return (WeldStompletContainer) getServer().getStompletContainer();
+    }
+    
+    public void prepareServer() throws Exception {
+        super.prepareServer();
+        getStompletContainer().addStomplet( "/queues/:destination", SimpleQueueStomplet.class.getName() );
+        getStompletContainer().addStomplet( "/topics/:destination", SimpleTopicStomplet.class.getName() );
     }
 
     @Test

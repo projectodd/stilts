@@ -46,7 +46,6 @@ public class JMSSubscription extends CircusSubscription implements MessageListen
 
     @Override
     public void onMessage(Message jmsMessage) {
-        System.err.println( "ON JMS: " +jmsMessage );
         StompMessage stompMessage;
         try {
             stompMessage = MessageConverter.convert( jmsMessage );
