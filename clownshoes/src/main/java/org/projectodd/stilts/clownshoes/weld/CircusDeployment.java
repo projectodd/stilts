@@ -56,13 +56,11 @@ public class CircusDeployment implements Deployment {
     public Collection<BeanDeploymentArchive> getBeanDeploymentArchives() {
         List<BeanDeploymentArchive> deploymentArchives = new ArrayList<BeanDeploymentArchive>();
         deploymentArchives.addAll( this.archives );
-        System.err.println( "deploying " + deploymentArchives );
         return deploymentArchives;
     }
 
     @Override
     public BeanDeploymentArchive loadBeanDeploymentArchive(Class<?> beanClass) {
-        System.err.println( "loadBDA(): " + beanClass );
         return null;
     }
 
@@ -73,7 +71,6 @@ public class CircusDeployment implements Deployment {
 
     @Override
     public Iterable<Metadata<Extension>> getExtensions() {
-        System.err.println( "getExtensions()" );
         return this.extensions;
     }
 

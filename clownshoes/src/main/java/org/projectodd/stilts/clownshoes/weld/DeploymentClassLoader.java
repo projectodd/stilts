@@ -35,7 +35,6 @@ public class DeploymentClassLoader extends ClassLoader {
     
     @Override
     protected Class<?> findClass(String name) throws ClassNotFoundException {
-        System.err.println( "FIND_CLASS: " + name );
         for ( ClassLoader each : this.classLoaders ) {
             try {
                 Class<?> result = each.loadClass( name );

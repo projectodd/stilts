@@ -32,10 +32,8 @@ public class PsuedoXAAcknowledger implements Acknowledger {
     public void ack() throws Exception {
         PsuedoXATransaction tx = this.resourceManager.currentTransaction();
         if (tx != null) {
-            System.err.println( "Transactional ack" );
             tx.addAck( this.acknowledger );
         } else {
-            System.err.println( "Direct ack" );
             this.acknowledger.ack();
         }
     }
@@ -44,10 +42,8 @@ public class PsuedoXAAcknowledger implements Acknowledger {
     public void nack() throws Exception {
         PsuedoXATransaction tx = this.resourceManager.currentTransaction();
         if (tx != null) {
-            System.err.println( "Transactional nack" );
             tx.addNack(  this.acknowledger );
         } else {
-            System.err.println( "Direct nack: " + this.acknowledger );
             this.acknowledger.nack();
         }
     }

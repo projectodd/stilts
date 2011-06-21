@@ -43,13 +43,11 @@ public class StompletConfParser {
         String line = null;
 
         while ((line = readLine( true )) != null) {
-            System.err.println( "LINE: " + line );
             RouteConfiguration config = null;
             Matcher matcher = ROUTE_PATTERN.matcher( line );
             if (matcher.matches()) {
                 String pattern = matcher.group( 1 );
                 String className = matcher.group( 2 );
-                System.err.println( pattern + ">" + className );
                 config = new RouteConfiguration( pattern, className );
                 configs.add( config );
 
@@ -62,7 +60,6 @@ public class StompletConfParser {
                     config.getProperties().put(  values[0], values[1] );
                 }
             } else {
-                System.err.println( "Malformed line: " + line );
                 continue;
             }
         }

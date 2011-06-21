@@ -77,17 +77,8 @@ public class WeldStompletContainer extends SimpleStompletContainer {
     }
 
     public void start() throws Exception {
-        System.err.println( "++++++++++++++++" );
-        System.err.println( "++++++++++++++++" );
-        System.err.println( "++++++++++++++++" );
         super.start();
-        System.err.println( "++++++++++++++++" );
-        System.err.println( "++++++++++++++++" );
-        System.err.println( "++++++++++++++++" );
         startWeld();
-        System.err.println( "++++++++++++++++" );
-        System.err.println( "++++++++++++++++" );
-        System.err.println( "++++++++++++++++" );
     }
 
     protected void startWeld() {
@@ -95,15 +86,12 @@ public class WeldStompletContainer extends SimpleStompletContainer {
         this.deployment = new CircusDeployment();
 
         this.aggregationArchive = new AggregatingBeanDeploymentArchive( "things", this.deployment.getClassLoader() );
-        System.err.println( "$$$ aggregationArchive: " + this.aggregationArchive );
         for (CircusBeanDeploymentArchive each : this.archives) {
             this.aggregationArchive.addMemberArchive( each );
-            //this.deployment.addArchive( each );
         }
         if (this.includeCore) {
             CoreStompletBeanDeploymentArchive core = new CoreStompletBeanDeploymentArchive();
             this.aggregationArchive.addMemberArchive( core );
-            //this.deployment.addArchive( core );
         }
         this.deployment.addArchive( this.aggregationArchive );
         this.bootstrap.startContainer( Environments.SE, this.deployment );
@@ -112,11 +100,6 @@ public class WeldStompletContainer extends SimpleStompletContainer {
         this.bootstrap.validateBeans();
 
         this.beanManager = this.bootstrap.getManager( this.aggregationArchive );
-        System.err.println( "$$$ beanManager: " + this.beanManager );
-        
-        for (CircusBeanDeploymentArchive each : this.archives) {
-            System.err.println( " ===> " + each + " // " + this.bootstrap.getManager( this.aggregationArchive ) );
-        }
     }
 
     public void stop() throws Exception {

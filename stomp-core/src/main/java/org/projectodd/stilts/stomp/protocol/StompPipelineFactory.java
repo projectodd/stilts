@@ -80,6 +80,7 @@ public class StompPipelineFactory implements ChannelPipelineFactory {
     }
     
     Logger log(String name) {
+    	System.err.println( "MANAGER: " + this.loggerManager );
         return this.loggerManager.getLogger( "pipeline.stomp." + name );
     }
 

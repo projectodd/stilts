@@ -31,7 +31,6 @@ public class StompletAcknowledger implements Acknowledger {
         this.stomplet = stomplet;
         this.subscriber = subscriber;
         this.message = message;
-        System.err.println( "CREATE ACK FOR : " + message );
     }
     
     @Override

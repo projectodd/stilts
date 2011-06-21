@@ -38,7 +38,6 @@ public abstract class SimpleSubscribableStomplet extends AbstractStomplet implem
     @Override
     public void onSubscribe(Subscriber subscriber) throws StompException {
         synchronized ( this.destinations ) {
-            System.err.println( "ADD SUBSCRIBER: " + subscriber );
             SubscriberList destinationSubscribers = this.destinations.get( subscriber.getDestination() );
             if ( destinationSubscribers == null ) {
                 destinationSubscribers = new SubscriberList();
@@ -60,7 +59,6 @@ public abstract class SimpleSubscribableStomplet extends AbstractStomplet implem
     
     protected void sendToAllSubscribers(StompMessage message) throws StompException {
         synchronized ( this.destinations ) {
-            System.err.println( this.destinations );
             SubscriberList destinationSubscribers = this.destinations.get( message.getDestination() );
             if ( destinationSubscribers != null ) {
                 destinationSubscribers.sendToAllSubscribers( message );

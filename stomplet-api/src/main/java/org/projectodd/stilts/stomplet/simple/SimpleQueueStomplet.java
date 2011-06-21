@@ -33,13 +33,11 @@ public class SimpleQueueStomplet extends SimpleSubscribableStomplet implements A
 
     @Override
     public void ack(Subscriber subscriber, StompMessage message) {
-        System.err.println( "ACK ACK ACK: " + message );
         // yay
     }
 
     @Override
     public void nack(Subscriber subscriber, StompMessage message) {
-        System.err.println( "NACK NACK NACK: " + message );
         try {
             sendToOneSubscriber( message );
         } catch (StompException e) {

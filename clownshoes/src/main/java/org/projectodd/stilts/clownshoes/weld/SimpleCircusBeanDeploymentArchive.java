@@ -42,7 +42,6 @@ public class SimpleCircusBeanDeploymentArchive implements CircusBeanDeploymentAr
         this.serviceRegistry.add( InjectionServices.class, new CircusInjectionServices() );
         this.serviceRegistry.add( ResourceInjectionServices.class, new CircusResourceInjectionServices() );
         ClassLoaderResourceLoader resourceLoader = new ClassLoaderResourceLoader( classLoader );
-        System.err.println( "LOADER: " + resourceLoader + " // " + classLoader );
         this.serviceRegistry.add( ResourceLoader.class, resourceLoader );
 
         this.beanClasses = new ArrayList<String>();
@@ -64,7 +63,6 @@ public class SimpleCircusBeanDeploymentArchive implements CircusBeanDeploymentAr
 
     @Override
     public Collection<String> getBeanClasses() {
-        System.err.println( "RETUNRING CLASSES: " + this.beanClasses );
         return this.beanClasses;
     }
 

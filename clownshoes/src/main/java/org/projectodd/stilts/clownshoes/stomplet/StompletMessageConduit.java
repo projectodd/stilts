@@ -45,12 +45,9 @@ public class StompletMessageConduit implements MessageConduit {
     @Override
     public Subscription subscribe(String subscriptionId, String destination, Headers headers) throws Exception {
         RouteMatch match = this.stompletContainer.match( destination );
-        System.err.println( "SUBSCRIBER MATCH: " + match );
         if (match == null) {
             return null;
         }
-        
-        System.err.println( "ADD SUBSCRIBER: " + match );
         
         Stomplet stomplet = match.getRoute().getStomplet();
         

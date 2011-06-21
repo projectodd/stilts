@@ -36,11 +36,6 @@ public class NackHandler extends AbstractControlFrameHandler {
         String messageId = frame.getHeader( Header.MESSAGE_ID );
         Acknowledger acknowledger = getContext().getAckManager().removeAcknowledger( messageId );
         String transactionId = frame.getHeader( Header.TRANSACTION );
-        System.err.println( "--------" );
-        System.err.println( "A: " + acknowledger );
-        System.err.println( "M: " + messageId );
-        System.err.println( "T: " + transactionId );
-        System.err.println( "--------" );
         if ( acknowledger != null ) {
             try {
                 getStompConnection().nack( acknowledger, transactionId );

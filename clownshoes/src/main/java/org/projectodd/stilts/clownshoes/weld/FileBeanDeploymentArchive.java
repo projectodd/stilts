@@ -65,7 +65,6 @@ public class FileBeanDeploymentArchive extends SimpleCircusBeanDeploymentArchive
                 String name = child.getName();
                 if (name.endsWith( ".class" )) {
                     name = name.substring( 0, name.length() - 6 );
-                    System.err.println( "class [" + prefix + name + "]" );
                     addBeanClass( prefix + name );
                 }
             }

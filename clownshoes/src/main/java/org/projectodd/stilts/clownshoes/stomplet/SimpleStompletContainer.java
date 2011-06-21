@@ -59,7 +59,6 @@ public class SimpleStompletContainer implements StompletContainer, MessageRouter
         StompletConfig config = new DefaultStompletConfig( this.stompletContext, properties );
         stomplet.initialize( config );
         Route route = new Route( destinationPattern, stomplet );
-        System.err.println( "*** INSTALL ROUTE " + destinationPattern + " // " + route );
         this.routes.add( route );
     }
 
@@ -79,10 +78,8 @@ public class SimpleStompletContainer implements StompletContainer, MessageRouter
     }
 
     public RouteMatch match(String destination) {
-        System.err.println( "match.destination=[" + destination + "]" );
         RouteMatch match = null;
         for (Route route : this.routes) {
-            System.err.println( "attempt: " + route );
             match = route.match( destination );
             if (match != null) {
                 break;

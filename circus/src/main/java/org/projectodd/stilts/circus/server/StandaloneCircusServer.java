@@ -27,11 +27,12 @@ import javax.transaction.TransactionManager;
 
 import org.jboss.jca.embedded.Embedded;
 import org.jboss.jca.embedded.EmbeddedFactory;
+import org.projectodd.stilts.logging.LoggerManager;
 import org.projectodd.stilts.logging.SimpleLoggerManager;
 
 public class StandaloneCircusServer<T extends CircusServer> {
 
-    public StandaloneCircusServer(T server) {
+	public StandaloneCircusServer(T server) {
         this.server = server;
     }
 
@@ -40,10 +41,18 @@ public class StandaloneCircusServer<T extends CircusServer> {
         configure();
         this.server.start();
     }
+    
+    public void setLoggerManager(LoggerManager loggerManager) {
+    	this.loggerManager = loggerManager;
+    }
+    
+    public LoggerManager getLoggerManager() {
+    	return this.loggerManager;
+    }
 
     public void configure() throws Throwable {
         this.server.setExecutor( Executors.newFixedThreadPool( 4 ) );
-        this.server.setLoggerManager( SimpleLoggerManager.DEFAULT_INSTANCE );
+        this.server.setLoggerManager( getLoggerManager() );
         
         this.context = new InitialContext();
         TransactionManager transactionManager = (TransactionManager) context.lookup( "java:/TransactionManager" );
@@ -63,7 +72,6 @@ public class StandaloneCircusServer<T extends CircusServer> {
 
     public void stop() throws Throwable {
         this.server.stop();
-        System.err.println( "TM: " + this.server.getTransactionManager() );
         this.server.setTransactionManager( null );
         stopEmbeddedJCA();
     }
@@ -77,9 +85,11 @@ public class StandaloneCircusServer<T extends CircusServer> {
     public T getServer() {
         return this.server;
     }
+    
 
     private T server;
     private Embedded embeddedJca;
     private InitialContext context;
+    private LoggerManager loggerManager = SimpleLoggerManager.DEFAULT_INSTANCE;
 
 }

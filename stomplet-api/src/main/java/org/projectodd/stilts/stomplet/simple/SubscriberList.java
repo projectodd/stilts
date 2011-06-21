@@ -46,7 +46,6 @@ public class SubscriberList {
 
     protected synchronized void sendToAllSubscribers(StompMessage message) throws StompException {
         for (Subscriber each : this.subscribers) {
-            System.err.println( "SUBSCRIBER: " + each + " // " + message );
             each.send( message );
         }
     }

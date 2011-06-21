@@ -72,7 +72,6 @@ public class StompFrameEncoder extends OneToOneEncoder {
             if (name.equalsIgnoreCase( "content-length" )) {
                 continue;
             }
-            System.err.println( name );
             buffer.writeBytes( name.getBytes() );
             buffer.writeBytes( HEADER_DELIM );
             buffer.writeBytes( frame.getHeader( name ).getBytes() );

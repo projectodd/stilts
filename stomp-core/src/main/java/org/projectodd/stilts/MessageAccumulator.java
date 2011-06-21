@@ -54,14 +54,12 @@ public class MessageAccumulator implements MessageHandler {
         this.messages.add( message );
         if ( shouldAck ) {
             try {
-                System.err.println( "Send ACK" );
                 message.ack();
             } catch (StompException e) {
                 e.printStackTrace();
             }
         } else if ( shouldNack ) {
             try {
-                System.err.println( "Send NACK" );
                 message.nack();
             } catch (StompException e) {
                 e.printStackTrace();

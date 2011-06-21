@@ -66,7 +66,6 @@ public class DefaultSubscriber implements Subscriber {
         dupe.getHeaders().put( Header.SUBSCRIPTION, this.subscriptionId );
         
         if ((acknowledger == null) && (this.stomplet instanceof AcknowledgeableStomplet)) {
-            System.err.println( "creating acknowledger for the stomplet" );
             acknowledger = new StompletAcknowledger( (AcknowledgeableStomplet) this.stomplet, this, dupe );
         }
 
