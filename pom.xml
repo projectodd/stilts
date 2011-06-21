@@ -30,7 +30,10 @@
     <version.netty>3.2.1.Final</version.netty>
 
     <version.jbossts>4.15.1.Final</version.jbossts>
+<!--
     <version.ironjacamar>1.0.0.CR2</version.ironjacamar>
+-->
+    <version.ironjacamar>1.0.0-SNAPSHOT</version.ironjacamar>
     <version.shrinkwrap>1.0.0-beta-1</version.shrinkwrap>
     <version.jboss-naming>5.0.6.CR1</version.jboss-naming>
     <version.jboss-stdio>1.0.0.CR3</version.jboss-stdio>
