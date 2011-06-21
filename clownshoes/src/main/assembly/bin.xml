@@ -4,21 +4,22 @@
   <formats>
     <format>dir</format>
   </formats>
+  <files>
+    <file>
+      <source>${basedir}/bin/clownshoes</source>
+      <outputDirectory>/bin</outputDirectory>
+      <fileMode>0755</fileMode>
+    </file>
+  </files>
   <dependencySets>
     <dependencySet>
       <outputDirectory>/lib/</outputDirectory>
-<!--
-      <outputFileNameMapping>${artifact.artifactId}.${artifact.extension}</outputFileNameMapping>
--->
       <includes>
         <include>org.projectodd.stilts:*</include>
       </includes>
     </dependencySet>
     <dependencySet>
       <outputDirectory>/lib/ext/</outputDirectory>
-<!--
-      <outputFileNameMapping>${artifact.artifactId}.${artifact.extension}</outputFileNameMapping>
--->
       <excludes>
         <exclude>org.projectodd.stilts:*</exclude>
       </excludes>
