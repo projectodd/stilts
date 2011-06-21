@@ -30,10 +30,10 @@ import javax.transaction.xa.XAResource;
 import org.projectodd.stilts.StompException;
 import org.projectodd.stilts.StompMessage;
 import org.projectodd.stilts.circus.xa.XAMessageConduit;
-import org.projectodd.stilts.protocol.StompFrame.Header;
 import org.projectodd.stilts.spi.AcknowledgeableMessageSink;
 import org.projectodd.stilts.spi.Headers;
 import org.projectodd.stilts.spi.Subscription;
+import org.projectodd.stilts.stomp.protocol.StompFrame.Header;
 
 public class JMSMessageConduit implements XAMessageConduit {
 

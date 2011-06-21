@@ -24,8 +24,8 @@ import java.util.List;
 
 import org.projectodd.stilts.StompException;
 import org.projectodd.stilts.StompMessage;
-import org.projectodd.stilts.client.MessageHandler;
-import org.projectodd.stilts.protocol.StompFrame.Header;
+import org.projectodd.stilts.stomp.client.MessageHandler;
+import org.projectodd.stilts.stomp.protocol.StompFrame.Header;
 
 public class MessageAccumulator implements MessageHandler {
     private ArrayList<StompMessage> messages;

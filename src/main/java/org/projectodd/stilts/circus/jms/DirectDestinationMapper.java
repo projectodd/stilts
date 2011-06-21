@@ -23,8 +23,8 @@ import javax.jms.Destination;
 import javax.jms.JMSException;
 import javax.jms.Session;
 
-import org.projectodd.stilts.protocol.StompFrame.Header;
 import org.projectodd.stilts.spi.Headers;
+import org.projectodd.stilts.stomp.protocol.StompFrame.Header;
 
 public class DirectDestinationMapper implements DestinationMapper {
     

@@ -25,9 +25,9 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.projectodd.stilts.MessageAccumulator;
 import org.projectodd.stilts.StompMessages;
-import org.projectodd.stilts.client.ClientSubscription;
-import org.projectodd.stilts.client.ClientTransaction;
 import org.projectodd.stilts.logging.SimpleLoggerManager.Level;
+import org.projectodd.stilts.stomp.client.ClientSubscription;
+import org.projectodd.stilts.stomp.client.ClientTransaction;
 
 @Ignore
 public class BasicHornetQClientServerTest extends AbstractHornetQClientServerTest {

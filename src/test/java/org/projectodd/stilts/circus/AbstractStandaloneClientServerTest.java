@@ -9,10 +9,10 @@ import org.junit.Before;
 import org.projectodd.stilts.MessageAccumulator;
 import org.projectodd.stilts.circus.server.CircusServer;
 import org.projectodd.stilts.circus.server.StandaloneCircusServer;
-import org.projectodd.stilts.client.AbstractStompClient;
 import org.projectodd.stilts.logging.SimpleLoggerManager;
 import org.projectodd.stilts.logging.SimpleLoggerManager.Level;
 import org.projectodd.stilts.server.SimpleStompServer;
+import org.projectodd.stilts.stomp.client.AbstractStompClient;
 
 public abstract class AbstractStandaloneClientServerTest<T extends CircusServer> {
     

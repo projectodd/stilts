@@ -34,9 +34,9 @@ import org.projectodd.stilts.helpers.DefaultServerEnvironment;
 import org.projectodd.stilts.logging.Logger;
 import org.projectodd.stilts.logging.LoggerManager;
 import org.projectodd.stilts.logging.SimpleLoggerManager;
-import org.projectodd.stilts.protocol.StompPipelineFactory;
 import org.projectodd.stilts.spi.StompProvider;
 import org.projectodd.stilts.spi.StompServerEnvironment;
+import org.projectodd.stilts.stomp.protocol.StompPipelineFactory;
 
 public class SimpleStompServer<T extends StompProvider> {
     

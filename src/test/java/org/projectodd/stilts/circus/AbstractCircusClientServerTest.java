@@ -29,10 +29,10 @@ import org.junit.After;
 import org.junit.Before;
 import org.projectodd.stilts.MessageAccumulator;
 import org.projectodd.stilts.circus.server.CircusServer;
-import org.projectodd.stilts.client.AbstractStompClient;
 import org.projectodd.stilts.logging.SimpleLoggerManager;
 import org.projectodd.stilts.logging.SimpleLoggerManager.Level;
 import org.projectodd.stilts.server.SimpleStompServer;
+import org.projectodd.stilts.stomp.client.AbstractStompClient;
 
 import com.arjuna.ats.jta.common.jtaPropertyManager;
 

@@ -27,8 +27,8 @@ import javax.jms.MessageListener;
 import org.projectodd.stilts.StompException;
 import org.projectodd.stilts.StompMessage;
 import org.projectodd.stilts.circus.CircusSubscription;
-import org.projectodd.stilts.protocol.StompFrame.Header;
 import org.projectodd.stilts.spi.AcknowledgeableMessageSink;
+import org.projectodd.stilts.stomp.protocol.StompFrame.Header;
 
 public class JMSSubscription extends CircusSubscription implements MessageListener {
 

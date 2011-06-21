@@ -30,9 +30,9 @@ import javax.transaction.xa.XAResource;
 
 import org.projectodd.stilts.StompException;
 import org.projectodd.stilts.StompMessage;
-import org.projectodd.stilts.protocol.StompFrame.Header;
 import org.projectodd.stilts.spi.Acknowledger;
 import org.projectodd.stilts.spi.StompTransaction;
+import org.projectodd.stilts.stomp.protocol.StompFrame.Header;
 
 public class CircusTransaction implements StompTransaction {
 

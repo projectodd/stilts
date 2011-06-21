@@ -19,8 +19,8 @@
 
 package org.projectodd.stilts;
 
-import org.projectodd.stilts.protocol.DefaultStompMessage;
 import org.projectodd.stilts.spi.Headers;
+import org.projectodd.stilts.stomp.protocol.DefaultStompMessage;
 
 public class StompMessages {
 
