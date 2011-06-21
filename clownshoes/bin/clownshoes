@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+JAVA=java
+
+$JAVA \
+  -cp target/clownshoes-bin/clownshoes-0.1.0-SNAPSHOT/lib/*:target/clownshoes-bin/clownshoes-0.1.0-SNAPSHOT/lib/ext/* \
+  org.projectodd.stilts.clownshoes.server.ClownShoesServer \
+  $*

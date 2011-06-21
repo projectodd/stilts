@@ -1,0 +1,27 @@
+<assembly>
+  <id>bin</id>
+  <baseDirectory>clownshoes-${project.version}</baseDirectory>
+  <formats>
+    <format>dir</format>
+  </formats>
+  <dependencySets>
+    <dependencySet>
+      <outputDirectory>/lib/</outputDirectory>
+<!--
+      <outputFileNameMapping>${artifact.artifactId}.${artifact.extension}</outputFileNameMapping>
+-->
+      <includes>
+        <include>org.projectodd.stilts:*</include>
+      </includes>
+    </dependencySet>
+    <dependencySet>
+      <outputDirectory>/lib/ext/</outputDirectory>
+<!--
+      <outputFileNameMapping>${artifact.artifactId}.${artifact.extension}</outputFileNameMapping>
+-->
+      <excludes>
+        <exclude>org.projectodd.stilts:*</exclude>
+      </excludes>
+    </dependencySet>
+  </dependencySets>
+</assembly>

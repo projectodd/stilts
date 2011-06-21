@@ -116,6 +116,14 @@
             <groupId>org.jboss.logging</groupId>
             <artifactId>jboss-logging-spi</artifactId>
           </exclusion>
+          <exclusion>
+            <groupId>emma</groupId>
+            <artifactId>emma</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>emma</groupId>
+            <artifactId>emma_ant</artifactId>
+          </exclusion>
         </exclusions>
       </dependency>
 
@@ -139,6 +147,15 @@
             <groupId>org.jboss.logging</groupId>
             <artifactId>jboss-logging-spi</artifactId>
           </exclusion>
+          <exclusion>
+            <groupId>emma</groupId>
+            <artifactId>emma</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>emma</groupId>
+            <artifactId>emma_ant</artifactId>
+          </exclusion>
+
         </exclusions>
       </dependency>
   
