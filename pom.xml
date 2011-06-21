@@ -8,10 +8,10 @@
     <version>6-beta-1</version>
   </parent>
 
-  <groupId>org.jboss</groupId>
+  <groupId>org.projectodd.stilts</groupId>
   <artifactId>stilts</artifactId>
   <version>0.1.0-SNAPSHOT</version>
-  <packaging>jar</packaging>
+  <packaging>pom</packaging>
   <name>Stilts</name>
   <url>http://www.jboss.org/</url>
 
@@ -93,204 +93,209 @@
 
   </profiles>
     
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.jboss.netty</groupId>
+        <artifactId>netty</artifactId>
+        <version>${version.netty}</version>
+      </dependency>
+  
+      <dependency>
+        <groupId>javax.transaction</groupId>
+        <artifactId>jta</artifactId>
+        <version>${version.jta}</version>
+      </dependency>
+  
+      <dependency>
+        <groupId>org.jboss.jbossts</groupId>
+        <artifactId>jbossjta</artifactId>
+        <version>${version.jbossts}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.jboss.logging</groupId>
+            <artifactId>jboss-logging-spi</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+
+      <dependency>
+        <groupId>org.jboss.logging</groupId>
+        <artifactId>jboss-logging</artifactId>
+        <version>${version.jboss-logging}</version>
+      </dependency>
+      <dependency>
+        <groupId>log4j</groupId>
+        <artifactId>log4j</artifactId>
+        <version>${version.log4j}</version>
+      </dependency>
+  
+      <dependency>
+        <groupId>org.jboss.jbossts</groupId>
+        <artifactId>jbossjta-integration</artifactId>
+        <version>${version.jbossts}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.jboss.logging</groupId>
+            <artifactId>jboss-logging-spi</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+  
+  
+     <dependency>
+        <groupId>org.hornetq</groupId>
+        <artifactId>hornetq-core</artifactId>
+        <version>${version.hornetq}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.hornetq</groupId>
+        <artifactId>hornetq-jms</artifactId>
+        <version>${version.hornetq}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.hornetq</groupId>
+        <artifactId>hornetq-jms-client</artifactId>
+        <version>${version.hornetq}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.hornetq</groupId>
+        <artifactId>hornetq-logging</artifactId>
+        <version>${version.hornetq}</version>
+      </dependency>
+      <dependency>
+        <groupId>javax.jms</groupId>
+        <artifactId>jms-api</artifactId>
+        <version>${version.jms-api}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-simple</artifactId>
+        <version>${version.org.slf4j}</version>
+      </dependency>
+  
+      <dependency>
+        <groupId>org.jboss.ironjacamar</groupId>
+        <artifactId>ironjacamar-core-impl</artifactId>
+        <version>${version.ironjacamar}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.ironjacamar</groupId>
+        <artifactId>ironjacamar-deployers-common</artifactId>
+        <version>${version.ironjacamar}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.ironjacamar</groupId>
+        <artifactId>ironjacamar-common-impl-papaki</artifactId>
+        <version>${version.ironjacamar}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.shrinkwrap</groupId>
+        <artifactId>shrinkwrap-api</artifactId>
+        <version>${version.shrinkwrap}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.shrinkwrap</groupId>
+        <artifactId>shrinkwrap-impl-base</artifactId>
+        <version>${version.shrinkwrap}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.shrinkwrap.descriptors</groupId>
+        <artifactId>shrinkwrap-descriptors-api</artifactId>
+        <version>${version.shrinkwrap}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.ironjacamar</groupId>
+        <artifactId>ironjacamar-deployers-fungal</artifactId>
+        <version>${version.ironjacamar}</version>
+  <!--
+        <exclusions>
+          <exclusion>
+            <groupId>com.github.fungal</groupId>
+            <artifactId>fungal</artifactId>
+          </exclusion>
+        </exclusions>
+  -->
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.ironjacamar</groupId>
+        <artifactId>ironjacamar-embedded</artifactId>
+        <version>${version.ironjacamar}</version>
+  <!--
+        <exclusions>
+          <exclusion>
+            <groupId>com.github.fungal</groupId>
+            <artifactId>fungal</artifactId>
+          </exclusion>
+        </exclusions>
+  -->
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.stdio</groupId>
+        <artifactId>jboss-stdio</artifactId>
+        <version>${version.jboss-stdio}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.hibernate</groupId>
+        <artifactId>hibernate-validator</artifactId>
+        <version>${version.hibernate-validator}</version>
+      </dependency>
+  
+      <dependency>
+        <groupId>org.jboss.weld</groupId>
+        <artifactId>weld-spi</artifactId>
+        <version>${version.weld-spi}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.weld</groupId>
+        <artifactId>weld-core</artifactId>
+        <version>${version.weld-core}</version>
+      </dependency>
+      <dependency>
+        <groupId>javax.el</groupId>
+        <artifactId>el-api</artifactId>
+        <version>${version.el-api}</version>
+      </dependency>
+  
+      <dependency>
+        <groupId>org.jboss.naming</groupId>
+        <artifactId>jnpserver</artifactId>
+        <version>${version.jboss-naming}</version>
+      </dependency>
+  
+      <dependency>
+        <groupId>junit</groupId>
+        <artifactId>junit</artifactId>
+        <version>${version.junit}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.mockito</groupId>
+        <artifactId>mockito-all</artifactId>
+        <version>${version.mockito}</version> 
+      </dependency>
+      <dependency>
+        <groupId>org.hamcrest</groupId>
+        <artifactId>hamcrest-all</artifactId>
+        <version>${version.hamcrest}</version>
+      </dependency>
+  
+    </dependencies>
+  </dependencyManagement>
+
   <dependencies>
-    <dependency>
-      <groupId>org.jboss.netty</groupId>
-      <artifactId>netty</artifactId>
-      <version>${version.netty}</version>
-    </dependency>
-
-    <dependency>
-      <groupId>javax.transaction</groupId>
-      <artifactId>jta</artifactId>
-      <version>${version.jta}</version>
-    </dependency>
-
-    <dependency>
-      <groupId>org.jboss.jbossts</groupId>
-      <artifactId>jbossjta</artifactId>
-      <version>${version.jbossts}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>org.jboss.logging</groupId>
-          <artifactId>jboss-logging-spi</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-
-    <dependency>
-      <groupId>org.jboss.logging</groupId>
-      <artifactId>jboss-logging</artifactId>
-      <version>${version.jboss-logging}</version>
-    </dependency>
-    <dependency>
-      <groupId>log4j</groupId>
-      <artifactId>log4j</artifactId>
-      <version>${version.log4j}</version>
-    </dependency>
-
-    <dependency>
-      <groupId>org.jboss.jbossts</groupId>
-      <artifactId>jbossjta-integration</artifactId>
-      <version>${version.jbossts}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>org.jboss.logging</groupId>
-          <artifactId>jboss-logging-spi</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-
-
-   <dependency>
-      <groupId>org.hornetq</groupId>
-      <artifactId>hornetq-core</artifactId>
-      <version>${version.hornetq}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.hornetq</groupId>
-      <artifactId>hornetq-jms</artifactId>
-      <version>${version.hornetq}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.hornetq</groupId>
-      <artifactId>hornetq-jms-client</artifactId>
-      <version>${version.hornetq}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.hornetq</groupId>
-      <artifactId>hornetq-logging</artifactId>
-      <version>${version.hornetq}</version>
-    </dependency>
-    <dependency>
-      <groupId>javax.jms</groupId>
-      <artifactId>jms-api</artifactId>
-      <version>${version.jms-api}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-simple</artifactId>
-      <version>${version.org.slf4j}</version>
-    </dependency>
-
-    <dependency>
-      <groupId>org.jboss.ironjacamar</groupId>
-      <artifactId>ironjacamar-core-impl</artifactId>
-      <version>${version.ironjacamar}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.jboss.ironjacamar</groupId>
-      <artifactId>ironjacamar-deployers-common</artifactId>
-      <version>${version.ironjacamar}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.jboss.ironjacamar</groupId>
-      <artifactId>ironjacamar-common-impl-papaki</artifactId>
-      <version>${version.ironjacamar}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.jboss.shrinkwrap</groupId>
-      <artifactId>shrinkwrap-api</artifactId>
-      <version>${version.shrinkwrap}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.jboss.shrinkwrap</groupId>
-      <artifactId>shrinkwrap-impl-base</artifactId>
-      <version>${version.shrinkwrap}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.jboss.shrinkwrap.descriptors</groupId>
-      <artifactId>shrinkwrap-descriptors-api</artifactId>
-      <version>${version.shrinkwrap}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.jboss.ironjacamar</groupId>
-      <artifactId>ironjacamar-deployers-fungal</artifactId>
-      <version>${version.ironjacamar}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>com.github.fungal</groupId>
-          <artifactId>fungal</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.jboss.ironjacamar</groupId>
-      <artifactId>ironjacamar-embedded</artifactId>
-      <version>${version.ironjacamar}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>com.github.fungal</groupId>
-          <artifactId>fungal</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.jboss.stdio</groupId>
-      <artifactId>jboss-stdio</artifactId>
-      <version>${version.jboss-stdio}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.hibernate</groupId>
-      <artifactId>hibernate-validator</artifactId>
-      <version>${version.hibernate-validator}</version>
-    </dependency>
-
-    <dependency>
-      <groupId>org.jboss.weld</groupId>
-      <artifactId>weld-spi</artifactId>
-      <version>${version.weld-spi}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.jboss.weld</groupId>
-      <artifactId>weld-core</artifactId>
-      <version>${version.weld-core}</version>
-    </dependency>
-    <dependency>
-      <groupId>javax.el</groupId>
-      <artifactId>el-api</artifactId>
-      <version>${version.el-api}</version>
-    </dependency>
-
-    <dependency>
-      <groupId>org.jboss.naming</groupId>
-      <artifactId>jnpserver</artifactId>
-      <version>${version.jboss-naming}</version>
-    </dependency>
-
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>${version.junit}</version>
+      <scope>test</scope>
     </dependency>
-    <dependency>
-      <groupId>org.mockito</groupId>
-      <artifactId>mockito-all</artifactId>
-      <version>${version.mockito}</version> 
-    </dependency>
-    <dependency>
-      <groupId>org.hamcrest</groupId>
-      <artifactId>hamcrest-all</artifactId>
-      <version>${version.hamcrest}</version>
-    </dependency>
-
-  </dependencies>
-
-
 <!--
-  <dependencies>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <scope>test</scope>
-    </dependency>
     <dependency>
       <groupId>log4j</groupId>
       <artifactId>log4j</artifactId>
       <scope>test</scope>
     </dependency>
-  </dependencies>
 -->
+  </dependencies>
 
   <build>
 
@@ -387,4 +392,12 @@
       </plugins>
     </pluginManagement>
   </build>
+
+  <modules>
+    <module>stomp-spi</module>
+    <module>stomp-core</module>
+    <module>circus</module>
+    <module>stomplet-api</module>
+    <module>clownshoes</module>
+  </modules>
 </project>
