@@ -20,7 +20,9 @@
 package org.projectodd.stilts.clownshoes.weld;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.enterprise.context.spi.CreationalContext;
@@ -41,9 +43,13 @@ public class WeldStompletContainer extends SimpleStompletContainer {
     }
 
     public void addStomplet(String pattern, String className) throws StompException {
+        addStomplet( pattern, className, new HashMap<String,String>() );
+    }
+    
+    public void addStomplet(String pattern, String className, Map<String,String> properties) throws StompException {
         try {
             Stomplet stomplet = newStomplet( className );
-            addStomplet( pattern, stomplet );
+            addStomplet( pattern, stomplet, properties );
         } catch (ClassNotFoundException e) {
             throw new StompException( e );
         }

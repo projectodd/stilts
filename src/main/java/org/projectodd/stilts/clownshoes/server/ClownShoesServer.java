@@ -98,7 +98,7 @@ public class ClownShoesServer extends StandaloneWeldStompletCircusServer {
             StompletConfParser parser = new StompletConfParser( in );
             List<RouteConfiguration> configs = parser.parse();
             for ( RouteConfiguration each : configs ) {
-                getStompletContainer().addStomplet( each.getPattern(), each.getStompletClassName() );
+                getStompletContainer().addStomplet( each.getPattern(), each.getStompletClassName(), each.getProperties() );
             }
         } finally {
             in.close();

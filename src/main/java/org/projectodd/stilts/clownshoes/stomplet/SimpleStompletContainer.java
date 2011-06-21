@@ -20,6 +20,7 @@
 package org.projectodd.stilts.clownshoes.stomplet;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -51,7 +52,11 @@ public class SimpleStompletContainer implements StompletContainer, MessageRouter
     }
     
     public void addStomplet(String destinationPattern, Stomplet stomplet) throws StompException {
-        StompletConfig config = new DefaultStompletConfig( this.stompletContext, null );
+        addStomplet( destinationPattern, stomplet, new HashMap<String,String>() );
+    }
+    
+    public void addStomplet(String destinationPattern, Stomplet stomplet, Map<String,String> properties) throws StompException {
+        StompletConfig config = new DefaultStompletConfig( this.stompletContext, properties );
         stomplet.initialize( config );
         Route route = new Route( destinationPattern, stomplet );
         System.err.println( "*** INSTALL ROUTE " + destinationPattern + " // " + route );
