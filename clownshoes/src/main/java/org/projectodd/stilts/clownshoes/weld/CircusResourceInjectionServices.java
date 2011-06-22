@@ -24,6 +24,7 @@ public class CircusResourceInjectionServices implements ResourceInjectionService
 
 
     private int counter;
+    
     @Override
     public Object resolveResource(InjectionPoint injectionPoint) {
         //Resource resourceAnno = injectionPoint.getAnnotated().getAnnotation( Resource.class );

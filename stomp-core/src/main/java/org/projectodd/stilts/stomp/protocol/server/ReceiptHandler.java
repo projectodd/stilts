@@ -19,8 +19,8 @@ package org.projectodd.stilts.stomp.protocol.server;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.MessageEvent;
 import org.projectodd.stilts.stomp.protocol.StompFrame;
-import org.projectodd.stilts.stomp.protocol.StompFrames;
 import org.projectodd.stilts.stomp.protocol.StompFrame.Header;
+import org.projectodd.stilts.stomp.protocol.StompFrames;
 import org.projectodd.stilts.stomp.spi.StompProvider;
 
 public class ReceiptHandler extends AbstractProviderHandler {

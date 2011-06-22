@@ -21,7 +21,7 @@ import javax.transaction.TransactionManager;
 import org.projectodd.stilts.circus.CircusStompProvider;
 import org.projectodd.stilts.circus.MessageConduitFactory;
 import org.projectodd.stilts.circus.xa.XAMessageConduitFactory;
-import org.projectodd.stilts.circus.xa.psuedo.PsuedoXAMessageConduitFactory;
+import org.projectodd.stilts.circus.xa.pseudo.PseudoXAMessageConduitFactory;
 import org.projectodd.stilts.server.SimpleStompServer;
 
 public class CircusServer extends SimpleStompServer<CircusStompProvider> {
@@ -63,7 +63,7 @@ public class CircusServer extends SimpleStompServer<CircusStompProvider> {
         if ( factory instanceof XAMessageConduitFactory ) {
             xaFactory = (XAMessageConduitFactory) factory;
         } else {
-            xaFactory = new PsuedoXAMessageConduitFactory( factory );
+            xaFactory = new PseudoXAMessageConduitFactory( factory );
         }
         
         CircusStompProvider provider = new CircusStompProvider( this.transactionManager, xaFactory );

@@ -18,8 +18,6 @@ package org.projectodd.stilts.clownshoes.server;
 
 import org.projectodd.stilts.circus.AbstractStandaloneClientServerTest;
 import org.projectodd.stilts.circus.server.StandaloneCircusServer;
-import org.projectodd.stilts.clownshoes.server.StandaloneStompletCircusServer;
-import org.projectodd.stilts.clownshoes.server.StompletCircusServer;
 import org.projectodd.stilts.clownshoes.stomplet.SimpleStompletContainer;
 import org.projectodd.stilts.stomplet.simple.SimpleQueueStomplet;
 import org.projectodd.stilts.stomplet.simple.SimpleTopicStomplet;

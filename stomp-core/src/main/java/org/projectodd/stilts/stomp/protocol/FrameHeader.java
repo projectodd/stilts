@@ -16,7 +16,7 @@
 
 package org.projectodd.stilts.stomp.protocol;
 
-import static org.projectodd.stilts.stomp.protocol.StompFrame.Header.*;
+import static org.projectodd.stilts.stomp.protocol.StompFrame.Header.CONTENT_LENGTH;
 
 import java.util.Set;
 

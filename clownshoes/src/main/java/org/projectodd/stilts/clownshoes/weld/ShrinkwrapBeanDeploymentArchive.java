@@ -18,7 +18,6 @@ package org.projectodd.stilts.clownshoes.weld;
 
 import java.io.File;
 
-import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.exporter.ZipExporter;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.jboss.weld.bootstrap.api.ServiceRegistry;

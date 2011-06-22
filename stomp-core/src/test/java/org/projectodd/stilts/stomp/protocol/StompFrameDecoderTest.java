@@ -31,9 +31,6 @@ import org.jboss.netty.handler.codec.embedder.DecoderEmbedder;
 import org.junit.Before;
 import org.junit.Test;
 import org.projectodd.stilts.logging.SimpleLogger;
-import org.projectodd.stilts.stomp.protocol.StompContentFrame;
-import org.projectodd.stilts.stomp.protocol.StompFrame;
-import org.projectodd.stilts.stomp.protocol.StompFrameDecoder;
 import org.projectodd.stilts.stomp.protocol.StompFrame.Command;
 
 public class StompFrameDecoderTest {
