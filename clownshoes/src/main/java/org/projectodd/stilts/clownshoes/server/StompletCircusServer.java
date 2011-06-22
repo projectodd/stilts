@@ -17,8 +17,7 @@
 package org.projectodd.stilts.clownshoes.server;
 
 import org.projectodd.stilts.circus.server.CircusServer;
-import org.projectodd.stilts.circus.xa.psuedo.PsuedoXAMessageConduitFactory;
-import org.projectodd.stilts.clownshoes.stomplet.SimpleStompletContainer;
+import org.projectodd.stilts.circus.xa.pseudo.PseudoXAMessageConduitFactory;
 import org.projectodd.stilts.clownshoes.stomplet.StompletContainer;
 import org.projectodd.stilts.clownshoes.stomplet.StompletMessageConduitFactory;
 
@@ -44,7 +43,7 @@ public class StompletCircusServer extends CircusServer {
     
     protected void startConduitFactory() {
         StompletMessageConduitFactory factory = new StompletMessageConduitFactory( this.stompletContainer );
-        PsuedoXAMessageConduitFactory xaFactory = new PsuedoXAMessageConduitFactory( factory );
+        PseudoXAMessageConduitFactory xaFactory = new PseudoXAMessageConduitFactory( factory );
         setMessageConduitFactory( xaFactory );
     }
 

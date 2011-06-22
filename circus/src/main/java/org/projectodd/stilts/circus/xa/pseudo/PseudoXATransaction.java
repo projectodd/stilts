@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.projectodd.stilts.circus.xa.psuedo;
+package org.projectodd.stilts.circus.xa.pseudo;
 
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -22,9 +22,9 @@ import org.projectodd.stilts.StompMessage;
 import org.projectodd.stilts.circus.MessageConduit;
 import org.projectodd.stilts.stomp.spi.Acknowledger;
 
-class PsuedoXATransaction {
+class PseudoXATransaction {
     
-    PsuedoXATransaction() {
+    PseudoXATransaction() {
     }
     
     void setRollbackOnly(boolean rollbackOnly) {

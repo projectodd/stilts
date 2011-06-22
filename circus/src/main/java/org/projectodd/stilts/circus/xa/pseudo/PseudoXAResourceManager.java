@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.projectodd.stilts.circus.xa.psuedo;
+package org.projectodd.stilts.circus.xa.pseudo;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -25,9 +25,9 @@ import javax.transaction.xa.Xid;
 
 import org.projectodd.stilts.circus.MessageConduit;
 
-public class PsuedoXAResourceManager implements XAResource {
+public class PseudoXAResourceManager implements XAResource {
     
-    public PsuedoXAResourceManager(MessageConduit messageConduit) {
+    public PseudoXAResourceManager(MessageConduit messageConduit) {
         this.messageConduit = messageConduit;
     }
     
@@ -48,9 +48,9 @@ public class PsuedoXAResourceManager implements XAResource {
 
     @Override
     public void start(Xid xid, int flags) throws XAException {
-        PsuedoXATransaction tx = null;
+        PseudoXATransaction tx = null;
         if (flags == XAResource.TMNOFLAGS || flags == XAResource.TMJOIN) {
-            tx = new PsuedoXATransaction();
+            tx = new PseudoXATransaction();
             this.transactions.put( xid, tx );
         } else if (flags == XAResource.TMRESUME) {
             tx = this.transactions.get( xid );
@@ -65,7 +65,7 @@ public class PsuedoXAResourceManager implements XAResource {
 
     @Override
     public void end(Xid xid, int flags) throws XAException {
-        PsuedoXATransaction tx = this.transactions.get( xid );
+        PseudoXATransaction tx = this.transactions.get( xid );
         if (tx == null) {
             throw new XAException( "No such transaction: " + xid );
         }
@@ -79,7 +79,7 @@ public class PsuedoXAResourceManager implements XAResource {
 
     @Override
     public int prepare(Xid xid) throws XAException {
-        PsuedoXATransaction tx = this.transactions.get( xid );
+        PseudoXATransaction tx = this.transactions.get( xid );
         
         if (tx == null) {
             throw new XAException( "No such transaction: " + xid );
@@ -94,7 +94,7 @@ public class PsuedoXAResourceManager implements XAResource {
 
     @Override
     public void commit(Xid xid, boolean onePhase) throws XAException {
-        PsuedoXATransaction tx = this.transactions.get( xid );
+        PseudoXATransaction tx = this.transactions.get( xid );
         
         if (tx == null) {
             throw new XAException( "No such transaction: " + xid );
@@ -105,7 +105,7 @@ public class PsuedoXAResourceManager implements XAResource {
 
     @Override
     public void rollback(Xid xid) throws XAException {
-        PsuedoXATransaction tx = this.transactions.get( xid );
+        PseudoXATransaction tx = this.transactions.get( xid );
         
         if (tx == null) {
             throw new XAException( "No such transaction: " + xid );
@@ -129,12 +129,12 @@ public class PsuedoXAResourceManager implements XAResource {
         return null;
     }
     
-    PsuedoXATransaction currentTransaction() {
+    PseudoXATransaction currentTransaction() {
         return currentTransaction.get();
     }
 
-    private final ThreadLocal<PsuedoXATransaction> currentTransaction = new ThreadLocal<PsuedoXATransaction>();
-    private final Map<Xid, PsuedoXATransaction> transactions = new ConcurrentHashMap<Xid, PsuedoXATransaction>();
+    private final ThreadLocal<PseudoXATransaction> currentTransaction = new ThreadLocal<PseudoXATransaction>();
+    private final Map<Xid, PseudoXATransaction> transactions = new ConcurrentHashMap<Xid, PseudoXATransaction>();
 
     private MessageConduit messageConduit;
     private int transactionTimeout;

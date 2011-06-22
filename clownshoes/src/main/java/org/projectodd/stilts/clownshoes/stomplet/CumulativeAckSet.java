@@ -22,9 +22,9 @@ import java.util.ListIterator;
 
 import org.projectodd.stilts.stomp.spi.Acknowledger;
 
-public class CummulativeAckSet implements AckSet {
+public class CumulativeAckSet implements AckSet {
 
-    public CummulativeAckSet() {
+    public CumulativeAckSet() {
 
     }
 
@@ -76,5 +76,5 @@ public class CummulativeAckSet implements AckSet {
         public Acknowledger acknowledger;
     }
 
-    private List<Entry> acknowledgers = new LinkedList<CummulativeAckSet.Entry>();
+    private List<Entry> acknowledgers = new LinkedList<CumulativeAckSet.Entry>();
 }

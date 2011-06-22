@@ -14,20 +14,20 @@
  * limitations under the License.
  */
 
-package org.projectodd.stilts.circus.xa.psuedo;
+package org.projectodd.stilts.circus.xa.pseudo;
 
 import org.projectodd.stilts.stomp.spi.Acknowledger;
 
-public class PsuedoXAAcknowledger implements Acknowledger {
+public class PseudoXAAcknowledger implements Acknowledger {
 
-    public PsuedoXAAcknowledger(PsuedoXAResourceManager resourceManager, Acknowledger acknowledger) {
+    public PseudoXAAcknowledger(PseudoXAResourceManager resourceManager, Acknowledger acknowledger) {
         this.resourceManager = resourceManager;
         this.acknowledger = acknowledger;
     }
 
     @Override
     public void ack() throws Exception {
-        PsuedoXATransaction tx = this.resourceManager.currentTransaction();
+        PseudoXATransaction tx = this.resourceManager.currentTransaction();
         if (tx != null) {
             tx.addAck( this.acknowledger );
         } else {
@@ -37,7 +37,7 @@ public class PsuedoXAAcknowledger implements Acknowledger {
 
     @Override
     public void nack() throws Exception {
-        PsuedoXATransaction tx = this.resourceManager.currentTransaction();
+        PseudoXATransaction tx = this.resourceManager.currentTransaction();
         if (tx != null) {
             tx.addNack(  this.acknowledger );
         } else {
@@ -45,7 +45,7 @@ public class PsuedoXAAcknowledger implements Acknowledger {
         }
     }
     
-    private PsuedoXAResourceManager resourceManager;
+    private PseudoXAResourceManager resourceManager;
     private Acknowledger acknowledger;
 
 

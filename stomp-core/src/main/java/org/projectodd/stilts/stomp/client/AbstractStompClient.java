@@ -39,9 +39,9 @@ import org.projectodd.stilts.logging.LoggerManager;
 import org.projectodd.stilts.logging.SimpleLoggerManager;
 import org.projectodd.stilts.stomp.protocol.StompControlFrame;
 import org.projectodd.stilts.stomp.protocol.StompFrame;
-import org.projectodd.stilts.stomp.protocol.StompFrames;
 import org.projectodd.stilts.stomp.protocol.StompFrame.Command;
 import org.projectodd.stilts.stomp.protocol.StompFrame.Header;
+import org.projectodd.stilts.stomp.protocol.StompFrames;
 
 public class AbstractStompClient implements StompClient {
 

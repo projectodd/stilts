@@ -19,8 +19,6 @@ package org.projectodd.stilts;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.projectodd.stilts.StompException;
-import org.projectodd.stilts.StompMessage;
 import org.projectodd.stilts.stomp.client.MessageHandler;
 import org.projectodd.stilts.stomp.protocol.StompFrame.Header;
 
