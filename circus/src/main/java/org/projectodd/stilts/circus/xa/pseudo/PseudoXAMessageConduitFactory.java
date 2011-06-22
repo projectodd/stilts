@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.projectodd.stilts.circus.xa.psuedo;
+package org.projectodd.stilts.circus.xa.pseudo;
 
 import org.projectodd.stilts.circus.MessageConduit;
 import org.projectodd.stilts.circus.MessageConduitFactory;
@@ -22,11 +22,11 @@ import org.projectodd.stilts.circus.xa.XAMessageConduit;
 import org.projectodd.stilts.circus.xa.XAMessageConduitFactory;
 import org.projectodd.stilts.stomp.spi.AcknowledgeableMessageSink;
 
-public class PsuedoXAMessageConduitFactory implements XAMessageConduitFactory {
+public class PseudoXAMessageConduitFactory implements XAMessageConduitFactory {
 
     private MessageConduitFactory factory;
 
-    public PsuedoXAMessageConduitFactory(MessageConduitFactory factory) {
+    public PseudoXAMessageConduitFactory(MessageConduitFactory factory) {
         this.factory = factory;
     }
     
@@ -37,10 +37,10 @@ public class PsuedoXAMessageConduitFactory implements XAMessageConduitFactory {
 
     @Override
     public XAMessageConduit createXAMessageConduit(AcknowledgeableMessageSink messageSink) throws Exception {
-        PsuedoXAAcknowledgeableMessageSink xaMessageSink = new PsuedoXAAcknowledgeableMessageSink( messageSink );
+        PseudoXAAcknowledgeableMessageSink xaMessageSink = new PseudoXAAcknowledgeableMessageSink( messageSink );
         MessageConduit conduit = createMessageConduit( xaMessageSink );
-        PsuedoXAResourceManager resourceManager = new PsuedoXAResourceManager( conduit );
+        PseudoXAResourceManager resourceManager = new PseudoXAResourceManager( conduit );
         xaMessageSink.setResourceManager( resourceManager );
-        return new PsuedoXAMessageConduit( resourceManager );
+        return new PseudoXAMessageConduit( resourceManager );
     }
 }

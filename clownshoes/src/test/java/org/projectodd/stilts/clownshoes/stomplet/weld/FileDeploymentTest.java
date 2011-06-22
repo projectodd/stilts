@@ -18,8 +18,8 @@ package org.projectodd.stilts.clownshoes.stomplet.weld;
 
 import java.io.File;
 
-import org.junit.Test;
 import org.junit.Ignore;
+import org.junit.Test;
 import org.projectodd.stilts.clownshoes.weld.FileBeanDeploymentArchive;
 
 public class FileDeploymentTest {

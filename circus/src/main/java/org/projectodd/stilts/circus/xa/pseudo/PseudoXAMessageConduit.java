@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.projectodd.stilts.circus.xa.psuedo;
+package org.projectodd.stilts.circus.xa.pseudo;
 
 import javax.transaction.xa.XAResource;
 
@@ -23,15 +23,15 @@ import org.projectodd.stilts.circus.xa.XAMessageConduit;
 import org.projectodd.stilts.stomp.spi.Headers;
 import org.projectodd.stilts.stomp.spi.Subscription;
 
-public class PsuedoXAMessageConduit implements XAMessageConduit {
+public class PseudoXAMessageConduit implements XAMessageConduit {
 
-    public PsuedoXAMessageConduit(PsuedoXAResourceManager resourceManager) {
+    public PseudoXAMessageConduit(PseudoXAResourceManager resourceManager) {
         this.resourceManager = resourceManager;
     }
 
     @Override
     public void send(StompMessage stompMessage) throws Exception {
-        PsuedoXATransaction tx = this.resourceManager.currentTransaction();
+        PseudoXATransaction tx = this.resourceManager.currentTransaction();
         if ( tx == null ) {
             this.resourceManager.getMessageConduit().send( stompMessage );
         } else {
@@ -50,6 +50,6 @@ public class PsuedoXAMessageConduit implements XAMessageConduit {
     }
 
 
-    private PsuedoXAResourceManager resourceManager;
+    private PseudoXAResourceManager resourceManager;
 
 }

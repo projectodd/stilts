@@ -16,15 +16,14 @@
 
 package org.projectodd.stilts.clownshoes.parser;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
 import org.junit.Test;
-import org.projectodd.stilts.clownshoes.parser.RouteConfiguration;
-import org.projectodd.stilts.clownshoes.parser.StompletConfParser;
-
-import static org.junit.Assert.*;
 
 public class StompletConfParserTest {
 

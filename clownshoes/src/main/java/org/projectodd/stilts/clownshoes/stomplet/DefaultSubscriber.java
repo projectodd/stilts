@@ -36,7 +36,7 @@ public class DefaultSubscriber implements Subscriber {
         this.ackMode = ackMode;
 
         if (this.ackMode == AckMode.CLIENT) {
-            this.ackSet = new CummulativeAckSet();
+            this.ackSet = new CumulativeAckSet();
         } else if (this.ackMode == AckMode.CLIENT_INDIVIDUAL) {
             this.ackSet = new IndividualAckSet();
         }

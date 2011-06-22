@@ -21,9 +21,9 @@ import org.jboss.netty.channel.ChannelFutureListener;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.projectodd.stilts.NotConnectedException;
 import org.projectodd.stilts.stomp.protocol.StompFrame;
-import org.projectodd.stilts.stomp.protocol.StompFrames;
 import org.projectodd.stilts.stomp.protocol.StompFrame.Command;
 import org.projectodd.stilts.stomp.protocol.StompFrame.Header;
+import org.projectodd.stilts.stomp.protocol.StompFrames;
 import org.projectodd.stilts.stomp.spi.StompProvider;
 
 public class DisconnectHandler extends AbstractControlFrameHandler {

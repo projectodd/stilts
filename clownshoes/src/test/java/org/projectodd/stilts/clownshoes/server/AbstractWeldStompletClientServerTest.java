@@ -18,8 +18,6 @@ package org.projectodd.stilts.clownshoes.server;
 
 import org.projectodd.stilts.circus.AbstractStandaloneClientServerTest;
 import org.projectodd.stilts.circus.server.StandaloneCircusServer;
-import org.projectodd.stilts.clownshoes.server.StandaloneWeldStompletCircusServer;
-import org.projectodd.stilts.clownshoes.server.StompletCircusServer;
 import org.projectodd.stilts.clownshoes.weld.CircusBeanDeploymentArchive;
 
 public abstract class AbstractWeldStompletClientServerTest extends AbstractStandaloneClientServerTest<StompletCircusServer> {
