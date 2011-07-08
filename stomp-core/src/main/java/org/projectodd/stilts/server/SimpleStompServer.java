@@ -28,131 +28,118 @@ import org.jboss.netty.channel.socket.ServerSocketChannelFactory;
 import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
 import org.jboss.netty.util.VirtualExecutorService;
 import org.projectodd.stilts.helpers.DefaultServerEnvironment;
-import org.projectodd.stilts.logging.Logger;
-import org.projectodd.stilts.logging.LoggerManager;
-import org.projectodd.stilts.logging.SimpleLoggerManager;
 import org.projectodd.stilts.stomp.protocol.StompServerPipelineFactory;
 import org.projectodd.stilts.stomp.spi.StompProvider;
 import org.projectodd.stilts.stomp.spi.StompServerEnvironment;
 
 public class SimpleStompServer<T extends StompProvider> {
-    
-    public static final int DEFAULT_PORT = 8675;
 
-    public SimpleStompServer() {
-        this( DEFAULT_PORT );
-    }
-    
-    /**
-     * Construct with a port.
-     * 
-     * @param port The listen port to bind to.
-     */
-    public SimpleStompServer(int port) {
-        this.port = port;
-    }
+	public static final int DEFAULT_PORT = 8675;
 
-    /**
-     * Retrieve the bind port.
-     * 
-     * @return The bind port.
-     */
-    public int getPort() {
-        return this.port;
-    }
+	public SimpleStompServer() {
+		this(DEFAULT_PORT);
+	}
 
-    public void setChannelExecutor(Executor executor) {
-        this.channelExecutor = executor;
-    }
+	/**
+	 * Construct with a port.
+	 * 
+	 * @param port
+	 *            The listen port to bind to.
+	 */
+	public SimpleStompServer(int port) {
+		this.port = port;
+	}
 
-    public Executor getChannelExecutor() {
-        return this.channelExecutor;
-    }
-    
-    public void setMessageHandlingExecutor(Executor executor) {
-        this.messageHandlingExecutor = executor;
-    }
-    
-    public Executor getMessageHandlingExector() {
-        return this.messageHandlingExecutor;
-    }
-    
-    public void setLoggerManager(LoggerManager loggerManager) {
-        this.loggerManager = loggerManager;
-    }
-    
-    public LoggerManager getLoggerManager() {
-        return this.loggerManager;
-    }
-    
-    public void setStompProvider(T stompProvider) {
-        this.stompProvider = stompProvider;
-    }
-    
-    public  T getStompProvider() throws Exception {
-        return this.stompProvider;
-    }
+	/**
+	 * Retrieve the bind port.
+	 * 
+	 * @return The bind port.
+	 */
+	public int getPort() {
+		return this.port;
+	}
 
-    protected StompServerEnvironment getServerEnvironment() {
-        DefaultServerEnvironment env = new DefaultServerEnvironment();
-        env.setTransactionManager( this.transactionManager );
-        return env;
-    }
-    
-    /**
-     * Start this server.
-     * @throws Throwable 
-     * 
-     */
-    public void start() throws Throwable {
-        if ( this.loggerManager == null ) {
-            this.loggerManager = SimpleLoggerManager.DEFAULT_INSTANCE;
-        }
-        
-        this.log = this.loggerManager.getLogger( "server" );
-        
-        if (this.channelExecutor == null) {
-            this.channelExecutor = Executors.newFixedThreadPool( 2 );
-        }
-        
-        ServerBootstrap bootstrap = createServerBootstrap();
-        this.channel = bootstrap.bind( new InetSocketAddress( this.port ) );
-    }
+	public void setChannelExecutor(Executor executor) {
+		this.channelExecutor = executor;
+	}
 
-    protected ServerBootstrap createServerBootstrap() throws Exception {
-        ServerBootstrap bootstrap = new ServerBootstrap( createChannelFactory() );
-        bootstrap.setOption( "reuseAddress", true );
-        
-        StompServerPipelineFactory pipelineFactory = new StompServerPipelineFactory( getStompProvider(), getMessageHandlingExector(), this.loggerManager );
-        bootstrap.setPipelineFactory( pipelineFactory );
-        return bootstrap;
-    }
-    
-    
-    protected ServerSocketChannelFactory createChannelFactory() {
-        VirtualExecutorService bossExecutor = new VirtualExecutorService( this.channelExecutor );
-        VirtualExecutorService workerExecutor = new VirtualExecutorService( this.channelExecutor );
-        return new NioServerSocketChannelFactory( bossExecutor, workerExecutor );
-    }
+	public Executor getChannelExecutor() {
+		return this.channelExecutor;
+	}
 
-    /**
-     * Stop this server.
-     * @throws Exception 
-     * @throws Throwable 
-     */
-    public void stop() throws Throwable {
-        this.channel.close();
-        this.channel = null;
-    }
+	public void setMessageHandlingExecutor(Executor executor) {
+		this.messageHandlingExecutor = executor;
+	}
 
-    private int port;
+	public Executor getMessageHandlingExector() {
+		return this.messageHandlingExecutor;
+	}
 
-    private T stompProvider;
-    private TransactionManager transactionManager;
-    private LoggerManager loggerManager;
-    private Logger log;
-    private Executor channelExecutor;
-    private Executor messageHandlingExecutor;
-    private Channel channel;
+	public void setStompProvider(T stompProvider) {
+		this.stompProvider = stompProvider;
+	}
+
+	public T getStompProvider() throws Exception {
+		return this.stompProvider;
+	}
+
+	protected StompServerEnvironment getServerEnvironment() {
+		DefaultServerEnvironment env = new DefaultServerEnvironment();
+		env.setTransactionManager(this.transactionManager);
+		return env;
+	}
+
+	/**
+	 * Start this server.
+	 * 
+	 * @throws Throwable
+	 * 
+	 */
+	public void start() throws Throwable {
+
+		if (this.channelExecutor == null) {
+			this.channelExecutor = Executors.newFixedThreadPool(2);
+		}
+
+		ServerBootstrap bootstrap = createServerBootstrap();
+		this.channel = bootstrap.bind(new InetSocketAddress(this.port));
+	}
+
+	protected ServerBootstrap createServerBootstrap() throws Exception {
+		ServerBootstrap bootstrap = new ServerBootstrap(createChannelFactory());
+		bootstrap.setOption("reuseAddress", true);
+
+		StompServerPipelineFactory pipelineFactory = new StompServerPipelineFactory(
+				getStompProvider(), getMessageHandlingExector());
+		bootstrap.setPipelineFactory(pipelineFactory);
+		return bootstrap;
+	}
+
+	protected ServerSocketChannelFactory createChannelFactory() {
+		VirtualExecutorService bossExecutor = new VirtualExecutorService(
+				this.channelExecutor);
+		VirtualExecutorService workerExecutor = new VirtualExecutorService(
+				this.channelExecutor);
+		return new NioServerSocketChannelFactory(bossExecutor, workerExecutor);
+	}
+
+	/**
+	 * Stop this server.
+	 * 
+	 * @throws Exception
+	 * @throws Throwable
+	 */
+	public void stop() throws Throwable {
+		this.channel.close();
+		this.channel = null;
+	}
+
+	private int port;
+
+	private T stompProvider;
+	private TransactionManager transactionManager;
+	private Executor channelExecutor;
+	private Executor messageHandlingExecutor;
+	private Channel channel;
 
 }

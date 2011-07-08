@@ -16,6 +16,7 @@
 
 package org.projectodd.stilts.stomp.protocol.server;
 
+import org.jboss.logging.Logger;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.projectodd.stilts.StompException;
 import org.projectodd.stilts.stomp.protocol.StompFrame;
@@ -24,6 +25,8 @@ import org.projectodd.stilts.stomp.protocol.StompFrame.Header;
 import org.projectodd.stilts.stomp.spi.StompProvider;
 
 public class SubscribeHandler extends AbstractControlFrameHandler {
+	
+	private static Logger log = Logger.getLogger(SubscribeHandler.class);
 
     public SubscribeHandler(StompProvider server, ConnectionContext context) {
         super( server, context, Command.SUBSCRIBE );

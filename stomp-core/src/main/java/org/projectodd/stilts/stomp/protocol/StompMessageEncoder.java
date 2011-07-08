@@ -16,18 +16,16 @@
 
 package org.projectodd.stilts.stomp.protocol;
 
+import org.jboss.logging.Logger;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.handler.codec.oneone.OneToOneEncoder;
 import org.projectodd.stilts.StompMessage;
-import org.projectodd.stilts.logging.Logger;
 import org.projectodd.stilts.stomp.protocol.StompFrame.Command;
 
 public class StompMessageEncoder extends OneToOneEncoder {
-    
-    public StompMessageEncoder(Logger log) {
-        this.log = log; 
-    }
+	
+	private static Logger log = Logger.getLogger(StompMessageEncoder.class);
 
     @Override
     protected Object encode(ChannelHandlerContext ctx, Channel channel, Object msg) throws Exception {
@@ -44,7 +42,5 @@ public class StompMessageEncoder extends OneToOneEncoder {
         }
         return null;
     }
-
-    private Logger log;
 
 }

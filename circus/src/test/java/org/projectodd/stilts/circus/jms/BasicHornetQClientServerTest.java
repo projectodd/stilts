@@ -25,17 +25,11 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.projectodd.stilts.MessageAccumulator;
 import org.projectodd.stilts.StompMessages;
-import org.projectodd.stilts.logging.SimpleLoggerManager.Level;
 import org.projectodd.stilts.stomp.client.ClientSubscription;
 import org.projectodd.stilts.stomp.client.ClientTransaction;
 
 @Ignore
 public class BasicHornetQClientServerTest extends AbstractHornetQClientServerTest {
-
-    static {
-        SERVER_ROOT_LEVEL = Level.TRACE;
-        CLIENT_ROOT_LEVEL = Level.NONE;
-    }
 
     @Test
     public void testClient() throws Exception {
