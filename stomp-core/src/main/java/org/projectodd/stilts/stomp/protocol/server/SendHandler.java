@@ -22,6 +22,10 @@ import org.projectodd.stilts.StompMessage;
 import org.projectodd.stilts.stomp.protocol.StompFrame.Header;
 import org.projectodd.stilts.stomp.spi.StompProvider;
 
+/** Handler for inbound SEND frames from client to server.
+ * 
+ * @author Bob McWhirter
+ */
 public class SendHandler extends AbstractProviderHandler {
 
     public SendHandler(StompProvider server, ConnectionContext context) {
@@ -30,10 +34,7 @@ public class SendHandler extends AbstractProviderHandler {
 
     @Override
     public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) throws Exception {
-        log.info( "SEND: " + e.getMessage() );
         if (e.getMessage() instanceof StompMessage) {
-            log.info( "SEND: " + e.getMessage() + " via " + getContext()  );
-            log.info( "SEND: " + e.getMessage() + " via " + getContext().getStompConnection()  );
             StompMessage message = (StompMessage) e.getMessage();
             String transactionId = message.getHeaders().get( Header.TRANSACTION );
             getContext().getStompConnection().send( (StompMessage) e.getMessage(), transactionId );

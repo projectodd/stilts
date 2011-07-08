@@ -31,7 +31,7 @@ import org.projectodd.stilts.helpers.DefaultServerEnvironment;
 import org.projectodd.stilts.logging.Logger;
 import org.projectodd.stilts.logging.LoggerManager;
 import org.projectodd.stilts.logging.SimpleLoggerManager;
-import org.projectodd.stilts.stomp.protocol.StompPipelineFactory;
+import org.projectodd.stilts.stomp.protocol.StompServerPipelineFactory;
 import org.projectodd.stilts.stomp.spi.StompProvider;
 import org.projectodd.stilts.stomp.spi.StompServerEnvironment;
 
@@ -61,12 +61,20 @@ public class SimpleStompServer<T extends StompProvider> {
         return this.port;
     }
 
-    public void setExecutor(Executor executor) {
-        this.executor = executor;
+    public void setChannelExecutor(Executor executor) {
+        this.channelExecutor = executor;
     }
 
-    public Executor getExecutor() {
-        return this.executor;
+    public Executor getChannelExecutor() {
+        return this.channelExecutor;
+    }
+    
+    public void setMessageHandlingExecutor(Executor executor) {
+        this.messageHandlingExecutor = executor;
+    }
+    
+    public Executor getMessageHandlingExector() {
+        return this.messageHandlingExecutor;
     }
     
     public void setLoggerManager(LoggerManager loggerManager) {
@@ -103,8 +111,8 @@ public class SimpleStompServer<T extends StompProvider> {
         
         this.log = this.loggerManager.getLogger( "server" );
         
-        if (this.executor == null) {
-            this.executor = Executors.newFixedThreadPool( 2 );
+        if (this.channelExecutor == null) {
+            this.channelExecutor = Executors.newFixedThreadPool( 2 );
         }
         
         ServerBootstrap bootstrap = createServerBootstrap();
@@ -115,13 +123,15 @@ public class SimpleStompServer<T extends StompProvider> {
         ServerBootstrap bootstrap = new ServerBootstrap( createChannelFactory() );
         bootstrap.setOption( "reuseAddress", true );
         
-        bootstrap.setPipelineFactory( new StompPipelineFactory( getStompProvider(), this.loggerManager ) );
+        StompServerPipelineFactory pipelineFactory = new StompServerPipelineFactory( getStompProvider(), getMessageHandlingExector(), this.loggerManager );
+        bootstrap.setPipelineFactory( pipelineFactory );
         return bootstrap;
     }
     
+    
     protected ServerSocketChannelFactory createChannelFactory() {
-        VirtualExecutorService bossExecutor = new VirtualExecutorService( this.executor );
-        VirtualExecutorService workerExecutor = new VirtualExecutorService( this.executor );
+        VirtualExecutorService bossExecutor = new VirtualExecutorService( this.channelExecutor );
+        VirtualExecutorService workerExecutor = new VirtualExecutorService( this.channelExecutor );
         return new NioServerSocketChannelFactory( bossExecutor, workerExecutor );
     }
 
@@ -141,7 +151,8 @@ public class SimpleStompServer<T extends StompProvider> {
     private TransactionManager transactionManager;
     private LoggerManager loggerManager;
     private Logger log;
-    private Executor executor;
+    private Executor channelExecutor;
+    private Executor messageHandlingExecutor;
     private Channel channel;
 
 }

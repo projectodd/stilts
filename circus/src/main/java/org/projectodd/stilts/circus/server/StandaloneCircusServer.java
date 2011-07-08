@@ -48,7 +48,7 @@ public class StandaloneCircusServer<T extends CircusServer> {
     }
 
     public void configure() throws Throwable {
-        this.server.setExecutor( Executors.newFixedThreadPool( 4 ) );
+        this.server.setChannelExecutor( Executors.newFixedThreadPool( 4 ) );
         this.server.setLoggerManager( getLoggerManager() );
         
         this.context = new InitialContext();
