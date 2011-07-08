@@ -37,9 +37,7 @@ public class ConnectHandler extends AbstractControlFrameHandler {
             StompConnection clientAgent = getStompProvider().createConnection( new ChannelMessageSink( channelContext.getChannel(), getContext().getAckManager() ), frame.getHeaders() );
             if (clientAgent != null) {
                 getContext().setStompConnection( clientAgent );
-                log.info( "Set client-agent: " + getStompConnection() );
                 StompFrame connected = StompFrames.newConnectedFrame( clientAgent.getSessionId() );
-                log.info( "Replying with CONNECTED" );
                 sendFrame( channelContext, connected );
             } else {
                 sendErrorAndClose( channelContext, "Unable to connect", frame );

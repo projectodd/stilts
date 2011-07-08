@@ -17,9 +17,10 @@
 package org.projectodd.stilts.circus;
 
 import org.projectodd.stilts.stomp.spi.AcknowledgeableMessageSink;
+import org.projectodd.stilts.stomp.spi.Headers;
 
 public interface MessageConduitFactory {
     
-    MessageConduit createMessageConduit(AcknowledgeableMessageSink messageSink) throws Exception;
+    MessageConduit createMessageConduit(AcknowledgeableMessageSink messageSink, Headers headers) throws Exception;
 
 }

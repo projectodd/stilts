@@ -21,6 +21,7 @@ import org.projectodd.stilts.circus.MessageConduitFactory;
 import org.projectodd.stilts.circus.xa.XAMessageConduit;
 import org.projectodd.stilts.circus.xa.XAMessageConduitFactory;
 import org.projectodd.stilts.stomp.spi.AcknowledgeableMessageSink;
+import org.projectodd.stilts.stomp.spi.Headers;
 
 public class PseudoXAMessageConduitFactory implements XAMessageConduitFactory {
 
@@ -31,14 +32,14 @@ public class PseudoXAMessageConduitFactory implements XAMessageConduitFactory {
     }
     
     @Override
-    public MessageConduit createMessageConduit(AcknowledgeableMessageSink messageSink) throws Exception {
-        return this.factory.createMessageConduit( messageSink );
+    public MessageConduit createMessageConduit(AcknowledgeableMessageSink messageSink, Headers headers) throws Exception {
+        return this.factory.createMessageConduit( messageSink, headers );
     }
 
     @Override
-    public XAMessageConduit createXAMessageConduit(AcknowledgeableMessageSink messageSink) throws Exception {
+    public XAMessageConduit createXAMessageConduit(AcknowledgeableMessageSink messageSink, Headers headers) throws Exception {
         PseudoXAAcknowledgeableMessageSink xaMessageSink = new PseudoXAAcknowledgeableMessageSink( messageSink );
-        MessageConduit conduit = createMessageConduit( xaMessageSink );
+        MessageConduit conduit = createMessageConduit( xaMessageSink, headers );
         PseudoXAResourceManager resourceManager = new PseudoXAResourceManager( conduit );
         xaMessageSink.setResourceManager( resourceManager );
         return new PseudoXAMessageConduit( resourceManager );

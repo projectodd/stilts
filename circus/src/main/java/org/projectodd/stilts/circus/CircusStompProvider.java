@@ -91,7 +91,7 @@ public class CircusStompProvider implements StompProvider {
     }
 
     protected CircusStompConnection createStompConnection(AcknowledgeableMessageSink messageSink, String sessionId, Headers headers) throws Exception {
-        return new CircusStompConnection( this, this.messageConduitFactory.createXAMessageConduit( messageSink ), sessionId );
+        return new CircusStompConnection( this, this.messageConduitFactory.createXAMessageConduit( messageSink, headers ), sessionId );
     }
 
     XAMessageConduitFactory getMessageConduitFactory() {

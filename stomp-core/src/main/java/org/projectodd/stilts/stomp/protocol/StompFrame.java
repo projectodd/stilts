@@ -42,6 +42,7 @@ public class StompFrame {
         public static final String TRANSACTION = "transaction";
         public static final String SUBSCRIPTION = "subscription";
         public static final String MESSAGE_ID = "message-id";
+        public static final String HOST = "host";
     }
 
     public static class Command {

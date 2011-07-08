@@ -22,6 +22,7 @@ import javax.jms.XASession;
 import org.projectodd.stilts.circus.xa.AbstractXAMessageConduitFactory;
 import org.projectodd.stilts.circus.xa.XAMessageConduit;
 import org.projectodd.stilts.stomp.spi.AcknowledgeableMessageSink;
+import org.projectodd.stilts.stomp.spi.Headers;
 
 public class JMSMessageConduitFactory extends AbstractXAMessageConduitFactory {
 
@@ -31,7 +32,7 @@ public class JMSMessageConduitFactory extends AbstractXAMessageConduitFactory {
     }
     
     @Override
-    public XAMessageConduit createXAMessageConduit(AcknowledgeableMessageSink messageSink) throws Exception {
+    public XAMessageConduit createXAMessageConduit(AcknowledgeableMessageSink messageSink, Headers headers) throws Exception {
         XASession session = connection.createXASession();
         return new JMSMessageConduit( session, messageSink, this.destinationMapper );
     }

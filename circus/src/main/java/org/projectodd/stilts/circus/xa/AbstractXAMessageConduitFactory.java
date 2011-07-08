@@ -18,12 +18,13 @@ package org.projectodd.stilts.circus.xa;
 
 import org.projectodd.stilts.circus.MessageConduit;
 import org.projectodd.stilts.stomp.spi.AcknowledgeableMessageSink;
+import org.projectodd.stilts.stomp.spi.Headers;
 
 public abstract class AbstractXAMessageConduitFactory implements XAMessageConduitFactory {
 
     @Override
-    public MessageConduit createMessageConduit(AcknowledgeableMessageSink messageSink) throws Exception {
-        return createXAMessageConduit( messageSink );
+    public MessageConduit createMessageConduit(AcknowledgeableMessageSink messageSink, Headers headers) throws Exception {
+        return createXAMessageConduit( messageSink, headers );
     }
 
 }

@@ -19,6 +19,7 @@ package org.projectodd.stilts.clownshoes.stomplet;
 import org.projectodd.stilts.circus.MessageConduit;
 import org.projectodd.stilts.circus.MessageConduitFactory;
 import org.projectodd.stilts.stomp.spi.AcknowledgeableMessageSink;
+import org.projectodd.stilts.stomp.spi.Headers;
 
 public class StompletMessageConduitFactory implements MessageConduitFactory {
 
@@ -29,7 +30,7 @@ public class StompletMessageConduitFactory implements MessageConduitFactory {
     }
     
     @Override
-    public MessageConduit createMessageConduit(AcknowledgeableMessageSink messageSink) throws Exception {
+    public MessageConduit createMessageConduit(AcknowledgeableMessageSink messageSink, Headers headers) throws Exception {
         return new StompletMessageConduit( this.container, messageSink );
     }
 
