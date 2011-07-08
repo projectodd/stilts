@@ -9,7 +9,7 @@
   </parent>
 
   <groupId>org.projectodd.stilts</groupId>
-  <artifactId>stomplet-api</artifactId>
+  <artifactId>stilts-stomplet-api</artifactId>
   <packaging>jar</packaging>
   <name>Stilts Stomplet API</name>
 
@@ -20,7 +20,7 @@
   <dependencies>
     <dependency>
       <groupId>org.projectodd.stilts</groupId>
-      <artifactId>stomp-spi</artifactId>
+      <artifactId>stilts-stomp-spi</artifactId>
       <version>${project.version}</version>
     </dependency>
   </dependencies>

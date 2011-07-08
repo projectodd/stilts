@@ -9,7 +9,7 @@
   </parent>
 
   <groupId>org.projectodd.stilts</groupId>
-  <artifactId>stomp-core</artifactId>
+  <artifactId>stilts-stomp-core</artifactId>
   <packaging>jar</packaging>
   <name>Stilts Stomp Core</name>
 
@@ -20,7 +20,7 @@
   <dependencies>
     <dependency>
       <groupId>org.projectodd.stilts</groupId>
-      <artifactId>stomp-spi</artifactId>
+      <artifactId>stilts-stomp-spi</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>

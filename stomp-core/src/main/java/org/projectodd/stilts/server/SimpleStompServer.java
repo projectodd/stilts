@@ -34,112 +34,109 @@ import org.projectodd.stilts.stomp.spi.StompServerEnvironment;
 
 public class SimpleStompServer<T extends StompProvider> {
 
-	public static final int DEFAULT_PORT = 8675;
+    public static final int DEFAULT_PORT = 8675;
 
-	public SimpleStompServer() {
-		this(DEFAULT_PORT);
-	}
+    public SimpleStompServer() {
+        this( DEFAULT_PORT );
+    }
 
-	/**
-	 * Construct with a port.
-	 * 
-	 * @param port
-	 *            The listen port to bind to.
-	 */
-	public SimpleStompServer(int port) {
-		this.port = port;
-	}
+    /**
+     * Construct with a port.
+     * 
+     * @param port
+     *            The listen port to bind to.
+     */
+    public SimpleStompServer(int port) {
+        this.port = port;
+    }
 
-	/**
-	 * Retrieve the bind port.
-	 * 
-	 * @return The bind port.
-	 */
-	public int getPort() {
-		return this.port;
-	}
+    /**
+     * Retrieve the bind port.
+     * 
+     * @return The bind port.
+     */
+    public int getPort() {
+        return this.port;
+    }
 
-	public void setChannelExecutor(Executor executor) {
-		this.channelExecutor = executor;
-	}
+    public void setChannelExecutor(Executor executor) {
+        this.channelExecutor = executor;
+    }
 
-	public Executor getChannelExecutor() {
-		return this.channelExecutor;
-	}
+    public Executor getChannelExecutor() {
+        return this.channelExecutor;
+    }
 
-	public void setMessageHandlingExecutor(Executor executor) {
-		this.messageHandlingExecutor = executor;
-	}
+    public void setMessageHandlingExecutor(Executor executor) {
+        this.messageHandlingExecutor = executor;
+    }
 
-	public Executor getMessageHandlingExector() {
-		return this.messageHandlingExecutor;
-	}
+    public Executor getMessageHandlingExector() {
+        return this.messageHandlingExecutor;
+    }
 
-	public void setStompProvider(T stompProvider) {
-		this.stompProvider = stompProvider;
-	}
+    public void setStompProvider(T stompProvider) {
+        this.stompProvider = stompProvider;
+    }
 
-	public T getStompProvider() throws Exception {
-		return this.stompProvider;
-	}
+    public T getStompProvider() throws Exception {
+        return this.stompProvider;
+    }
 
-	protected StompServerEnvironment getServerEnvironment() {
-		DefaultServerEnvironment env = new DefaultServerEnvironment();
-		env.setTransactionManager(this.transactionManager);
-		return env;
-	}
+    protected StompServerEnvironment getServerEnvironment() {
+        DefaultServerEnvironment env = new DefaultServerEnvironment();
+        env.setTransactionManager( this.transactionManager );
+        return env;
+    }
 
-	/**
-	 * Start this server.
-	 * 
-	 * @throws Throwable
-	 * 
-	 */
-	public void start() throws Throwable {
+    /**
+     * Start this server.
+     * 
+     * @throws Throwable
+     * 
+     */
+    public void start() throws Throwable {
 
-		if (this.channelExecutor == null) {
-			this.channelExecutor = Executors.newFixedThreadPool(2);
-		}
+        if (this.channelExecutor == null) {
+            this.channelExecutor = Executors.newFixedThreadPool( 2 );
+        }
 
-		ServerBootstrap bootstrap = createServerBootstrap();
-		this.channel = bootstrap.bind(new InetSocketAddress(this.port));
-	}
+        ServerBootstrap bootstrap = createServerBootstrap();
+        this.channel = bootstrap.bind( new InetSocketAddress( this.port ) );
+    }
 
-	protected ServerBootstrap createServerBootstrap() throws Exception {
-		ServerBootstrap bootstrap = new ServerBootstrap(createChannelFactory());
-		bootstrap.setOption("reuseAddress", true);
+    protected ServerBootstrap createServerBootstrap() throws Exception {
+        ServerBootstrap bootstrap = new ServerBootstrap( createChannelFactory() );
+        bootstrap.setOption( "reuseAddress", true );
 
-		StompServerPipelineFactory pipelineFactory = new StompServerPipelineFactory(
-				getStompProvider(), getMessageHandlingExector());
-		bootstrap.setPipelineFactory(pipelineFactory);
-		return bootstrap;
-	}
+        StompServerPipelineFactory pipelineFactory = new StompServerPipelineFactory( getStompProvider(), getMessageHandlingExector() );
+        bootstrap.setPipelineFactory( pipelineFactory );
+        return bootstrap;
+    }
 
-	protected ServerSocketChannelFactory createChannelFactory() {
-		VirtualExecutorService bossExecutor = new VirtualExecutorService(
-				this.channelExecutor);
-		VirtualExecutorService workerExecutor = new VirtualExecutorService(
-				this.channelExecutor);
-		return new NioServerSocketChannelFactory(bossExecutor, workerExecutor);
-	}
+    protected ServerSocketChannelFactory createChannelFactory() {
+        VirtualExecutorService bossExecutor = new VirtualExecutorService( this.channelExecutor );
+        VirtualExecutorService workerExecutor = new VirtualExecutorService( this.channelExecutor );
+        return new NioServerSocketChannelFactory( bossExecutor, workerExecutor );
+    }
 
-	/**
-	 * Stop this server.
-	 * 
-	 * @throws Exception
-	 * @throws Throwable
-	 */
-	public void stop() throws Throwable {
-		this.channel.close();
-		this.channel = null;
-	}
+    /**
+     * Stop this server.
+     * 
+     * @throws Exception
+     * @throws Throwable
+     */
+    public void stop() throws Throwable {
+        this.channel.close();
+        this.channel = null;
+    }
 
-	private int port;
+    private int port;
 
-	private T stompProvider;
-	private TransactionManager transactionManager;
-	private Executor channelExecutor;
-	private Executor messageHandlingExecutor;
-	private Channel channel;
+    private T stompProvider;
+    private TransactionManager transactionManager;
+    private Executor channelExecutor;
+    private Executor messageHandlingExecutor;
+    private Channel channel;
 
 }

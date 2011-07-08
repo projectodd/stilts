@@ -405,8 +405,10 @@
   <modules>
     <module>stomp-spi</module>
     <module>stomp-core</module>
-    <module>circus</module>
+
+    <module>conduit</module>
+
     <module>stomplet-api</module>
-    <module>clownshoes</module>
+    <module>stomplet-core</module>
   </modules>
 </project>

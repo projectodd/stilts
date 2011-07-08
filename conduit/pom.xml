@@ -1,0 +1,139 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+ <modelVersion>4.0.0</modelVersion>
+
+ <parent>
+  <groupId>org.projectodd.stilts</groupId>
+  <artifactId>stilts</artifactId>
+  <version>0.1.0-SNAPSHOT</version>
+ </parent>
+
+ <groupId>org.projectodd.stilts</groupId>
+ <artifactId>stilts-conduit</artifactId>
+ <packaging>jar</packaging>
+ <name>Stilts Circus</name>
+
+ <description>
+    Stilts Message-Conduit API and Implementation
+  </description>
+
+ <dependencies>
+  <dependency>
+   <groupId>org.projectodd.stilts</groupId>
+   <artifactId>stilts-stomp-core</artifactId>
+   <version>${project.version}</version>
+  </dependency>
+
+  <!-- HornetQ (JMS) -->
+
+  <dependency>
+   <groupId>org.hornetq</groupId>
+   <artifactId>hornetq-core</artifactId>
+  </dependency>
+  <dependency>
+   <groupId>org.hornetq</groupId>
+   <artifactId>hornetq-jms</artifactId>
+  </dependency>
+  <dependency>
+   <groupId>javax.jms</groupId>
+   <artifactId>jms-api</artifactId>
+  </dependency>
+
+  <!-- IronJacamar (JCA) -->
+
+  <dependency>
+   <groupId>org.jboss.ironjacamar</groupId>
+   <artifactId>ironjacamar-core-impl</artifactId>
+  </dependency>
+  <dependency>
+   <groupId>org.jboss.ironjacamar</groupId>
+   <artifactId>ironjacamar-deployers-common</artifactId>
+  </dependency>
+  <dependency>
+   <groupId>org.jboss.ironjacamar</groupId>
+   <artifactId>ironjacamar-common-impl-papaki</artifactId>
+  </dependency>
+  <dependency>
+   <groupId>org.jboss.ironjacamar</groupId>
+   <artifactId>ironjacamar-deployers-fungal</artifactId>
+  </dependency>
+  <dependency>
+   <groupId>org.jboss.ironjacamar</groupId>
+   <artifactId>ironjacamar-embedded</artifactId>
+  </dependency>
+  <dependency>
+   <groupId>org.jboss.stdio</groupId>
+   <artifactId>jboss-stdio</artifactId>
+  </dependency>
+  <dependency>
+   <groupId>org.hibernate</groupId>
+   <artifactId>hibernate-validator</artifactId>
+  </dependency>
+  <dependency>
+   <groupId>org.jboss.naming</groupId>
+   <artifactId>jnpserver</artifactId>
+  </dependency>
+
+  <!-- JBoss Transactions -->
+
+  <dependency>
+   <groupId>org.jboss.jbossts</groupId>
+   <artifactId>jbossjta</artifactId>
+  </dependency>
+  <dependency>
+   <groupId>org.jboss.jbossts</groupId>
+   <artifactId>jbossjta-integration</artifactId>
+  </dependency>
+
+  <!-- ShrinkWrap -->
+
+  <dependency>
+   <groupId>org.jboss.shrinkwrap</groupId>
+   <artifactId>shrinkwrap-api</artifactId>
+  </dependency>
+  <dependency>
+   <groupId>org.jboss.shrinkwrap</groupId>
+   <artifactId>shrinkwrap-impl-base</artifactId>
+  </dependency>
+  <dependency>
+   <groupId>org.jboss.shrinkwrap.descriptors</groupId>
+   <artifactId>shrinkwrap-descriptors-api</artifactId>
+  </dependency>
+
+  <!-- Misc -->
+
+  <dependency>
+   <groupId>org.slf4j</groupId>
+   <artifactId>slf4j-log4j12</artifactId>
+  </dependency>
+
+  <dependency>
+   <groupId>log4j</groupId>
+   <artifactId>log4j</artifactId>
+  </dependency>
+
+  <dependency>
+   <groupId>junit</groupId>
+   <artifactId>junit</artifactId>
+  </dependency>
+
+ </dependencies>
+
+ <build>
+  <plugins>
+   <plugin>
+    <groupId>org.apache.maven.plugins</groupId>
+    <artifactId>maven-jar-plugin</artifactId>
+    <executions>
+     <execution>
+      <goals>
+       <goal>test-jar</goal>
+      </goals>
+     </execution>
+    </executions>
+   </plugin>
+  </plugins>
+ </build>
+
+</project>

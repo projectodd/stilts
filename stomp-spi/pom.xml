@@ -9,7 +9,7 @@
   </parent>
 
   <groupId>org.projectodd.stilts</groupId>
-  <artifactId>stomp-spi</artifactId>
+  <artifactId>stilts-stomp-spi</artifactId>
   <packaging>jar</packaging>
   <name>Stilts Stomp SPI</name>
 
