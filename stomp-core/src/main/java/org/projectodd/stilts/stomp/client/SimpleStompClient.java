@@ -16,6 +16,7 @@
 
 package org.projectodd.stilts.stomp.client;
 
+import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.util.HashMap;
 import java.util.Map;
@@ -35,6 +36,7 @@ import org.jboss.netty.channel.socket.nio.NioClientSocketChannelFactory;
 import org.jboss.netty.util.VirtualExecutorService;
 import org.projectodd.stilts.StompException;
 import org.projectodd.stilts.StompMessage;
+import org.projectodd.stilts.server.SimpleStompServer;
 import org.projectodd.stilts.stomp.protocol.StompControlFrame;
 import org.projectodd.stilts.stomp.protocol.StompFrame;
 import org.projectodd.stilts.stomp.protocol.StompFrame.Command;
@@ -45,6 +47,20 @@ public class SimpleStompClient implements StompClient {
 	
 	private static Logger log = Logger.getLogger(SimpleStompClient.class);
 
+    
+    public SimpleStompClient(String host) {
+        this( host, SimpleStompServer.DEFAULT_PORT );
+    }
+    
+    public SimpleStompClient(String host, int port) {
+        this( host, new InetSocketAddress( host, port ) );
+    }
+    
+    public SimpleStompClient(String host, SocketAddress serverAddress) {
+        this( serverAddress );
+        this.host = host;
+    }
+    
     public SimpleStompClient(SocketAddress serverAddress) {
         this.serverAddress = serverAddress;
     }
@@ -140,6 +156,9 @@ public class SimpleStompClient implements StompClient {
 
         this.channel = bootstrap.connect( serverAddress ).await().getChannel();
         StompControlFrame frame = new StompControlFrame( Command.CONNECT );
+        if ( this.host != null ) {
+            frame.setHeader( Header.HOST, this.host );
+        }
         sendFrame( frame );
         waitForConnected();
 
@@ -331,5 +350,6 @@ public class SimpleStompClient implements StompClient {
     private Executor executor;
     private Channel channel;
     private SocketAddress serverAddress;
+    private String host;
 
 }
