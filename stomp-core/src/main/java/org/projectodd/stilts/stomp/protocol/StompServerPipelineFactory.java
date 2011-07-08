@@ -33,6 +33,8 @@ import org.projectodd.stilts.stomp.protocol.server.DisconnectHandler;
 import org.projectodd.stilts.stomp.protocol.server.NackHandler;
 import org.projectodd.stilts.stomp.protocol.server.ReceiptHandler;
 import org.projectodd.stilts.stomp.protocol.server.SendHandler;
+import org.projectodd.stilts.stomp.protocol.server.SubscribeHandler;
+import org.projectodd.stilts.stomp.protocol.server.UnsubscribeHandler;
 import org.projectodd.stilts.stomp.spi.StompProvider;
 
 public class StompServerPipelineFactory implements ChannelPipelineFactory {
@@ -56,6 +58,9 @@ public class StompServerPipelineFactory implements ChannelPipelineFactory {
         ConnectionContext context = new ConnectionContext( );
         pipeline.addLast( "stomp-server-connect", new ConnectHandler( provider, context ) );
         pipeline.addLast( "stomp-server-disconnect", new DisconnectHandler( provider, context ) );
+        
+        pipeline.addLast( "stomp-server-subscribe", new SubscribeHandler( provider, context ) );
+        pipeline.addLast( "stomp-server-unsubscribe", new UnsubscribeHandler( provider, context ) );        
 
         pipeline.addLast( "stomp-server-begin", new BeginHandler( provider, context ) );
         pipeline.addLast( "stomp-server-commit", new CommitHandler( provider, context ) );
