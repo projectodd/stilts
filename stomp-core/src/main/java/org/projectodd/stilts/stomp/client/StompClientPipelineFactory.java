@@ -32,7 +32,7 @@ import org.projectodd.stilts.stomp.protocol.client.ConnectedHandler;
 
 public class StompClientPipelineFactory implements ChannelPipelineFactory {
 
-    public StompClientPipelineFactory(AbstractStompClient client, ClientContext clientContext) {
+    public StompClientPipelineFactory(SimpleStompClient client, ClientContext clientContext) {
         this.client = client;
         this.clientContext = clientContext;
     }
@@ -63,7 +63,7 @@ public class StompClientPipelineFactory implements ChannelPipelineFactory {
         return this.clientContext.getLoggerManager().getLogger( "pipeline.stomp." + name );
     }
 
-    private AbstractStompClient client;
+    private SimpleStompClient client;
     private ClientContext clientContext;
 
 }

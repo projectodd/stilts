@@ -22,11 +22,11 @@ import org.projectodd.stilts.stomp.protocol.StompFrame.Header;
 
 public class DefaultClientTransaction implements ClientTransaction {
 
-    public DefaultClientTransaction(AbstractStompClient client, String id) {
+    public DefaultClientTransaction(SimpleStompClient client, String id) {
         this( client, id, false );
     }
 
-    public DefaultClientTransaction(AbstractStompClient client, String id, boolean isGlobal) {
+    public DefaultClientTransaction(SimpleStompClient client, String id, boolean isGlobal) {
         this.client = client;
         this.id = id;
     }
@@ -52,6 +52,6 @@ public class DefaultClientTransaction implements ClientTransaction {
         this.client.abort( this.id );
     }
 
-    private AbstractStompClient client;
+    private SimpleStompClient client;
     private String id;
 }

@@ -17,6 +17,7 @@
 package org.projectodd.stilts.stomp.client;
 
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executor;
 
 import org.projectodd.stilts.StompException;
 import org.projectodd.stilts.helpers.DefaultHeaders;
@@ -26,7 +27,7 @@ import org.projectodd.stilts.stomp.spi.Subscription.AckMode;
 
 public class DefaultSubscriptionBuilder implements SubscriptionBuilder {
     
-    public DefaultSubscriptionBuilder(AbstractStompClient client, String destination) {
+    public DefaultSubscriptionBuilder(SimpleStompClient client, String destination) {
         this.client = client;
         this.headers = new DefaultHeaders();
         this.headers.put( Header.DESTINATION, destination );
@@ -59,6 +60,15 @@ public class DefaultSubscriptionBuilder implements SubscriptionBuilder {
         this.headers.put( Header.ACK, ackMode.toString() );
         return this;
     }
+    
+    public SubscriptionBuilder withExecutor(Executor executor) {
+        this.executor = executor;
+        return this;
+    }
+    
+    public Executor getExecutor() {
+        return this.executor;
+    }
 
     @Override
     public ClientSubscription start() throws StompException {
@@ -75,8 +85,9 @@ public class DefaultSubscriptionBuilder implements SubscriptionBuilder {
         return this.headers;
     }
 
-    private AbstractStompClient client;
+    private SimpleStompClient client;
     private Headers headers;
     private MessageHandler messageHandler;
+    private Executor executor;
 
 }

@@ -23,9 +23,9 @@ import org.projectodd.stilts.stomp.spi.StompMessageFactory;
 
 public class ClientStompMessageFactory implements StompMessageFactory {
     
-    private AbstractStompClient client;
+    private SimpleStompClient client;
 
-    public ClientStompMessageFactory(AbstractStompClient client) {
+    public ClientStompMessageFactory(SimpleStompClient client) {
         this.client = client;
     }
 

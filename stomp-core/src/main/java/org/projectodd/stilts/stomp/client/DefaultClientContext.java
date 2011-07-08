@@ -23,7 +23,7 @@ import org.projectodd.stilts.stomp.protocol.client.ClientContext;
 
 public class DefaultClientContext implements ClientContext {
     
-    public DefaultClientContext(AbstractStompClient client) {
+    public DefaultClientContext(SimpleStompClient client) {
         this.client = client;
     }
 
@@ -42,7 +42,7 @@ public class DefaultClientContext implements ClientContext {
         this.client.setConnectionState( connectionState );
     }
 
-    private AbstractStompClient client;
+    private SimpleStompClient client;
 
     @Override
     public void messageReceived(StompMessage message) {

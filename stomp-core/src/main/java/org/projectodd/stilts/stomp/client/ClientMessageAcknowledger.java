@@ -22,7 +22,7 @@ import org.projectodd.stilts.stomp.spi.Headers;
 
 public class ClientMessageAcknowledger implements Acknowledger {
 
-    public ClientMessageAcknowledger(AbstractStompClient client, Headers headers) {
+    public ClientMessageAcknowledger(SimpleStompClient client, Headers headers) {
         this.client = client;
         this.headers = headers;
     }
@@ -37,7 +37,7 @@ public class ClientMessageAcknowledger implements Acknowledger {
         client.sendFrame( StompFrames.newNackFrame( this.headers ) );
     }
 
-    private AbstractStompClient client;
+    private SimpleStompClient client;
     private Headers headers;
 
 

@@ -20,10 +20,10 @@ import org.projectodd.stilts.StompMessage;
 
 public interface ClientListener {
     
-    void connecting(AbstractStompClient client);
-    void connected(AbstractStompClient client);
-    void disconnecting(AbstractStompClient client);
-    void disconnected(AbstractStompClient client);
-    void error(AbstractStompClient client, StompMessage error);
+    void connecting(SimpleStompClient client);
+    void connected(SimpleStompClient client);
+    void disconnecting(SimpleStompClient client);
+    void disconnected(SimpleStompClient client);
+    void error(SimpleStompClient client, StompMessage error);
 
 }

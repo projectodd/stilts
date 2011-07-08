@@ -28,7 +28,7 @@ import org.projectodd.stilts.circus.server.StandaloneCircusServer;
 import org.projectodd.stilts.logging.SimpleLoggerManager;
 import org.projectodd.stilts.logging.SimpleLoggerManager.Level;
 import org.projectodd.stilts.server.SimpleStompServer;
-import org.projectodd.stilts.stomp.client.AbstractStompClient;
+import org.projectodd.stilts.stomp.client.SimpleStompClient;
 
 public abstract class AbstractStandaloneClientServerTest<T extends CircusServer> {
     
@@ -38,7 +38,7 @@ public abstract class AbstractStandaloneClientServerTest<T extends CircusServer>
     private StandaloneCircusServer<T> server;
     protected SimpleLoggerManager serverLoggerManager;
     protected SimpleLoggerManager clientLoggerManager;
-    protected AbstractStompClient client;
+    protected SimpleStompClient client;
 
     private final Map<String, MessageAccumulator> accumulators = new HashMap<String, MessageAccumulator>();
     
@@ -80,7 +80,7 @@ public abstract class AbstractStandaloneClientServerTest<T extends CircusServer>
     public void setUpClient() throws Exception {
         setUpClientLogger();
         InetSocketAddress address = new InetSocketAddress( "localhost", SimpleStompServer.DEFAULT_PORT );
-        this.client = new AbstractStompClient( address );
+        this.client = new SimpleStompClient( address );
         this.client.setLoggerManager( this.clientLoggerManager );
     }
 

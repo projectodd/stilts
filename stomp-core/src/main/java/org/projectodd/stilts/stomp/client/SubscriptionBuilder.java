@@ -16,6 +16,8 @@
 
 package org.projectodd.stilts.stomp.client;
 
+import java.util.concurrent.Executor;
+
 import org.projectodd.stilts.StompException;
 import org.projectodd.stilts.stomp.spi.Subscription.AckMode;
 
@@ -25,6 +27,7 @@ public interface SubscriptionBuilder {
     SubscriptionBuilder withHeader(String headerName, String headerValue);
     SubscriptionBuilder withMessageHandler(MessageHandler messageHandler);
     SubscriptionBuilder withAckMode(AckMode ackMode);
+    SubscriptionBuilder withExecutor(Executor executor);
     
     ClientSubscription start() throws StompException;
 

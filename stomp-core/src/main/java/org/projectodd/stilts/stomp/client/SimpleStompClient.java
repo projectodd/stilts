@@ -43,9 +43,9 @@ import org.projectodd.stilts.stomp.protocol.StompFrame.Command;
 import org.projectodd.stilts.stomp.protocol.StompFrame.Header;
 import org.projectodd.stilts.stomp.protocol.StompFrames;
 
-public class AbstractStompClient implements StompClient {
+public class SimpleStompClient implements StompClient {
 
-    public AbstractStompClient(SocketAddress serverAddress) {
+    public SimpleStompClient(SocketAddress serverAddress) {
         this.serverAddress = serverAddress;
     }
 
@@ -110,11 +110,7 @@ public class AbstractStompClient implements StompClient {
         if (subscriptionId != null) {
             DefaultClientSubscription subscription = this.subscriptions.get( subscriptionId );
             if (subscription != null) {
-                MessageHandler handler = subscription.getMessageHandler();
-                if (handler != null) {
-                    handler.handle( message );
-                    handled = true;
-                }
+                handled = subscription.messageReceived( message );
             }
         }
         if (!handled) {
@@ -139,7 +135,7 @@ public class AbstractStompClient implements StompClient {
         this.log = this.loggerManager.getLogger( "client" );
 
         if (this.executor == null) {
-            this.executor = Executors.newFixedThreadPool( 2 );
+            this.executor = Executors.newFixedThreadPool( 4 );
         }
 
         ClientBootstrap bootstrap = new ClientBootstrap();
@@ -207,7 +203,11 @@ public class AbstractStompClient implements StompClient {
         if (future.isError()) {
             return null;
         } else {
-            DefaultClientSubscription subscription = new DefaultClientSubscription( this, subscriptionId, builder.getMessageHandler() );
+            Executor executor = builder.getExecutor();
+            if ( executor == null ) {
+                executor = getExecutor();
+            }
+            DefaultClientSubscription subscription = new DefaultClientSubscription( this, subscriptionId, builder.getMessageHandler(), executor );
             this.subscriptions.put( subscription.getId(), subscription );
             return subscription;
         }
