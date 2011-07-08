@@ -24,7 +24,6 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.FutureTask;
 
 import org.projectodd.stilts.StompException;
-import org.projectodd.stilts.circus.logging.JBossLoggerManager;
 import org.projectodd.stilts.clownshoes.parser.RouteConfiguration;
 import org.projectodd.stilts.clownshoes.parser.StompletConfParser;
 import org.projectodd.stilts.clownshoes.weld.CircusBeanDeploymentArchive;
@@ -132,7 +131,6 @@ public class ClownShoesServer extends StandaloneWeldStompletCircusServer {
         StompletCircusServer server = new StompletCircusServer();
         ClownShoesServer standalone = new ClownShoesServer( server );
         standalone.setDeploymentLocation( deploymentLocation );
-        standalone.setLoggerManager( new JBossLoggerManager() );
         standalone.run();
     }
 

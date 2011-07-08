@@ -16,6 +16,7 @@
 
 package org.projectodd.stilts.stomp.protocol.client;
 
+import org.jboss.logging.Logger;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.projectodd.stilts.stomp.client.StompClient.State;
 import org.projectodd.stilts.stomp.protocol.StompFrame;
@@ -23,6 +24,8 @@ import org.projectodd.stilts.stomp.protocol.StompFrame.Command;
 
 public class ConnectedHandler extends AbstractClientControlFrameHandler {
 
+	private static Logger log = Logger.getLogger(ConnectedHandler.class);	
+	
     public ConnectedHandler(ClientContext clientContext) {
         super( clientContext, Command.CONNECTED );
     }

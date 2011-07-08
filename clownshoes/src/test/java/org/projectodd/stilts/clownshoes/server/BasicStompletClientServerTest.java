@@ -24,17 +24,10 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 import org.projectodd.stilts.MessageAccumulator;
 import org.projectodd.stilts.StompMessages;
-import org.projectodd.stilts.logging.SimpleLoggerManager.Level;
 import org.projectodd.stilts.stomp.client.ClientSubscription;
 import org.projectodd.stilts.stomp.client.ClientTransaction;
 
 public class BasicStompletClientServerTest extends AbstractStompletClientServerTest {
-
-    static {
-        SERVER_ROOT_LEVEL = Level.TRACE;
-        CLIENT_ROOT_LEVEL = Level.TRACE;
-    }
-
     @Test
     public void testClient() throws Exception {
         client.connect();

@@ -26,6 +26,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.jboss.logging.Logger;
 import org.jboss.netty.bootstrap.ClientBootstrap;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelPipelineFactory;
@@ -34,9 +35,6 @@ import org.jboss.netty.channel.socket.nio.NioClientSocketChannelFactory;
 import org.jboss.netty.util.VirtualExecutorService;
 import org.projectodd.stilts.StompException;
 import org.projectodd.stilts.StompMessage;
-import org.projectodd.stilts.logging.Logger;
-import org.projectodd.stilts.logging.LoggerManager;
-import org.projectodd.stilts.logging.SimpleLoggerManager;
 import org.projectodd.stilts.stomp.protocol.StompControlFrame;
 import org.projectodd.stilts.stomp.protocol.StompFrame;
 import org.projectodd.stilts.stomp.protocol.StompFrame.Command;
@@ -44,6 +42,8 @@ import org.projectodd.stilts.stomp.protocol.StompFrame.Header;
 import org.projectodd.stilts.stomp.protocol.StompFrames;
 
 public class SimpleStompClient implements StompClient {
+	
+	private static Logger log = Logger.getLogger(SimpleStompClient.class);
 
     public SimpleStompClient(SocketAddress serverAddress) {
         this.serverAddress = serverAddress;
@@ -55,14 +55,6 @@ public class SimpleStompClient implements StompClient {
 
     public Executor getExecutor() {
         return this.executor;
-    }
-
-    public void setLoggerManager(LoggerManager loggerManager) {
-        this.loggerManager = loggerManager;
-    }
-
-    public LoggerManager getLoggerManager() {
-        return this.loggerManager;
     }
 
     public boolean isConnected() {
@@ -127,12 +119,6 @@ public class SimpleStompClient implements StompClient {
     }
 
     public void connect() throws InterruptedException {
-
-        if (this.loggerManager == null) {
-            this.loggerManager = SimpleLoggerManager.DEFAULT_INSTANCE;
-        }
-
-        this.log = this.loggerManager.getLogger( "client" );
 
         if (this.executor == null) {
             this.executor = Executors.newFixedThreadPool( 4 );
@@ -329,8 +315,6 @@ public class SimpleStompClient implements StompClient {
         }
     };
 
-    private Logger log;
-
     private AtomicInteger receiptCounter = new AtomicInteger();
     private ConcurrentHashMap<String, ReceiptFuture> receiptHandlers = new ConcurrentHashMap<String, ReceiptFuture>( 20 );
 
@@ -344,7 +328,6 @@ public class SimpleStompClient implements StompClient {
     private State connectionState;
 
     private ClientListener clientListener;
-    private LoggerManager loggerManager;
     private Executor executor;
     private Channel channel;
     private SocketAddress serverAddress;

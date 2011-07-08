@@ -16,19 +16,20 @@
 
 package org.projectodd.stilts.stomp.protocol;
 
+import org.jboss.logging.Logger;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.handler.codec.oneone.OneToOneDecoder;
-import org.projectodd.stilts.logging.Logger;
 import org.projectodd.stilts.stomp.protocol.StompFrame.Command;
 import org.projectodd.stilts.stomp.spi.StompMessageFactory;
 
 public class StompMessageDecoder extends OneToOneDecoder {
     
+	private static Logger log = Logger.getLogger(StompMessageDecoder.class);
+	
     private StompMessageFactory messageFactory;
 
-    public StompMessageDecoder(Logger log, StompMessageFactory messageFactory) {
-        this.log = log;
+    public StompMessageDecoder(StompMessageFactory messageFactory) {
         this.messageFactory = messageFactory;
     }
 
@@ -45,7 +46,5 @@ public class StompMessageDecoder extends OneToOneDecoder {
         }
         return null;
     }
-
-    private Logger log;
 
 }

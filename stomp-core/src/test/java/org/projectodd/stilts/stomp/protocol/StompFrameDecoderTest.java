@@ -30,7 +30,6 @@ import org.jboss.netty.buffer.ChannelBuffers;
 import org.jboss.netty.handler.codec.embedder.DecoderEmbedder;
 import org.junit.Before;
 import org.junit.Test;
-import org.projectodd.stilts.logging.SimpleLogger;
 import org.projectodd.stilts.stomp.protocol.StompFrame.Command;
 
 public class StompFrameDecoderTest {
@@ -39,7 +38,7 @@ public class StompFrameDecoderTest {
 
     @Before
     public void setUp() {
-        this.decoder = new DecoderEmbedder<StompFrame>( new StompFrameDecoder( SimpleLogger.DEFAULT ) );
+        this.decoder = new DecoderEmbedder<StompFrame>( new StompFrameDecoder( ) );
     }
 
     @Test

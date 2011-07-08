@@ -17,7 +17,6 @@
 package org.projectodd.stilts.stomp.client;
 
 import org.projectodd.stilts.StompMessage;
-import org.projectodd.stilts.logging.LoggerManager;
 import org.projectodd.stilts.stomp.client.StompClient.State;
 import org.projectodd.stilts.stomp.protocol.client.ClientContext;
 
@@ -25,11 +24,6 @@ public class DefaultClientContext implements ClientContext {
     
     public DefaultClientContext(SimpleStompClient client) {
         this.client = client;
-    }
-
-    @Override
-    public LoggerManager getLoggerManager() {
-        return this.client.getLoggerManager();
     }
 
     @Override

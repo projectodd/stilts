@@ -16,6 +16,7 @@
 
 package org.projectodd.stilts.stomp.protocol.server;
 
+import org.jboss.logging.Logger;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.MessageEvent;
 import org.projectodd.stilts.StompMessage;
@@ -27,6 +28,8 @@ import org.projectodd.stilts.stomp.spi.StompProvider;
  * @author Bob McWhirter
  */
 public class SendHandler extends AbstractProviderHandler {
+	
+	private static Logger log = Logger.getLogger(SendHandler.class);
 
     public SendHandler(StompProvider server, ConnectionContext context) {
         super( server, context );

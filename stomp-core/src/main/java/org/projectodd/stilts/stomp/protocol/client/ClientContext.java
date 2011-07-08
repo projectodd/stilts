@@ -17,12 +17,10 @@
 package org.projectodd.stilts.stomp.protocol.client;
 
 import org.projectodd.stilts.StompMessage;
-import org.projectodd.stilts.logging.LoggerManager;
 import org.projectodd.stilts.stomp.client.StompClient.State;
 
 public interface ClientContext {
     
-    LoggerManager getLoggerManager();
     State getConnectionState();
     void setConnectionState(State state);
     

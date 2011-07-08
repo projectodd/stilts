@@ -16,20 +16,16 @@
 
 package org.projectodd.stilts.stomp.protocol;
 
+import org.jboss.logging.Logger;
 import org.jboss.netty.channel.ChannelDownstreamHandler;
 import org.jboss.netty.channel.ChannelEvent;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.ChannelUpstreamHandler;
 import org.jboss.netty.channel.ExceptionEvent;
-import org.projectodd.stilts.logging.Logger;
 
 public class DebugHandler implements ChannelUpstreamHandler, ChannelDownstreamHandler {
 
-    private Logger log;
-    
-    public DebugHandler(Logger log) {
-        this.log = log;
-    }
+    private static final Logger log = Logger.getLogger(DebugHandler.class);
     
     @Override
     public void handleDownstream(ChannelHandlerContext ctx, ChannelEvent e) throws Exception {

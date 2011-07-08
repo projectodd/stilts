@@ -23,7 +23,6 @@ public abstract class AbstractHornetQClientServerTest extends AbstractCircusClie
 
     public HornetQCircusServer createServer() throws Exception {
         HornetQCircusServer server = new HornetQCircusServer();
-        server.setLoggerManager( this.serverLoggerManager );
         server.setDestinationMapper( DirectDestinationMapper.INSTANCE );
         return server;
     }
