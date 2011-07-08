@@ -16,22 +16,16 @@
 
 package org.projectodd.stilts.stomp.protocol.server;
 
-import org.projectodd.stilts.logging.LoggerManager;
 import org.projectodd.stilts.stomp.spi.StompConnection;
 
 public class ConnectionContext {
     
-    public ConnectionContext(LoggerManager loggerManager) {
-        this.loggerManager = loggerManager;
+    public ConnectionContext() {
         this.ackManager = new AckManager();
     }
     
     AckManager getAckManager() {
         return this.ackManager;
-    }
-    
-    public LoggerManager getLoggerManager() {
-        return this.loggerManager;
     }
     
     public void setStompConnection(StompConnection clientAgent) {
@@ -51,7 +45,6 @@ public class ConnectionContext {
     }
     
     private AckManager ackManager;
-    private LoggerManager loggerManager;
     private StompConnection stompConnection;
     private boolean active = true;
 

@@ -16,12 +16,15 @@
 
 package org.projectodd.stilts.stomp.protocol.client;
 
+import org.jboss.logging.Logger;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.MessageEvent;
 import org.projectodd.stilts.StompMessage;
 
 public class ClientMessageHandler extends AbstractClientHandler {
 
+	private static Logger log = Logger.getLogger(ClientMessageHandler.class);
+	
     public ClientMessageHandler(ClientContext clientContext) {
         super( clientContext );
     }

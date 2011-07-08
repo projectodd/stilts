@@ -30,18 +30,12 @@ import org.projectodd.stilts.clownshoes.stomplet.weld.TacoStomplet;
 import org.projectodd.stilts.clownshoes.weld.CircusBeanDeploymentArchive;
 import org.projectodd.stilts.clownshoes.weld.ShrinkwrapBeanDeploymentArchive;
 import org.projectodd.stilts.clownshoes.weld.WeldStompletContainer;
-import org.projectodd.stilts.logging.SimpleLoggerManager.Level;
 import org.projectodd.stilts.stomp.client.ClientSubscription;
 import org.projectodd.stilts.stomp.client.ClientTransaction;
 import org.projectodd.stilts.stomplet.simple.SimpleQueueStomplet;
 import org.projectodd.stilts.stomplet.simple.SimpleTopicStomplet;
 
 public class BasicStompletWeldClientServerTest extends AbstractWeldStompletClientServerTest {
-
-    static {
-        SERVER_ROOT_LEVEL = Level.TRACE;
-        CLIENT_ROOT_LEVEL = Level.TRACE;
-    }
 
     @Override
     public CircusBeanDeploymentArchive getBeanDeploymentArchive() throws Exception {

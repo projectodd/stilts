@@ -22,8 +22,6 @@ import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.jboss.netty.channel.DefaultChannelPipeline;
 import org.jboss.netty.handler.execution.ExecutionHandler;
-import org.projectodd.stilts.logging.Logger;
-import org.projectodd.stilts.logging.LoggerManager;
 import org.projectodd.stilts.stomp.protocol.server.AbortHandler;
 import org.projectodd.stilts.stomp.protocol.server.AckHandler;
 import org.projectodd.stilts.stomp.protocol.server.BeginHandler;
@@ -41,9 +39,8 @@ import org.projectodd.stilts.stomp.spi.StompProvider;
 
 public class StompServerPipelineFactory implements ChannelPipelineFactory {
 
-    public StompServerPipelineFactory(StompProvider provider, Executor executor, LoggerManager loggerManager) {
+    public StompServerPipelineFactory(StompProvider provider, Executor executor) {
         this.provider = provider;
-        this.loggerManager = loggerManager;
         this.executor = executor;
         if ( this.executor != null ) {
             this.executionHandler = new ExecutionHandler( this.executor );
@@ -55,15 +52,15 @@ public class StompServerPipelineFactory implements ChannelPipelineFactory {
         DefaultChannelPipeline pipeline = new DefaultChannelPipeline();
         
         //pipeline.addLast( "debug-head", new DebugHandler( log( "DEBUG.head" ) ) );
-        pipeline.addLast( "stomp-frame-encoder", new StompFrameEncoder( log( "frame.encoder") ) );
-        pipeline.addLast( "stomp-frame-decoder", new StompFrameDecoder( log( "frame.decode" ) ) );
+        pipeline.addLast( "stomp-frame-encoder", new StompFrameEncoder( ));
+        pipeline.addLast( "stomp-frame-decoder", new StompFrameDecoder( ));
         
-        ConnectionContext context = new ConnectionContext( this.loggerManager );
+        ConnectionContext context = new ConnectionContext( );
         pipeline.addLast( "stomp-server-connect", new ConnectHandler( provider, context ) );
         pipeline.addLast( "stomp-server-disconnect", new DisconnectHandler( provider, context ) );
-
+        
         pipeline.addLast( "stomp-server-subscribe", new SubscribeHandler( provider, context ) );
-        pipeline.addLast( "stomp-server-unsubscribe", new UnsubscribeHandler( provider, context ) );
+        pipeline.addLast( "stomp-server-unsubscribe", new UnsubscribeHandler( provider, context ) );        
 
         pipeline.addLast( "stomp-server-begin", new BeginHandler( provider, context ) );
         pipeline.addLast( "stomp-server-commit", new CommitHandler( provider, context ) );
@@ -74,8 +71,8 @@ public class StompServerPipelineFactory implements ChannelPipelineFactory {
         
         pipeline.addLast( "stomp-server-receipt", new ReceiptHandler( provider, context ) );
         
-        pipeline.addLast( "stomp-message-encoder", new StompMessageEncoder( log( "message.encoder") ) );
-        pipeline.addLast( "stomp-message-decoder", new StompMessageDecoder( log( "message.decode" ), DefaultStompMessageFactory.INSTANCE ) ); 
+        pipeline.addLast( "stomp-message-encoder", new StompMessageEncoder( ));
+        pipeline.addLast( "stomp-message-decoder", new StompMessageDecoder( DefaultStompMessageFactory.INSTANCE ) ); 
         
         if ( this.executionHandler != null ) {
             pipeline.addLast( "stomp-server-send-threading", this.executionHandler );
@@ -87,15 +84,10 @@ public class StompServerPipelineFactory implements ChannelPipelineFactory {
         return pipeline;
     }
     
-    Logger log(String name) {
-    	System.err.println( "MANAGER: " + this.loggerManager );
-        return this.loggerManager.getLogger( "pipeline.stomp." + name );
-    }
-
     private Executor executor;
     private ExecutionHandler executionHandler;
     
     private StompProvider provider;
-    private LoggerManager loggerManager;
+
 
 }

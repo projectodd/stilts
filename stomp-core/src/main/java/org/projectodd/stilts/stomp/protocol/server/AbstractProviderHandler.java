@@ -16,23 +16,24 @@
 
 package org.projectodd.stilts.stomp.protocol.server;
 
+import org.jboss.logging.Logger;
 import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.ChannelFutureListener;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.ExceptionEvent;
 import org.jboss.netty.channel.SimpleChannelUpstreamHandler;
-import org.projectodd.stilts.logging.Logger;
 import org.projectodd.stilts.stomp.protocol.StompFrame;
 import org.projectodd.stilts.stomp.protocol.StompFrames;
 import org.projectodd.stilts.stomp.spi.StompConnection;
 import org.projectodd.stilts.stomp.spi.StompProvider;
 
 public abstract class AbstractProviderHandler extends SimpleChannelUpstreamHandler {
-
+	
+	private static Logger log = Logger.getLogger(AbstractProviderHandler.class);
+	
     public AbstractProviderHandler(StompProvider provider, ConnectionContext context) {
         this.provider = provider;
         this.context = context;
-        this.log = context.getLoggerManager().getLogger( "stomp.protocol." + getClass().getSimpleName() );
     }
     
     public StompProvider getStompProvider() {
@@ -65,10 +66,6 @@ public abstract class AbstractProviderHandler extends SimpleChannelUpstreamHandl
     public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e) throws Exception {
         log.error( "An error occurred", e.getCause() );
     }
-
-
-
-    protected Logger log;
     
     private StompProvider provider;
     private ConnectionContext context;
