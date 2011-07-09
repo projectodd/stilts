@@ -22,9 +22,9 @@ import org.projectodd.stilts.stomp.DefaultStompMessage;
 import org.projectodd.stilts.stomp.Headers;
 import org.projectodd.stilts.stomp.StompException;
 
-public class ClientStompMessage extends DefaultStompMessage {
+class ClientStompMessage extends DefaultStompMessage {
 
-    public ClientStompMessage(Headers headers, ChannelBuffer content, boolean isError) {
+    ClientStompMessage(Headers headers, ChannelBuffer content, boolean isError) {
         super( headers, content, isError);
     }
     

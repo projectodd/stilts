@@ -28,11 +28,11 @@ import org.jboss.netty.util.VirtualExecutorService;
 import org.projectodd.stilts.stomp.server.protocol.StompServerPipelineFactory;
 import org.projectodd.stilts.stomp.spi.StompProvider;
 
-public class SimpleStompServer<T extends StompProvider> {
+public class StompServer<T extends StompProvider> {
 
     public static final int DEFAULT_PORT = 8675;
 
-    public SimpleStompServer() {
+    public StompServer() {
         this( DEFAULT_PORT );
     }
 
@@ -42,7 +42,7 @@ public class SimpleStompServer<T extends StompProvider> {
      * @param port
      *            The listen port to bind to.
      */
-    public SimpleStompServer(int port) {
+    public StompServer(int port) {
         this.port = port;
     }
 
@@ -85,7 +85,7 @@ public class SimpleStompServer<T extends StompProvider> {
      * @throws Throwable
      * 
      */
-    public void start() throws Throwable {
+    public void start() throws Exception {
 
         if (this.channelExecutor == null) {
             this.channelExecutor = Executors.newFixedThreadPool( 2 );
@@ -116,7 +116,7 @@ public class SimpleStompServer<T extends StompProvider> {
      * @throws Exception
      * @throws Throwable
      */
-    public void stop() throws Throwable {
+    public void stop() throws Exception {
         this.channel.close();
         this.channel = null;
     }

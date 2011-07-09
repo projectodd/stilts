@@ -20,9 +20,9 @@ import org.projectodd.stilts.stomp.Acknowledger;
 import org.projectodd.stilts.stomp.Headers;
 import org.projectodd.stilts.stomp.protocol.StompFrames;
 
-public class ClientMessageAcknowledger implements Acknowledger {
+class ClientAcknowledger implements Acknowledger {
 
-    public ClientMessageAcknowledger(SimpleStompClient client, Headers headers) {
+    ClientAcknowledger(StompClient client, Headers headers) {
         this.client = client;
         this.headers = headers;
     }
@@ -37,7 +37,7 @@ public class ClientMessageAcknowledger implements Acknowledger {
         client.sendFrame( StompFrames.newNackFrame( this.headers ) );
     }
 
-    private SimpleStompClient client;
+    private StompClient client;
     private Headers headers;
 
 

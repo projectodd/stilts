@@ -16,14 +16,66 @@
 
 package org.projectodd.stilts.stomp.client;
 
-import org.projectodd.stilts.stomp.StompException;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executor;
 
-public interface ClientSubscription {
-    
-    String getId();
-    void unsubscribe() throws StompException;
-    MessageHandler getMessageHandler();
-    
-    boolean isActive();
+import org.projectodd.stilts.stomp.StompException;
+import org.projectodd.stilts.stomp.StompMessage;
+
+public class ClientSubscription {
+
+    ClientSubscription(StompClient client, String id, MessageHandler messageHandler, Executor executor) {
+        this.client = client;
+        this.id = id;
+        this.messageHandler = messageHandler;
+        this.active = true;
+        this.executor = executor;
+    }
+
+    public boolean isActive() {
+        return this.active;
+    }
+
+    void setActive(boolean active) {
+        this.active = active;
+    }
+
+    public String getId() {
+        return this.id;
+    }
+
+    public MessageHandler getMessageHandler() {
+        return this.messageHandler;
+    }
+
+    boolean messageReceived(final StompMessage message) {
+        if (this.messageHandler != null) {
+            this.executor.execute( new Runnable() {
+                @Override
+                public void run() {
+                    messageHandler.handle( message );
+                }
+
+            } );
+            return true;
+        }
+        return false;
+    }
+
+    public void unsubscribe() throws StompException {
+        try {
+            this.client.unsubscribe( this );
+        } catch (InterruptedException e) {
+            throw new StompException( e );
+        } catch (ExecutionException e) {
+            throw new StompException( e );
+        }
+    }
+
+    private final Executor executor;
+    private final StompClient client;
+    private final MessageHandler messageHandler;
+    private final String id;
+    private boolean active;
 
 }

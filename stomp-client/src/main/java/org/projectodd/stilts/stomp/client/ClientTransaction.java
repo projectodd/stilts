@@ -18,14 +18,36 @@ package org.projectodd.stilts.stomp.client;
 
 import org.projectodd.stilts.stomp.StompException;
 import org.projectodd.stilts.stomp.StompMessage;
+import org.projectodd.stilts.stomp.protocol.StompFrame.Header;
 
-public interface ClientTransaction {
-    
-    String getId();
-    
-    void send(StompMessage message) throws StompException;
-    
-    void commit() throws StompException;
-    void abort() throws StompException;
+public class ClientTransaction {
 
+    ClientTransaction(StompClient client, String id) {
+        this( client, id, false );
+    }
+
+    ClientTransaction(StompClient client, String id, boolean isGlobal) {
+        this.client = client;
+        this.id = id;
+    }
+
+    public String getId() {
+        return this.id;
+    }
+
+    public void send(StompMessage message) {
+        message.getHeaders().put( Header.TRANSACTION, this.id );
+        this.client.send( message );
+    }
+
+    public void commit() throws StompException {
+        this.client.commit( this.id );
+    }
+
+    public void abort() throws StompException {
+        this.client.abort( this.id );
+    }
+
+    private StompClient client;
+    private String id;
 }

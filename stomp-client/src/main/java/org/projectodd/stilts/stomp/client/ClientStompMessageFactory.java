@@ -21,18 +21,18 @@ import org.projectodd.stilts.stomp.Headers;
 import org.projectodd.stilts.stomp.StompMessage;
 import org.projectodd.stilts.stomp.StompMessageFactory;
 
-public class ClientStompMessageFactory implements StompMessageFactory {
+class ClientStompMessageFactory implements StompMessageFactory {
     
-    private SimpleStompClient client;
+    private StompClient client;
 
-    public ClientStompMessageFactory(SimpleStompClient client) {
+    ClientStompMessageFactory(StompClient client) {
         this.client = client;
     }
 
     @Override
     public StompMessage createMessage(Headers headers, ChannelBuffer content, boolean isError) {
         ClientStompMessage message = new ClientStompMessage( headers, content, isError );
-        message.setAcknowledger( new ClientMessageAcknowledger( this.client, message.getHeaders() ) );
+        message.setAcknowledger( new ClientAcknowledger( this.client, message.getHeaders() ) );
         return message;
     }
     

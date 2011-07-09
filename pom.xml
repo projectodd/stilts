@@ -416,5 +416,6 @@
 
     <module>stomplet-api</module>
     <module>stomplet-server-core</module>
+    <module>stomplet-server-cdi</module>
   </modules>
 </project>

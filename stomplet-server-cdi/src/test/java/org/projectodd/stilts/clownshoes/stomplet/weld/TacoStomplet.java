@@ -14,16 +14,10 @@
  * limitations under the License.
  */
 
-package org.projectodd.stilts.stomp.client;
+package org.projectodd.stilts.clownshoes.stomplet.weld;
 
-import org.projectodd.stilts.stomp.StompMessage;
+import org.projectodd.stilts.stomplet.helpers.DefaultStomplet;
 
-public interface ClientListener {
-    
-    void connecting(StompClient client);
-    void connected(StompClient client);
-    void disconnecting(StompClient client);
-    void disconnected(StompClient client);
-    void error(StompClient client, StompMessage error);
+public class TacoStomplet extends DefaultStomplet {
 
 }

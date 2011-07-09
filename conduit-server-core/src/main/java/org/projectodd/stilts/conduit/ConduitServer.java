@@ -22,7 +22,8 @@ import org.projectodd.stilts.conduit.spi.MessageConduitFactory;
 import org.projectodd.stilts.conduit.spi.XAMessageConduitFactory;
 import org.projectodd.stilts.conduit.stomp.ConduitStompProvider;
 import org.projectodd.stilts.conduit.xa.PseudoXAMessageConduitFactory;
-import org.projectodd.stilts.stomp.server.SimpleStompServer;
+import org.projectodd.stilts.stomp.Constants;
+import org.projectodd.stilts.stomp.server.StompServer;
 
 /** Adapts basic STOMP server to simpler <code>MessageConduit</code> interface.
  * 
@@ -30,10 +31,11 @@ import org.projectodd.stilts.stomp.server.SimpleStompServer;
  * 
  * @author Bob McWhirter
  */
-public class ConduitServer<T extends MessageConduitFactory> extends SimpleStompServer<ConduitStompProvider> {
+public class ConduitServer<T extends MessageConduitFactory> {
 
-    public ConduitServer() {
-        super();
+    
+	public ConduitServer() {
+		this( Constants.DEFAULT_PORT );
     }
     
     /**
@@ -42,7 +44,7 @@ public class ConduitServer<T extends MessageConduitFactory> extends SimpleStompS
      * @param port The listen port to bind to.
      */
     public ConduitServer(int port) {
-        super( port );
+    	this.server = new StompServer<ConduitStompProvider>( port );
     }
 
     public void setTransactionManager(TransactionManager transactionManager) {
@@ -70,18 +72,17 @@ public class ConduitServer<T extends MessageConduitFactory> extends SimpleStompS
         return this.xaMessageConduitFactory;
     }
     
-    @Override
-    public void start() throws Throwable {
+    public void start() throws Exception {
         ConduitStompProvider provider = new ConduitStompProvider( this.transactionManager, getXAMessageConduitFactory() );
-        setStompProvider( provider );
-        super.start();
+        this.server.setStompProvider( provider );
+        this.server.start();
     }
     
-    public void stop() throws Throwable {
-        super.stop();
-        getStompProvider().stop();
+    public void stop() throws Exception {
+    	this.server.stop();
     }
 
+    private StompServer<ConduitStompProvider> server;
     private TransactionManager transactionManager;
     private T messageConduitFactory;
     private XAMessageConduitFactory xaMessageConduitFactory;

@@ -20,9 +20,9 @@ import org.projectodd.stilts.stomp.StompMessage;
 import org.projectodd.stilts.stomp.client.StompClient.State;
 import org.projectodd.stilts.stomp.client.protocol.ClientContext;
 
-public class DefaultClientContext implements ClientContext {
+class ClientContextImpl implements ClientContext {
     
-    public DefaultClientContext(SimpleStompClient client) {
+    ClientContextImpl(StompClient client) {
         this.client = client;
     }
 
@@ -35,8 +35,6 @@ public class DefaultClientContext implements ClientContext {
     public void setConnectionState(State connectionState) {
         this.client.setConnectionState( connectionState );
     }
-
-    private SimpleStompClient client;
 
     @Override
     public void messageReceived(StompMessage message) {
@@ -52,5 +50,7 @@ public class DefaultClientContext implements ClientContext {
     public void receiptReceived(String receiptId) {
         this.client.receiptReceived( receiptId );
     }
+
+    private StompClient client;
 
 }

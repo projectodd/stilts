@@ -17,6 +17,7 @@
 package org.projectodd.stilts.stomplet;
 
 import org.projectodd.stilts.conduit.ConduitServer;
+import org.projectodd.stilts.stomp.Constants;
 import org.projectodd.stilts.stomplet.conduit.StompletMessageConduitFactory;
 import org.projectodd.stilts.stomplet.container.StompletContainer;
 
@@ -25,23 +26,37 @@ import org.projectodd.stilts.stomplet.container.StompletContainer;
  * 
  * @author Bob McWhirter
  */
-public class StompletServer extends ConduitServer<StompletMessageConduitFactory> {
+public class StompletServer {
 
-    public StompletServer() {
-        setMessageConduitFactory( new StompletMessageConduitFactory() );
+	public StompletServer() {
+		this( Constants.DEFAULT_PORT );
     }
 
     public StompletServer(int port) {
-        super( port );
-        setMessageConduitFactory( new StompletMessageConduitFactory() );
+    	this.server = new ConduitServer<StompletMessageConduitFactory>( port );
+        this.server.setMessageConduitFactory( new StompletMessageConduitFactory() );
     }
 
     public void registerVirtualHost(String host, StompletContainer container) {
-        getMessageConduitFactory().registerVirtualHost( host, container );
+        this.server.getMessageConduitFactory().registerVirtualHost( host, container );
+    }
+    
+    public StompletContainer unregisterVirtualHost(String host) {
+        return this.server.getMessageConduitFactory().unregisterVirtualHost( host );
     }
 
     public void setDefaultContainer(StompletContainer container) {
-        getMessageConduitFactory().setDefaultContainer( container );
+        this.server.getMessageConduitFactory().setDefaultContainer( container );
     }
+    
+    public void start() throws Exception {
+    	this.server.start();
+    }
+    
+    public void stop() throws Exception {
+    	this.server.stop();
+    }
+
+    private ConduitServer<StompletMessageConduitFactory> server;
 
 }

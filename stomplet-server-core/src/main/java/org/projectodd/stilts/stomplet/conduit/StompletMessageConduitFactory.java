@@ -56,6 +56,11 @@ public class StompletMessageConduitFactory implements MessageConduitFactory {
         }
     }
 
+    
+    public StompletContainer unregisterVirtualHost(final String host) {
+    	return this.virtualHosts.remove(host);
+    }
+    
     public StompletContainer lookupVirtualHost(final String host) {
         return this.virtualHosts.get( host.toLowerCase() );
     }

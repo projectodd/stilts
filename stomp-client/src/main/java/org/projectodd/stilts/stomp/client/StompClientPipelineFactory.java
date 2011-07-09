@@ -31,7 +31,7 @@ import org.projectodd.stilts.stomp.protocol.StompMessageEncoder;
 
 public class StompClientPipelineFactory implements ChannelPipelineFactory {
 
-    public StompClientPipelineFactory(SimpleStompClient client, ClientContext clientContext) {
+    public StompClientPipelineFactory(StompClient client, ClientContext clientContext) {
         this.client = client;
         this.clientContext = clientContext;
     }
@@ -58,7 +58,7 @@ public class StompClientPipelineFactory implements ChannelPipelineFactory {
         return pipeline;
     }
 
-    private SimpleStompClient client;
+    private StompClient client;
     private ClientContext clientContext;
 
 }

@@ -14,16 +14,19 @@
  * limitations under the License.
  */
 
-package org.projectodd.stilts.stomp.client;
+package org.projectodd.stilts.clownshoes.stomplet.weld;
 
-import org.projectodd.stilts.stomp.StompMessage;
+import java.io.File;
 
-public interface ClientListener {
-    
-    void connecting(StompClient client);
-    void connected(StompClient client);
-    void disconnecting(StompClient client);
-    void disconnected(StompClient client);
-    void error(StompClient client, StompMessage error);
+import org.junit.Ignore;
+import org.junit.Test;
+import org.projectodd.stilts.clownshoes.weld.FileBeanDeploymentArchive;
 
+public class FileDeploymentTest {
+
+    @Test
+    @Ignore
+    public void testScanDirectory() throws Exception {
+        FileBeanDeploymentArchive deployment = new FileBeanDeploymentArchive( new File( "./target/stilts.jar" ) );
+    }
 }

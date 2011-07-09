@@ -25,9 +25,9 @@ import org.projectodd.stilts.stomp.StompException;
 import org.projectodd.stilts.stomp.Subscription.AckMode;
 import org.projectodd.stilts.stomp.protocol.StompFrame.Header;
 
-public class DefaultSubscriptionBuilder implements SubscriptionBuilder {
+class SubscriptionBuilderImpl implements SubscriptionBuilder {
     
-    public DefaultSubscriptionBuilder(SimpleStompClient client, String destination) {
+    SubscriptionBuilderImpl(StompClient client, String destination) {
         this.client = client;
         this.headers = new DefaultHeaders();
         this.headers.put( Header.DESTINATION, destination );
@@ -39,7 +39,7 @@ public class DefaultSubscriptionBuilder implements SubscriptionBuilder {
         return this;
     }
     
-    public MessageHandler getMessageHandler() {
+    MessageHandler getMessageHandler() {
         return this.messageHandler;
     }
 
@@ -55,18 +55,23 @@ public class DefaultSubscriptionBuilder implements SubscriptionBuilder {
         return this;
     }
     
+    Headers getHeaders() {
+        return this.headers;
+    }
+
     @Override
     public SubscriptionBuilder withAckMode(AckMode ackMode) {
         this.headers.put( Header.ACK, ackMode.toString() );
         return this;
     }
     
+    @Override
     public SubscriptionBuilder withExecutor(Executor executor) {
         this.executor = executor;
         return this;
     }
     
-    public Executor getExecutor() {
+    Executor getExecutor() {
         return this.executor;
     }
 
@@ -81,11 +86,7 @@ public class DefaultSubscriptionBuilder implements SubscriptionBuilder {
         }
     }
 
-    public Headers getHeaders() {
-        return this.headers;
-    }
-
-    private SimpleStompClient client;
+    private final StompClient client;
     private Headers headers;
     private MessageHandler messageHandler;
     private Executor executor;

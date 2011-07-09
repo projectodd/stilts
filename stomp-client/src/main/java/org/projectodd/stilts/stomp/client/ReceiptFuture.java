@@ -22,26 +22,22 @@ import java.util.concurrent.FutureTask;
 
 import org.projectodd.stilts.stomp.StompMessage;
 
-public class ReceiptFuture {
+class ReceiptFuture {
     
-    public ReceiptFuture() {
+    ReceiptFuture() {
         this( NO_OP );
     }
     
-    public ReceiptFuture(Callable<Void> receiptHandler) {
+    ReceiptFuture(Callable<Void> receiptHandler) {
         if ( receiptHandler == null ) {
             receiptHandler = NO_OP;
         }
         this.future = new FutureTask<Void>( receiptHandler );
     }
 
-    public void received() {
-        this.future.run();
-    }
-    
-    public void received(StompMessage errorMessage) {
-        this.future.run();
+    void received(StompMessage errorMessage) {
         this.errorMessage = errorMessage;
+        this.future.run();
     }
     
     public StompMessage await() throws InterruptedException, ExecutionException {
