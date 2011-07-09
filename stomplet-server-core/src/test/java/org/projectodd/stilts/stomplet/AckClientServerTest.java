@@ -22,6 +22,8 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 import org.projectodd.stilts.stomp.StompMessages;
 import org.projectodd.stilts.stomp.Subscription.AckMode;
+import org.projectodd.stilts.stomp.client.ClientSubscription;
+import org.projectodd.stilts.stomp.client.ClientTransaction;
 
 public class AckClientServerTest extends AbstractStompletClientServerTest {
 

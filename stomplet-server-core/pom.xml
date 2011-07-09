@@ -9,22 +9,15 @@
   </parent>
 
   <groupId>org.projectodd.stilts</groupId>
-  <artifactId>stilts-stomplet-core</artifactId>
+  <artifactId>stilts-stomplet-server-core</artifactId>
   <packaging>jar</packaging>
-  <name>Stilts Stomplet Core</name>
+  <name>Stilts Stomplet Server Core</name>
 
   <description>
-    Stilts Stomplet Core
+    Stilts Stomplet Server Core
   </description>
 
   <dependencies>
-    <dependency>
-      <groupId>org.projectodd.stilts</groupId>
-      <artifactId>stilts-conduit-server-core</artifactId>
-      <version>${project.version}</version>
-      <scope>test</scope>
-      <classifier>tests</classifier>
-    </dependency>
     <dependency>
       <groupId>org.projectodd.stilts</groupId>
       <artifactId>stilts-conduit-server-core</artifactId>
@@ -34,6 +27,20 @@
       <groupId>org.projectodd.stilts</groupId>
       <artifactId>stilts-stomplet-api</artifactId>
       <version>${project.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.projectodd.stilts</groupId>
+      <artifactId>stilts-stomp-client</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.projectodd.stilts</groupId>
+      <artifactId>stilts-conduit-server-core</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+      <classifier>tests</classifier>
     </dependency>
 
     <!-- Weld -->

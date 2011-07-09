@@ -415,6 +415,6 @@
     <module>conduit-server-core</module>
 
     <module>stomplet-api</module>
-    <module>stomplet-core</module>
+    <module>stomplet-server-core</module>
   </modules>
 </project>
