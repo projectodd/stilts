@@ -16,8 +16,8 @@
 
 package org.projectodd.stilts.stomplet;
 
-import org.projectodd.stilts.StompException;
-import org.projectodd.stilts.StompMessage;
+import org.projectodd.stilts.stomp.StompException;
+import org.projectodd.stilts.stomp.StompMessage;
 
 public interface MessageRouter {
     

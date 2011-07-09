@@ -16,7 +16,7 @@
 
 package org.projectodd.stilts.stomplet.helpers;
 
-import org.projectodd.stilts.StompException;
+import org.projectodd.stilts.stomp.StompException;
 import org.projectodd.stilts.stomplet.Stomplet;
 import org.projectodd.stilts.stomplet.StompletConfig;
 

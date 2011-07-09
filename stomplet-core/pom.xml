@@ -20,14 +20,14 @@
   <dependencies>
     <dependency>
       <groupId>org.projectodd.stilts</groupId>
-      <artifactId>stilts-conduit</artifactId>
+      <artifactId>stilts-conduit-server-core</artifactId>
       <version>${project.version}</version>
       <scope>test</scope>
       <classifier>tests</classifier>
     </dependency>
     <dependency>
       <groupId>org.projectodd.stilts</groupId>
-      <artifactId>stilts-conduit</artifactId>
+      <artifactId>stilts-conduit-server-core</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>

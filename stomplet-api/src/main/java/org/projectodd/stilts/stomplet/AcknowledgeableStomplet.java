@@ -16,7 +16,7 @@
 
 package org.projectodd.stilts.stomplet;
 
-import org.projectodd.stilts.StompMessage;
+import org.projectodd.stilts.stomp.StompMessage;
 
 public interface AcknowledgeableStomplet extends Stomplet {
     

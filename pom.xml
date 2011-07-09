@@ -403,10 +403,16 @@
   </build>
 
   <modules>
-    <module>stomp-spi</module>
-    <module>stomp-core</module>
+    <module>stomp-api</module>
+    <module>stomp-common</module>
 
-    <module>conduit</module>
+    <module>stomp-client</module>
+
+    <module>stomp-server-spi</module>
+    <module>stomp-server-core</module>
+
+    <module>conduit-server-spi</module>
+    <module>conduit-server-core</module>
 
     <module>stomplet-api</module>
     <module>stomplet-core</module>

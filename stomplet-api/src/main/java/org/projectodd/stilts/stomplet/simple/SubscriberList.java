@@ -20,8 +20,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import org.projectodd.stilts.StompException;
-import org.projectodd.stilts.StompMessage;
+import org.projectodd.stilts.stomp.StompException;
+import org.projectodd.stilts.stomp.StompMessage;
 import org.projectodd.stilts.stomplet.Subscriber;
 
 public class SubscriberList {

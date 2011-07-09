@@ -20,7 +20,7 @@
   <dependencies>
     <dependency>
       <groupId>org.projectodd.stilts</groupId>
-      <artifactId>stilts-stomp-spi</artifactId>
+      <artifactId>stilts-stomp-server-spi</artifactId>
       <version>${project.version}</version>
     </dependency>
   </dependencies>
