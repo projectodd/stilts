@@ -24,6 +24,14 @@ public class MockMessageConduit implements MessageConduit {
         this.subscriptions.add( subscription );
         return subscription;
     }
+    
+    public List<StompMessage> getMessages() {
+        return this.messages;
+    }
+    
+    public List<Subscription> getSubscriptions() {
+        return this.subscriptions;
+    }
 
     private List<StompMessage> messages = new ArrayList<StompMessage>();
     private List<Subscription> subscriptions = new ArrayList<Subscription>();
