@@ -75,7 +75,7 @@ public class StompServer<T extends StompProvider> {
         this.stompProvider = stompProvider;
     }
 
-    public T getStompProvider() throws Exception {
+    public T getStompProvider() {
         return this.stompProvider;
     }
 
