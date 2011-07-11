@@ -30,6 +30,7 @@ import org.projectodd.stilts.stomp.spi.AcknowledgeableMessageSink;
 import org.projectodd.stilts.stomp.spi.Authenticator;
 import org.projectodd.stilts.stomp.spi.StompConnection;
 import org.projectodd.stilts.stomp.spi.StompProvider;
+import org.projectodd.stilts.stomp.spi.TransactionalAcknowledgeableMessageSink;
 
 public class ConduitStompProvider implements StompProvider {
 
@@ -55,7 +56,7 @@ public class ConduitStompProvider implements StompProvider {
     }
 
     @Override
-    public StompConnection createConnection(AcknowledgeableMessageSink messageSink, Headers headers) throws StompException {
+    public StompConnection createConnection(TransactionalAcknowledgeableMessageSink messageSink, Headers headers) throws StompException {
         if (this.authenticator.authenticate( headers )) {
             try {
                 ConduitStompConnection connection = createStompConnection( messageSink, getNextSessionId(), headers );
@@ -90,8 +91,11 @@ public class ConduitStompProvider implements StompProvider {
         return "session-" + sessionCounter.getAndIncrement();
     }
 
-    protected ConduitStompConnection createStompConnection(AcknowledgeableMessageSink messageSink, String sessionId, Headers headers) throws Exception {
-        return new ConduitStompConnection( this, this.messageConduitFactory.createXAMessageConduit( messageSink, headers ), sessionId );
+    protected ConduitStompConnection createStompConnection(TransactionalAcknowledgeableMessageSink messageSink, String sessionId, Headers headers) throws Exception {
+        ConduitAcknowledgeableMessageSink conduitSink = new ConduitAcknowledgeableMessageSink( messageSink );
+        ConduitStompConnection connection = new ConduitStompConnection( this, this.messageConduitFactory.createXAMessageConduit( conduitSink, headers ), sessionId );
+        conduitSink.setConnection( connection );
+        return connection;
     }
 
     XAMessageConduitFactory getMessageConduitFactory() {

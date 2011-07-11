@@ -69,21 +69,16 @@ public class MockStompConnection implements StompConnection {
     }
 
     @Override
-    public void ack(Acknowledger acknowledger, String transactionId) throws StompException {
-        
-    }
-
-    @Override
-    public void nack(Acknowledger acknowledger, String transactionId) throws StompException {
-        
-    }
-
-    @Override
     public void disconnect() throws NotConnectedException {
-        
+        this.disconnected = true;
+    }
+    
+    public boolean isDisconnected() {
+        return this.disconnected;
     }
     
     private String sessionId;
+    private boolean disconnected;
     private List<Send> sends = new ArrayList<Send>();
     private List<String> begins = new ArrayList<String>();
     private List<String> commits = new ArrayList<String>();

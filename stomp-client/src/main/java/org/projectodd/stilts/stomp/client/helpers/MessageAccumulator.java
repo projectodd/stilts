@@ -48,7 +48,7 @@ public class MessageAccumulator implements MessageHandler {
         }
     }
 
-    public List<StompMessage> getMessage() {
+    public List<StompMessage> getMessages() {
         return this.messages;
     }
 

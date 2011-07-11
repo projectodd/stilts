@@ -14,34 +14,32 @@
  * limitations under the License.
  */
 
-package org.projectodd.stilts.stomplet.stomp;
+package org.projectodd.stilts.stomplet.impl;
 
-import org.projectodd.stilts.stomp.Acknowledger;
-import org.projectodd.stilts.stomp.StompMessage;
-import org.projectodd.stilts.stomplet.AcknowledgeableStomplet;
+import org.projectodd.stilts.stomp.StompException;
+import org.projectodd.stilts.stomp.Subscription;
+import org.projectodd.stilts.stomplet.Stomplet;
 import org.projectodd.stilts.stomplet.Subscriber;
 
-public class StompletAcknowledger implements Acknowledger {
+class SubscriptionImpl implements Subscription {
 
-
-    public StompletAcknowledger(AcknowledgeableStomplet stomplet, Subscriber subscriber, StompMessage message) {
+    public SubscriptionImpl(Stomplet stomplet, SubscriberImpl subscriber) {
         this.stomplet = stomplet;
         this.subscriber = subscriber;
-        this.message = message;
-    }
-    
-    @Override
-    public void ack() throws Exception {
-        this.stomplet.ack( this.subscriber, this.message );
     }
 
     @Override
-    public void nack() throws Exception {
-        this.stomplet.nack( this.subscriber, this.message );
+    public String getId() {
+        return this.subscriber.getId();
     }
-    
-    private AcknowledgeableStomplet stomplet;
-    private Subscriber subscriber;
-    private StompMessage message;
+
+    @Override
+    public void cancel() throws StompException {
+        subscriber.close();
+        stomplet.onUnsubscribe( this.subscriber );
+    }
+
+    private Stomplet stomplet;
+    private SubscriberImpl subscriber;
 
 }

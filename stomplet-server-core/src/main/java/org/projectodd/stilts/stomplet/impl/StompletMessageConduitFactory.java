@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.projectodd.stilts.stomplet.conduit;
+package org.projectodd.stilts.stomplet.impl;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -35,11 +35,14 @@ public class StompletMessageConduitFactory implements MessageConduitFactory {
     public MessageConduit createMessageConduit(AcknowledgeableMessageSink messageSink, Headers headers) throws Exception {
         String host = headers.get( Header.HOST );
         StompletContainer container = null;
-        if (host == null) {
+        
+        if (host != null) {
+            container = lookupVirtualHost( host );
+        }
+
+        if (container == null) {
             container = this.defaultContainer;
             host = "default";
-        } else {
-            container = lookupVirtualHost( host );
         }
 
         if (container == null) {
@@ -51,16 +54,12 @@ public class StompletMessageConduitFactory implements MessageConduitFactory {
 
     public void registerVirtualHost(final String host, final StompletContainer container) {
         this.virtualHosts.put( host.toLowerCase(), container );
-        if (this.defaultContainer == null) {
-            this.defaultContainer = container;
-        }
     }
 
-    
     public StompletContainer unregisterVirtualHost(final String host) {
-    	return this.virtualHosts.remove(host);
+        return this.virtualHosts.remove( host );
     }
-    
+
     public StompletContainer lookupVirtualHost(final String host) {
         return this.virtualHosts.get( host.toLowerCase() );
     }
@@ -79,26 +78,25 @@ public class StompletMessageConduitFactory implements MessageConduitFactory {
         if (this.defaultContainer != null) {
             containers.add( this.defaultContainer );
         }
-        
-        for ( StompletContainer each : containers ) {
+
+        for (StompletContainer each : containers) {
             each.start();
         }
     }
-    
+
     public void stop() throws Exception {
         Set<StompletContainer> containers = new HashSet<StompletContainer>();
         containers.addAll( this.virtualHosts.values() );
         if (this.defaultContainer != null) {
             containers.add( this.defaultContainer );
         }
-        
-        for ( StompletContainer each : containers ) {
+
+        for (StompletContainer each : containers) {
             each.stop();
         }
     }
 
     private Map<String, StompletContainer> virtualHosts = new HashMap<String, StompletContainer>();
     private StompletContainer defaultContainer = null;
-
 
 }

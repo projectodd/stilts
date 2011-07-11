@@ -21,7 +21,8 @@ import org.projectodd.stilts.stomp.Acknowledger;
 public interface AckSet {
     
     void ack(String messageId) throws Exception;
-    void nak(String messageId) throws Exception;
+    void nack(String messageId) throws Exception;
     void addAcknowledger(String messageId, Acknowledger acknowledger);
+    void close();
 
 }

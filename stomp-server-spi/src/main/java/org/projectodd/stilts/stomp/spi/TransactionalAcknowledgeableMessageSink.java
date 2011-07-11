@@ -14,19 +14,13 @@
  * limitations under the License.
  */
 
-package org.projectodd.stilts.clownshoes.stomplet.weld;
+package org.projectodd.stilts.stomp.spi;
 
-import java.io.File;
+import org.projectodd.stilts.MessageSink;
+import org.projectodd.stilts.stomp.StompException;
+import org.projectodd.stilts.stomp.StompMessage;
+import org.projectodd.stilts.stomp.TransactionalAcknowledger;
 
-import org.junit.Ignore;
-import org.junit.Test;
-import org.projectodd.stilts.clownshoes.weld.FileBeanDeploymentArchive;
-
-public class FileDeploymentTest {
-
-    @Test
-    @Ignore
-    public void testScanDirectory() throws Exception {
-        FileBeanDeploymentArchive deployment = new FileBeanDeploymentArchive( new File( "./target/stilts.jar" ) );
-    }
+public interface TransactionalAcknowledgeableMessageSink extends MessageSink {
+    void send(StompMessage message, TransactionalAcknowledger acknowledger) throws StompException;
 }

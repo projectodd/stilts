@@ -101,7 +101,7 @@ public class DefaultStompMessage implements StompMessage {
     }
     
     public String toString() {
-        return "[StompMessage: headers=" + this.headers + "\n  content=" + getContent() + "]";
+        return "[StompMessage: headers=" + this.headers + "\n  content=" + getContentAsString() + "]";
     }
     
     @Override
@@ -110,7 +110,17 @@ public class DefaultStompMessage implements StompMessage {
     }
     
     @Override
+    public void ack(String transactionId) throws StompException {
+        throw new UnsupportedOperationException("ACK");
+    }
+    
+    @Override
     public void nack() throws StompException {
+        throw new UnsupportedOperationException("ACK");
+    }
+    
+    @Override
+    public void nack(String transactionId) throws StompException {
         throw new UnsupportedOperationException("NACK");
     }
     

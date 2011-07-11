@@ -134,10 +134,17 @@ public class StompClient {
     }
 
     void errorReceived(StompMessage message) {
-        log.info( "received error: " + message );
+        log.error( message.getContentAsString() );
         String receiptId = message.getHeaders().get( Header.RECEIPT_ID );
         if (receiptId != null) {
             receiptReceived( receiptId, message );
+        }
+        
+        synchronized ( this.stateLock ) {
+            if ( this.connectionState == State.CONNECTING ) {
+                this.connectionState = State.DISCONNECTED;
+                this.stateLock.notifyAll();
+            }
         }
     }
 

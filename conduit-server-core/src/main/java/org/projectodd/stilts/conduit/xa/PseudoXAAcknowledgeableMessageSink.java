@@ -42,6 +42,10 @@ public class PseudoXAAcknowledgeableMessageSink implements AcknowledgeableMessag
         this.sink.send( message, xaAcknowledger );
     }
     
+    public void close() {
+        
+    }
+    
     private PseudoXAResourceManager resourceManager;
     private AcknowledgeableMessageSink sink;
 

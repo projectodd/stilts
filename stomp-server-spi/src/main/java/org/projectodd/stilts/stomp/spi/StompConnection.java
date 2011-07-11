@@ -36,8 +36,8 @@ public interface StompConnection {
     void commit(String transactionId) throws StompException;
     void abort(String transactionId) throws StompException;
     
-    void ack(Acknowledger acknowledger, String transactionId) throws StompException;
-    void nack(Acknowledger acknowledger, String transactionId) throws StompException;
+    //void ack(Acknowledger acknowledger, String transactionId) throws StompException;
+    //void nack(Acknowledger acknowledger, String transactionId) throws StompException;
     
     void disconnect() throws NotConnectedException;
 

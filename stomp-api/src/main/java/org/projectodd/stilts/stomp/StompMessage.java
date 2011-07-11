@@ -36,8 +36,12 @@ public interface StompMessage {
     void setContent(ChannelBuffer content);
     
     boolean isError();
+    
     void ack() throws StompException;
     void nack() throws StompException;
+    
+    void ack(String transactionId) throws StompException;
+    void nack(String transactionId) throws StompException;
     
     StompMessage duplicate();
     

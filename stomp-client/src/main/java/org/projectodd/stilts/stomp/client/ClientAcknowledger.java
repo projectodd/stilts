@@ -17,10 +17,13 @@
 package org.projectodd.stilts.stomp.client;
 
 import org.projectodd.stilts.stomp.Acknowledger;
+import org.projectodd.stilts.stomp.DefaultHeaders;
 import org.projectodd.stilts.stomp.Headers;
+import org.projectodd.stilts.stomp.TransactionalAcknowledger;
+import org.projectodd.stilts.stomp.protocol.StompFrame.Header;
 import org.projectodd.stilts.stomp.protocol.StompFrames;
 
-class ClientAcknowledger implements Acknowledger {
+class ClientAcknowledger implements Acknowledger, TransactionalAcknowledger {
 
     ClientAcknowledger(StompClient client, Headers headers) {
         this.client = client;
@@ -29,16 +32,43 @@ class ClientAcknowledger implements Acknowledger {
 
     @Override
     public void ack() throws Exception {
-        client.sendFrame( StompFrames.newAckFrame( this.headers ) );
+        ack( null );
+    }
+
+    @Override
+    public void ack(String transactionId) throws Exception {
+        DefaultHeaders ackHeaders = new DefaultHeaders();
+        ackHeaders.put( Header.MESSAGE_ID, this.headers.get( Header.MESSAGE_ID ) );
+        ackHeaders.put( Header.SUBSCRIPTION, this.headers.get( Header.SUBSCRIPTION ) );
+        if (transactionId == null) {
+            transactionId = this.headers.get( Header.TRANSACTION );
+        }
+        if (transactionId != null) {
+            ackHeaders.put( Header.TRANSACTION, transactionId );
+        }
+        client.sendFrame( StompFrames.newAckFrame( ackHeaders ) );
     }
 
     @Override
     public void nack() throws Exception {
-        client.sendFrame( StompFrames.newNackFrame( this.headers ) );
+        nack( null );
+    }
+
+    @Override
+    public void nack(String transactionId) throws Exception {
+        DefaultHeaders nackHeaders = new DefaultHeaders();
+        nackHeaders.put( Header.MESSAGE_ID, this.headers.get( Header.MESSAGE_ID ) );
+        nackHeaders.put( Header.SUBSCRIPTION, this.headers.get( Header.SUBSCRIPTION ) );
+        if (transactionId == null) {
+            transactionId = this.headers.get( Header.TRANSACTION );
+        }
+        if (transactionId != null) {
+            nackHeaders.put( Header.TRANSACTION, transactionId );
+        }
+        client.sendFrame( StompFrames.newNackFrame( nackHeaders ) );
     }
 
     private StompClient client;
     private Headers headers;
-
 
 }

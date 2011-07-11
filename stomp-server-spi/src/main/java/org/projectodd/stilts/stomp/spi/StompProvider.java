@@ -20,5 +20,5 @@ import org.projectodd.stilts.stomp.Headers;
 import org.projectodd.stilts.stomp.StompException;
 
 public interface StompProvider {
-    StompConnection createConnection(AcknowledgeableMessageSink messageSink, Headers headers) throws StompException;
+    StompConnection createConnection(TransactionalAcknowledgeableMessageSink messageSink, Headers headers) throws StompException;
 }

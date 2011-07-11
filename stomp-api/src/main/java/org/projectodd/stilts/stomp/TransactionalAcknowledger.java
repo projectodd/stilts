@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-package org.projectodd.stilts.clownshoes.stomplet.weld;
+package org.projectodd.stilts.stomp;
 
-import org.projectodd.stilts.stomplet.helpers.DefaultStomplet;
-
-public class TacoStomplet extends DefaultStomplet {
+public interface TransactionalAcknowledger {
+    
+    void ack(String transactionId) throws Exception;
+    void nack(String transactionId) throws Exception;
 
 }

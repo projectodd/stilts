@@ -21,20 +21,35 @@ import org.projectodd.stilts.stomp.Acknowledger;
 import org.projectodd.stilts.stomp.DefaultStompMessage;
 import org.projectodd.stilts.stomp.Headers;
 import org.projectodd.stilts.stomp.StompException;
+import org.projectodd.stilts.stomp.TransactionalAcknowledger;
+import org.projectodd.stilts.stomp.protocol.StompFrame.Header;
 
 class ClientStompMessage extends DefaultStompMessage {
 
     ClientStompMessage(Headers headers, ChannelBuffer content, boolean isError) {
-        super( headers, content, isError);
+        super( headers, content, isError );
     }
-    
+
     void setAcknowledger(Acknowledger acknowledger) {
         this.acknowledger = acknowledger;
     }
 
     @Override
+    public void ack(String transactionId) throws StompException {
+        if (this.acknowledger instanceof TransactionalAcknowledger ) {
+            try {
+                ((TransactionalAcknowledger)this.acknowledger).ack( transactionId );
+            } catch (Exception e) {
+                throw new StompException( e );
+            }
+        } else {
+            ack();
+        }
+    }
+
+    @Override
     public void ack() throws StompException {
-        if ( this.acknowledger != null ) {
+        if (this.acknowledger != null) {
             try {
                 this.acknowledger.ack();
             } catch (Exception e) {
@@ -44,10 +59,24 @@ class ClientStompMessage extends DefaultStompMessage {
             super.ack();
         }
     }
+
+    
+    @Override
+    public void nack(String transactionId) throws StompException {
+        if (this.acknowledger instanceof TransactionalAcknowledger) {
+            try {
+                ((TransactionalAcknowledger) this.acknowledger).nack( transactionId );
+            } catch (Exception e) {
+                throw new StompException( e );
+            }
+        } else {
+            nack();
+        }
+    }
     
     @Override
     public void nack() throws StompException {
-        if ( this.acknowledger != null ) {
+        if (this.acknowledger != null) {
             try {
                 this.acknowledger.nack();
             } catch (Exception e) {

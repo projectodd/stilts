@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-package org.projectodd.stilts.stomplet.conduit;
+package org.projectodd.stilts.stomplet.impl;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.projectodd.stilts.conduit.spi.MessageConduit;
 import org.projectodd.stilts.stomp.Headers;
@@ -25,11 +29,8 @@ import org.projectodd.stilts.stomp.Subscription.AckMode;
 import org.projectodd.stilts.stomp.protocol.StompFrame.Header;
 import org.projectodd.stilts.stomp.spi.AcknowledgeableMessageSink;
 import org.projectodd.stilts.stomplet.Stomplet;
-import org.projectodd.stilts.stomplet.Subscriber;
-import org.projectodd.stilts.stomplet.container.DefaultSubscriber;
 import org.projectodd.stilts.stomplet.container.RouteMatch;
 import org.projectodd.stilts.stomplet.container.StompletContainer;
-import org.projectodd.stilts.stomplet.stomp.StompletSubscription;
 
 public class StompletMessageConduit implements MessageConduit {
 
@@ -38,6 +39,10 @@ public class StompletMessageConduit implements MessageConduit {
         this.messageSink = messageSink;
     }
     
+    AcknowledgeableMessageSink getMessageSink() {
+        return this.messageSink;
+    }
+
     @Override
     public void send(StompMessage message) throws StompException {
         this.stompletContainer.send( message );
@@ -49,28 +54,36 @@ public class StompletMessageConduit implements MessageConduit {
         if (match == null) {
             return null;
         }
-        
+
         Stomplet stomplet = match.getRoute().getStomplet();
-        
+
         String ackHeader = headers.get( Header.ACK );
-        
+
         AckMode ackMode = AckMode.AUTO;
-        
-        if ( ackHeader == null || "auto".equalsIgnoreCase( ackHeader ) ) {
+
+        if (ackHeader == null || "auto".equalsIgnoreCase( ackHeader )) {
             ackMode = AckMode.AUTO;
-        } else if ( "client".equalsIgnoreCase( ackHeader ) ){
+        } else if ("client".equalsIgnoreCase( ackHeader )) {
             ackMode = AckMode.CLIENT;
-        } else if ( "client-individual".equalsIgnoreCase( ackHeader ) ){
+        } else if ("client-individual".equalsIgnoreCase( ackHeader )) {
             ackMode = AckMode.CLIENT_INDIVIDUAL;
         }
-        
-        Subscriber subscriber = new DefaultSubscriber( stomplet, subscriptionId, destination, this.messageSink, ackMode );
+
+        SubscriberImpl subscriber = new SubscriberImpl( stomplet, subscriptionId, destination, this, ackMode );
         stomplet.onSubscribe( subscriber );
-        return new StompletSubscription( stomplet, subscriber );
+        SubscriptionImpl subscription = new SubscriptionImpl( stomplet, subscriber );
+        this.subscriptions.put( subscriptionId, subscription );
+        return subscription;
     }
     
+    String getNextMessageId() {
+        return "message-" + this.messageCounter.getAndIncrement();
+    }
+
     private StompletContainer stompletContainer;
     private AcknowledgeableMessageSink messageSink;
+    private Map<String, Subscription> subscriptions = new HashMap<String, Subscription>();
 
+    private AtomicLong messageCounter = new AtomicLong();
 
 }

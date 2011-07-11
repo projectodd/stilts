@@ -35,6 +35,7 @@
       <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
+
     <dependency>
       <groupId>org.projectodd.stilts</groupId>
       <artifactId>stilts-conduit-server-core</artifactId>
@@ -42,27 +43,17 @@
       <scope>test</scope>
       <classifier>tests</classifier>
     </dependency>
-
-    <!-- Weld -->
-
     <dependency>
-      <groupId>org.jboss.weld</groupId>
-      <artifactId>weld-spi</artifactId>
+      <groupId>org.projectodd.stilts</groupId>
+      <artifactId>stilts-stomp-client</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.jboss.weld</groupId>
-      <artifactId>weld-core</artifactId>
+      <groupId>org.jboss.jbossts</groupId>
+      <artifactId>jbossjta</artifactId>
+      <scope>test</scope>
     </dependency>
-    <dependency>
-      <groupId>javax.el</groupId>
-      <artifactId>el-api</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>log4j</groupId>
-      <artifactId>log4j</artifactId>
-    </dependency>
-
   </dependencies>
 
 

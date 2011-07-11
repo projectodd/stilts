@@ -36,7 +36,7 @@ public class IndividualAckSet implements AckSet {
     }
 
     @Override
-    public void nak(String messageId) throws Exception {
+    public void nack(String messageId) throws Exception {
         Acknowledger ack = this.acknowledgers.remove( messageId );
         if ( ack != null ) {
             ack.nack();
@@ -46,6 +46,17 @@ public class IndividualAckSet implements AckSet {
     @Override
     public void addAcknowledger(String messageId, Acknowledger acknowledger) {
         this.acknowledgers.put( messageId, acknowledger );
+    }
+    
+    @Override
+    public void close() {
+        for ( Acknowledger each : acknowledgers.values() ) {
+            try {
+                each.nack();
+            } catch (Exception e) {
+                // ignore
+            }
+        }
     }
     
     private Map<String, Acknowledger> acknowledgers = new ConcurrentHashMap<String, Acknowledger>();

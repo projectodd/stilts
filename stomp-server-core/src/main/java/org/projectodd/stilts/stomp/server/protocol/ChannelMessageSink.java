@@ -16,16 +16,13 @@
 
 package org.projectodd.stilts.stomp.server.protocol;
 
-import java.util.concurrent.atomic.AtomicLong;
-
 import org.jboss.netty.channel.Channel;
-import org.projectodd.stilts.stomp.Acknowledger;
 import org.projectodd.stilts.stomp.StompException;
 import org.projectodd.stilts.stomp.StompMessage;
-import org.projectodd.stilts.stomp.protocol.StompFrame.Header;
-import org.projectodd.stilts.stomp.spi.AcknowledgeableMessageSink;
+import org.projectodd.stilts.stomp.TransactionalAcknowledger;
+import org.projectodd.stilts.stomp.spi.TransactionalAcknowledgeableMessageSink;
 
-public class ChannelMessageSink implements AcknowledgeableMessageSink {
+public class ChannelMessageSink implements TransactionalAcknowledgeableMessageSink {
 
     public ChannelMessageSink(Channel channel, AckManager ackManager) {
         this.channel = channel;
@@ -38,23 +35,14 @@ public class ChannelMessageSink implements AcknowledgeableMessageSink {
     }
 
     @Override
-    public void send(StompMessage message, Acknowledger acknowledger) throws StompException {
-        if ( message.getId() == null ) {
-            message.getHeaders().put( Header.MESSAGE_ID, getNextMessageId() );
-        }
+    public void send(StompMessage message, TransactionalAcknowledger acknowledger) throws StompException {
         if (acknowledger != null) {
             this.ackManager.registerAcknowledger( message.getId(), acknowledger );
         }
         this.channel.write( message );
     }
     
-    private static String getNextMessageId() {
-        return "message-" + MESSAGE_COUNTER.getAndIncrement();
-    }
-
     private Channel channel;
     private AckManager ackManager;
     
-    private static final AtomicLong MESSAGE_COUNTER = new AtomicLong();
-
 }

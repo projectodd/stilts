@@ -22,7 +22,5 @@ import org.projectodd.stilts.stomp.StompException;
 import org.projectodd.stilts.stomp.StompMessage;
 
 public interface AcknowledgeableMessageSink extends MessageSink {
-    
     void send(StompMessage message, Acknowledger acknowledger) throws StompException;
-
 }

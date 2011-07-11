@@ -14,46 +14,33 @@
  * limitations under the License.
  */
 
-package org.projectodd.stilts.stomplet.stomp;
+package org.projectodd.stilts.stomplet.impl;
 
 import org.projectodd.stilts.stomp.Acknowledger;
-import org.projectodd.stilts.stomp.StompException;
 import org.projectodd.stilts.stomp.StompMessage;
-import org.projectodd.stilts.stomp.Subscription;
-import org.projectodd.stilts.stomp.spi.AcknowledgeableMessageSink;
-import org.projectodd.stilts.stomplet.Stomplet;
+import org.projectodd.stilts.stomplet.AcknowledgeableStomplet;
 import org.projectodd.stilts.stomplet.Subscriber;
 
-public class StompletSubscription implements Subscription, AcknowledgeableMessageSink {
+public class StompletAcknowledger implements Acknowledger {
 
-    public StompletSubscription(Stomplet stomplet, Subscriber subscriber) {
+    public StompletAcknowledger(AcknowledgeableStomplet stomplet, Subscriber subscriber, StompMessage message) {
         this.stomplet = stomplet;
         this.subscriber = subscriber;
-    }
-
-    @Override
-    public String getId() {
-        return null;
-    }
-
-    @Override
-    public void cancel() throws StompException {
-        stomplet.onUnsubscribe( this.subscriber );
-    }
-
-    @Override
-    public void send(StompMessage message) throws StompException {
-        // TODO Auto-generated method stub
-        
-    }
-
-    @Override
-    public void send(StompMessage message, Acknowledger acknowledger) throws StompException {
-        // TODO Auto-generated method stub
-        
+        this.message = message;
     }
     
-    private Stomplet stomplet;
+    @Override
+    public void ack() throws Exception {
+        this.stomplet.ack( this.subscriber, this.message );
+    }
+
+    @Override
+    public void nack() throws Exception {
+        this.stomplet.nack( this.subscriber, this.message );
+    }
+    
+    private AcknowledgeableStomplet stomplet;
     private Subscriber subscriber;
+    private StompMessage message;
 
 }

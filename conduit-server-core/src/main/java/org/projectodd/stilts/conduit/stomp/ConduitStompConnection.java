@@ -53,7 +53,7 @@ public class ConduitStompConnection implements StompConnection {
     public ConduitStompProvider getStompProvider() {
         return this.stompProvider;
     }
-    
+
     public XAMessageConduit getMessageConduit() {
         return this.messageConduit;
     }
@@ -65,7 +65,7 @@ public class ConduitStompConnection implements StompConnection {
             send( message );
         }
     }
-    
+
     protected void send(StompMessage message) throws StompException {
         try {
             this.messageConduit.send( message );
@@ -74,8 +74,7 @@ public class ConduitStompConnection implements StompConnection {
         }
     }
 
-    @Override
-    public void ack(Acknowledger acknowledger, String transactionId) throws StompException {
+    void ack(Acknowledger acknowledger, String transactionId) throws StompException {
         if (transactionId != null) {
             getTransaction( transactionId ).ack( acknowledger );
         } else {
@@ -87,8 +86,7 @@ public class ConduitStompConnection implements StompConnection {
         }
     }
 
-    @Override
-    public void nack(Acknowledger acknowledger, String transactionId) throws StompException {
+    void nack(Acknowledger acknowledger, String transactionId) throws StompException {
         if (transactionId != null) {
             getTransaction( transactionId ).nack( acknowledger );
         } else {
@@ -180,6 +178,7 @@ public class ConduitStompConnection implements StompConnection {
         if (subscription == null) {
             throw new InvalidSubscriptionException( id );
         }
+        subscription.cancel();
     }
 
     @Override
@@ -191,6 +190,19 @@ public class ConduitStompConnection implements StompConnection {
                 e.printStackTrace();
             }
         }
+        
+        this.namedTransactions.clear();
+
+        for (Subscription each : this.subscriptions.values()) {
+            try {
+                each.cancel();
+            } catch (StompException e) {
+                e.printStackTrace();
+            }
+        }
+        
+        this.subscriptions.clear();
+        
         this.stompProvider.unregister( this );
     }
 

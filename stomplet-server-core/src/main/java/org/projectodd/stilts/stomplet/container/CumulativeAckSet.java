@@ -30,31 +30,31 @@ public class CumulativeAckSet implements AckSet {
 
     @Override
     public synchronized void ack(String messageId) throws Exception {
-        if ( hasMessageId( messageId) ) {
+        if (hasMessageId( messageId )) {
             ListIterator<Entry> iter = this.acknowledgers.listIterator();
-            while ( iter.hasNext() ) {
+            while (iter.hasNext()) {
                 Entry entry = iter.next();
                 iter.remove();
                 entry.acknowledger.ack();
             }
         }
     }
-    
+
     @Override
-    public synchronized void nak(String messageId) throws Exception {
-        if ( hasMessageId( messageId) ) {
+    public synchronized void nack(String messageId) throws Exception {
+        if (hasMessageId( messageId )) {
             ListIterator<Entry> iter = this.acknowledgers.listIterator();
-            while ( iter.hasNext() ) {
+            while (iter.hasNext()) {
                 Entry entry = iter.next();
                 iter.remove();
                 entry.acknowledger.ack();
             }
         }
     }
-    
+
     protected boolean hasMessageId(String messageId) {
-        for ( Entry each : this.acknowledgers ) {
-            if ( each.messageId.equals( messageId ) ) {
+        for (Entry each : this.acknowledgers) {
+            if (each.messageId.equals( messageId )) {
                 return true;
             }
         }
@@ -63,7 +63,18 @@ public class CumulativeAckSet implements AckSet {
 
     @Override
     public synchronized void addAcknowledger(String messageId, Acknowledger acknowledger) {
-        acknowledgers.add( new Entry(messageId, acknowledger) );
+        acknowledgers.add( new Entry( messageId, acknowledger ) );
+    }
+
+    @Override
+    public void close() {
+        for (Entry each : this.acknowledgers) {
+            try {
+                each.acknowledger.nack();
+            } catch (Exception e) {
+                // ignore
+            }
+        }
     }
 
     class Entry {

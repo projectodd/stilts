@@ -31,18 +31,15 @@ public class UnsubscribeHandler extends AbstractControlFrameHandler {
 
     @Override
     public void handleControlFrame(ChannelHandlerContext channelContext, StompFrame frame) {
-        String destinationOrId = frame.getHeader( Header.DESTINATION );
-        if ( destinationOrId == null ) {
-            destinationOrId = frame.getHeader( Header.ID );
-        }
+        String subscriptionId = frame.getHeader( Header.ID );
         
-        if ( destinationOrId == null ) {
-            sendError( channelContext, "Must supply 'destination' or 'id' header for UNSUBSCRIBE", frame );
+        if ( subscriptionId == null ) {
+            sendError( channelContext, "Must supply 'id' header for UNSUBSCRIBE", frame );
             return;
         }
         
         try {
-            getStompConnection().unsubscribe( destinationOrId, frame.getHeaders() );
+            getStompConnection().unsubscribe( subscriptionId, frame.getHeaders() );
         } catch (StompException e) {
             sendError( channelContext, e.getMessage(), frame );
         }

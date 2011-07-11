@@ -19,7 +19,7 @@ package org.projectodd.stilts.stomp.server.protocol;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.projectodd.stilts.stomp.Acknowledger;
+import org.projectodd.stilts.stomp.TransactionalAcknowledger;
 
 class AckManager {
 
@@ -27,13 +27,13 @@ class AckManager {
 
     }
 
-    void registerAcknowledger(String messageId, Acknowledger acknowledger) {
+    void registerAcknowledger(String messageId, TransactionalAcknowledger acknowledger) {
         this.acknowledgers.put( messageId, acknowledger );
     }
 
-    Acknowledger removeAcknowledger(String messageId) {
+    TransactionalAcknowledger removeAcknowledger(String messageId) {
         return this.acknowledgers.remove( messageId );
     }
-
-    private final Map<String, Acknowledger> acknowledgers = new HashMap<String, Acknowledger>();
+    
+    private final Map<String, TransactionalAcknowledger> acknowledgers = new HashMap<String, TransactionalAcknowledger>();
 }

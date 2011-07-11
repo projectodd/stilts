@@ -17,7 +17,7 @@
 package org.projectodd.stilts.stomp.server.protocol;
 
 import org.jboss.netty.channel.ChannelHandlerContext;
-import org.projectodd.stilts.stomp.Acknowledger;
+import org.projectodd.stilts.stomp.TransactionalAcknowledger;
 import org.projectodd.stilts.stomp.protocol.StompFrame;
 import org.projectodd.stilts.stomp.protocol.StompFrame.Command;
 import org.projectodd.stilts.stomp.protocol.StompFrame.Header;
@@ -31,11 +31,11 @@ public class AckHandler extends AbstractControlFrameHandler {
 
     public void handleControlFrame(ChannelHandlerContext channelContext, StompFrame frame) {
         String messageId = frame.getHeader( Header.MESSAGE_ID );
-        Acknowledger acknowledger = getContext().getAckManager().removeAcknowledger( messageId );
-        String transactionId = frame.getHeader( Header.TRANSACTION );
-        if ( acknowledger != null ) {
+        TransactionalAcknowledger acknowledger = getContext().getAckManager().removeAcknowledger( messageId );
+        if (acknowledger != null) {
+            String transactionId = frame.getHeader( Header.TRANSACTION );
             try {
-                getStompConnection().ack( acknowledger, transactionId );
+                acknowledger.ack( transactionId );
             } catch (Exception e) {
                 sendError( channelContext, "Unable to ACK", frame );
             }
