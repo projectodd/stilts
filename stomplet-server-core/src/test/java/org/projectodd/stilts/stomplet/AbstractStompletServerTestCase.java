@@ -16,9 +16,9 @@ public abstract class AbstractStompletServerTestCase {
 		this.server = new StompletServer();
 		this.server.setTransactionManager( getTransactionManager() );
 		this.server.start();
+		configureServer();
 	}
 	
-	@Before 
 	public abstract void configureServer() throws Exception;
 	
 	

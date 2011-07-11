@@ -16,7 +16,6 @@
 
 package org.projectodd.stilts.stomp.spi;
 
-import org.projectodd.stilts.stomp.Acknowledger;
 import org.projectodd.stilts.stomp.Headers;
 import org.projectodd.stilts.stomp.NotConnectedException;
 import org.projectodd.stilts.stomp.StompException;
@@ -35,9 +34,6 @@ public interface StompConnection {
     void begin(String transactionId, Headers headers) throws StompException;
     void commit(String transactionId) throws StompException;
     void abort(String transactionId) throws StompException;
-    
-    //void ack(Acknowledger acknowledger, String transactionId) throws StompException;
-    //void nack(Acknowledger acknowledger, String transactionId) throws StompException;
     
     void disconnect() throws NotConnectedException;
 
