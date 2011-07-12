@@ -40,7 +40,7 @@ public class StompClientPipelineFactory implements ChannelPipelineFactory {
     public ChannelPipeline getPipeline() throws Exception {
         ChannelPipeline pipeline = Channels.pipeline();
 
-        pipeline.addLast( "debug-head", new DebugHandler());
+        //pipeline.addLast( "debug-head", new DebugHandler());
 
         pipeline.addLast( "stomp-frame-decoder", new StompFrameDecoder());
         pipeline.addLast( "stomp-frame-encoder", new StompFrameEncoder());
