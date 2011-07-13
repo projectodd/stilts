@@ -173,6 +173,8 @@ public class StompClient {
         if ( this.host != null ) {
             frame.setHeader( Header.HOST, this.host );
         }
+        // TODO: Figure out a better place to put the accepted versions.
+        frame.setHeader( Header.ACCEPT_VERSION, "1.0,1.1" );
         sendFrame( frame );
         waitForConnected();
 
@@ -183,6 +185,7 @@ public class StompClient {
             }
         } else {
             log.info( "Failed to connect" );
+            // TODO: Handle error
         }
     }
 

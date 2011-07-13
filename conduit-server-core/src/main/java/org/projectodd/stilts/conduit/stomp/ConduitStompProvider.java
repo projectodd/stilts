@@ -26,7 +26,6 @@ import org.projectodd.stilts.conduit.spi.XAMessageConduitFactory;
 import org.projectodd.stilts.stomp.Headers;
 import org.projectodd.stilts.stomp.StompException;
 import org.projectodd.stilts.stomp.server.helpers.OpenAuthenticator;
-import org.projectodd.stilts.stomp.spi.AcknowledgeableMessageSink;
 import org.projectodd.stilts.stomp.spi.Authenticator;
 import org.projectodd.stilts.stomp.spi.StompConnection;
 import org.projectodd.stilts.stomp.spi.StompProvider;

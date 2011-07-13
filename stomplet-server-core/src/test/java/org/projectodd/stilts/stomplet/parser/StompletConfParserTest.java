@@ -24,8 +24,6 @@ import java.io.InputStream;
 import java.util.List;
 
 import org.junit.Test;
-import org.projectodd.stilts.stomplet.parser.RouteConfiguration;
-import org.projectodd.stilts.stomplet.parser.StompletConfParser;
 
 public class StompletConfParserTest {
 

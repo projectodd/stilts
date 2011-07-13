@@ -3,7 +3,6 @@ package org.projectodd.stilts.stomp.server;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.projectodd.stilts.stomp.Acknowledger;
 import org.projectodd.stilts.stomp.Headers;
 import org.projectodd.stilts.stomp.NotConnectedException;
 import org.projectodd.stilts.stomp.StompException;

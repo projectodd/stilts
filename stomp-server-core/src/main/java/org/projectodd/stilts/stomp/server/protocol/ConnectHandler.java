@@ -16,18 +16,23 @@
 
 package org.projectodd.stilts.stomp.server.protocol;
 
+import java.util.regex.Pattern;
+
 import org.jboss.logging.Logger;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.projectodd.stilts.stomp.StompException;
 import org.projectodd.stilts.stomp.protocol.StompFrame;
 import org.projectodd.stilts.stomp.protocol.StompFrame.Command;
+import org.projectodd.stilts.stomp.protocol.StompFrame.Header;
 import org.projectodd.stilts.stomp.protocol.StompFrames;
 import org.projectodd.stilts.stomp.spi.StompConnection;
 import org.projectodd.stilts.stomp.spi.StompProvider;
 
 public class ConnectHandler extends AbstractControlFrameHandler {
-	
-	private static Logger log = Logger.getLogger(ConnectHandler.class);
+
+    private static Logger log = Logger.getLogger( ConnectHandler.class );
+    
+    private static final Pattern VERSION_PATTERN = Pattern.compile( "^([^\\s]+,)*[^\\s]*$" );
 
     public ConnectHandler(StompProvider server, ConnectionContext context) {
         super( server, context, Command.CONNECT );
@@ -37,7 +42,9 @@ public class ConnectHandler extends AbstractControlFrameHandler {
     @Override
     public void handleControlFrame(ChannelHandlerContext channelContext, StompFrame frame) {
         try {
-            StompConnection clientAgent = getStompProvider().createConnection( new ChannelMessageSink( channelContext.getChannel(), getContext().getAckManager() ), frame.getHeaders() );
+            validate( frame );
+            StompConnection clientAgent = getStompProvider().createConnection( new ChannelMessageSink( channelContext.getChannel(), getContext().getAckManager() ),
+                    frame.getHeaders() );
             if (clientAgent != null) {
                 getContext().setStompConnection( clientAgent );
                 StompFrame connected = StompFrames.newConnectedFrame( clientAgent.getSessionId() );
@@ -51,4 +58,13 @@ public class ConnectHandler extends AbstractControlFrameHandler {
         }
     }
 
+    public void validate(StompFrame frame) throws StompException {
+        String acceptVersion = frame.getHeader( Header.ACCEPT_VERSION );
+        if (acceptVersion == null) {
+            throw new StompException( "No accept version header specified." );
+        } else if (!VERSION_PATTERN.matcher( acceptVersion ).matches()) {
+            throw new StompException("Accept-version header value must be a comma-separated list.");
+        }
+        
+    }
 }

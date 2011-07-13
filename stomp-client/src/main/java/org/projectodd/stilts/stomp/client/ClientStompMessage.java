@@ -22,7 +22,6 @@ import org.projectodd.stilts.stomp.DefaultStompMessage;
 import org.projectodd.stilts.stomp.Headers;
 import org.projectodd.stilts.stomp.StompException;
 import org.projectodd.stilts.stomp.TransactionalAcknowledger;
-import org.projectodd.stilts.stomp.protocol.StompFrame.Header;
 
 class ClientStompMessage extends DefaultStompMessage {
 

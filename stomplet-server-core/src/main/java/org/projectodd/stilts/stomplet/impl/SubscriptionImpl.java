@@ -19,7 +19,6 @@ package org.projectodd.stilts.stomplet.impl;
 import org.projectodd.stilts.stomp.StompException;
 import org.projectodd.stilts.stomp.Subscription;
 import org.projectodd.stilts.stomplet.Stomplet;
-import org.projectodd.stilts.stomplet.Subscriber;
 
 class SubscriptionImpl implements Subscription {
 

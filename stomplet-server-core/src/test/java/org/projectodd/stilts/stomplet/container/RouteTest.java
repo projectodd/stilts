@@ -21,8 +21,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 import org.junit.Test;
-import org.projectodd.stilts.stomplet.container.Route;
-import org.projectodd.stilts.stomplet.container.RouteMatch;
 
 public class RouteTest {
     
