@@ -29,6 +29,40 @@ import org.projectodd.stilts.stomp.Headers;
  */
 public class StompFrame {
 
+    public enum Version {
+
+        VERSION_1_0("1.0"),
+        VERSION_1_1("1.1");
+
+        private String versionString;
+
+        Version(String versionString) {
+            this.versionString = versionString;
+        }
+
+        public static Version forVersionString(String versionString) {
+            for (Version version : Version.values()) {
+                if (versionString.equals( version.versionString ))
+                    return version;
+            }
+            return null;
+        }
+
+        public static String[] supportedVersions() {
+            Version[] versions = Version.values();
+            String[] supportedVersions = new String[versions.length];
+            for (int i = 0; i < versions.length; i++) {
+                supportedVersions[i] = versions[i].versionString;
+            }
+            return supportedVersions;
+        }
+        
+        public String versionString() {
+            return versionString;
+        }
+
+    }
+
     public static class Header {
 
         public static final String CONTENT_LENGTH = "content-length";
@@ -46,6 +80,7 @@ public class StompFrame {
         public static final String HOST = "host";
         public static final String ACCEPT_VERSION = "accept-version";
         public static final String VERSION = "version";
+        public static final String SERVER = "server";
     }
 
     public static class Command {

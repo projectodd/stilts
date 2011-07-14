@@ -18,20 +18,22 @@ package org.projectodd.stilts.stomp.server.protocol;
 
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang.StringUtils;
 import org.jboss.logging.Logger;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.projectodd.stilts.stomp.StompException;
 import org.projectodd.stilts.stomp.protocol.StompFrame;
+import org.projectodd.stilts.stomp.protocol.StompFrames;
 import org.projectodd.stilts.stomp.protocol.StompFrame.Command;
 import org.projectodd.stilts.stomp.protocol.StompFrame.Header;
-import org.projectodd.stilts.stomp.protocol.StompFrames;
+import org.projectodd.stilts.stomp.protocol.StompFrame.Version;
 import org.projectodd.stilts.stomp.spi.StompConnection;
 import org.projectodd.stilts.stomp.spi.StompProvider;
 
 public class ConnectHandler extends AbstractControlFrameHandler {
 
     private static Logger log = Logger.getLogger( ConnectHandler.class );
-    
+
     private static final Pattern VERSION_PATTERN = Pattern.compile( "^([^\\s]+,)*[^\\s]*$" );
 
     public ConnectHandler(StompProvider server, ConnectionContext context) {
@@ -42,15 +44,13 @@ public class ConnectHandler extends AbstractControlFrameHandler {
     @Override
     public void handleControlFrame(ChannelHandlerContext channelContext, StompFrame frame) {
         try {
-            validate( frame );
+            Version version = checkVersion( frame );
             StompConnection clientAgent = getStompProvider().createConnection( new ChannelMessageSink( channelContext.getChannel(), getContext().getAckManager() ),
                     frame.getHeaders() );
             if (clientAgent != null) {
                 getContext().setStompConnection( clientAgent );
-                StompFrame connected = StompFrames.newConnectedFrame( clientAgent.getSessionId() );
+                StompFrame connected = StompFrames.newConnectedFrame( clientAgent.getSessionId(), version );
                 sendFrame( channelContext, connected );
-            } else {
-                sendErrorAndClose( channelContext, "Unable to connect", frame );
             }
         } catch (StompException e) {
             log.error( "Error connecting", e );
@@ -58,13 +58,24 @@ public class ConnectHandler extends AbstractControlFrameHandler {
         }
     }
 
-    public void validate(StompFrame frame) throws StompException {
+    private Version checkVersion(StompFrame frame) throws StompException {
         String acceptVersion = frame.getHeader( Header.ACCEPT_VERSION );
         if (acceptVersion == null) {
-            throw new StompException( "No accept version header specified." );
+            return Version.VERSION_1_0;
         } else if (!VERSION_PATTERN.matcher( acceptVersion ).matches()) {
-            throw new StompException("Accept-version header value must be a comma-separated list.");
+            throw new StompException( "Accept-version header value must be an incrementing comma-separated list." );
         }
-        
+        String[] versions = acceptVersion.split( "," );
+        Version selectedVersion = null;
+        for (int i = versions.length - 1; i >= 0; i--) {
+            if ((selectedVersion = Version.forVersionString( versions[i] )) != null)
+                break;
+        }
+        if (selectedVersion == null) {
+            // no matching version found - send error frame
+            throw new StompException( "Supported protocol versions are " + StringUtils.join( Version.supportedVersions(), " " ) );
+        }
+        return selectedVersion;
+
     }
 }

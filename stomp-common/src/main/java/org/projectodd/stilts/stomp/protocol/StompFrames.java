@@ -21,6 +21,7 @@ import org.projectodd.stilts.stomp.Headers;
 import org.projectodd.stilts.stomp.StompMessage;
 import org.projectodd.stilts.stomp.protocol.StompFrame.Command;
 import org.projectodd.stilts.stomp.protocol.StompFrame.Header;
+import org.projectodd.stilts.stomp.protocol.StompFrame.Version;
 
 public class StompFrames {
     
@@ -53,9 +54,12 @@ public class StompFrames {
         return frame;
     }
     
-    public static StompFrame newConnectedFrame(String sessionId) {
+    public static StompFrame newConnectedFrame(String sessionId, Version version) {
         StompControlFrame frame = new StompControlFrame( Command.CONNECTED );
         frame.setHeader( Header.SESSION, sessionId );
+        frame.setHeader( Header.SERVER, "Stilts/0.1-SNAPSHOT" );
+        if (version == Version.VERSION_1_1)
+            frame.setHeader( Header.VERSION, version.versionString() );
         return frame;
     }
     

@@ -24,7 +24,7 @@ public class ConnectionContext {
         this.ackManager = new AckManager();
     }
     
-    AckManager getAckManager() {
+    public AckManager getAckManager() {
         return this.ackManager;
     }
     

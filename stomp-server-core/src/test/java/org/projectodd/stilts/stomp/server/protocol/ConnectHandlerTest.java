@@ -1,5 +1,6 @@
 package org.projectodd.stilts.stomp.server.protocol;
 
+import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Mockito.mock;
@@ -64,7 +65,7 @@ public class ConnectHandlerTest extends AbstractStompServerTestCase<MockStompPro
     }
 
     @Test
-    public void testBadVersionString() {
+    public void testSpacesVersionString() {
         StompFrame stompFrame = new StompFrame( Command.CONNECT );
         stompFrame.setHeader( Header.ACCEPT_VERSION, "1.0 1.1" );
         handler.handleControlFrame( channelHandlerContext, stompFrame );
@@ -72,7 +73,19 @@ public class ConnectHandlerTest extends AbstractStompServerTestCase<MockStompPro
         StompContentFrame frame = (StompContentFrame) mockAnswer.getWriteBuffer().get( 0 );
         Command command = frame.getCommand();
         assertEquals( Command.ERROR, command );
-        assertEquals( "Accept-version header value must be a comma-separated list.", new String( frame.getContent().array() ) );
+        assertEquals( "Accept-version header value must be an incrementing comma-separated list.", new String( frame.getContent().array() ) );
+    }
+
+    @Test
+    public void testNoMatchingVersions() {
+        StompFrame stompFrame = new StompFrame( Command.CONNECT );
+        stompFrame.setHeader( Header.ACCEPT_VERSION, "beef" );
+        handler.handleControlFrame( channelHandlerContext, stompFrame );
+        assertEquals( 1, mockAnswer.getWriteBuffer().size() );
+        StompContentFrame frame = (StompContentFrame) mockAnswer.getWriteBuffer().get( 0 );
+        Command command = frame.getCommand();
+        assertEquals( Command.ERROR, command );
+        assertEquals( "Supported protocol versions are 1.0 1.1", new String( frame.getContent().array() ) );
     }
 
     @Test
@@ -80,9 +93,9 @@ public class ConnectHandlerTest extends AbstractStompServerTestCase<MockStompPro
         StompFrame stompFrame = new StompFrame( Command.CONNECT );
         handler.handleControlFrame( channelHandlerContext, stompFrame );
         assertEquals( 1, mockAnswer.getWriteBuffer().size() );
-        StompContentFrame answerFrame = (StompContentFrame) mockAnswer.getWriteBuffer().get( 0 );
-        assertEquals( Command.ERROR, answerFrame.getCommand() );
-        assertEquals( "No accept version header specified.", new String( answerFrame.getContent().array() ) );
+        StompFrame frame = mockAnswer.getWriteBuffer().get( 0 );
+        assertEquals( Command.CONNECTED, frame.getCommand() );
+        assertNull( frame.getHeader( Header.VERSION ) );
     }
 
 }
