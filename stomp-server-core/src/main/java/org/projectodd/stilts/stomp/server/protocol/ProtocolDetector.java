@@ -57,9 +57,6 @@ public class ProtocolDetector extends ReplayingDecoder<VoidEnum> {
         ChannelPipeline pipeline = context.getPipeline();
         pipeline.remove( this  );
         
-        pipeline.addLast( "stomp-frame-encoder", new StompFrameEncoder( ));
-        pipeline.addLast( "stomp-frame-decoder", new StompFrameDecoder( ));
-        
         appendCommonHandlers( pipeline );
         
         return fullBuffer;
@@ -71,11 +68,9 @@ public class ProtocolDetector extends ReplayingDecoder<VoidEnum> {
         ChannelPipeline pipeline = context.getPipeline();
         pipeline.remove( this  );
         
-        pipeline.addLast( "http-decoder", new HttpRequestDecoder() );
         pipeline.addLast( "http-encoder", new HttpResponseEncoder() );
+        pipeline.addLast( "http-decoder", new HttpRequestDecoder() );
         pipeline.addLast( "websocket-handshake", new HandshakeHandler() );
-        pipeline.addLast( "stomp-frame-encoder", new StompFrameEncoder( ));
-        pipeline.addLast( "stomp-frame-decoder", new StompFrameDecoder( ));
         
         appendCommonHandlers( pipeline );
         
@@ -85,6 +80,10 @@ public class ProtocolDetector extends ReplayingDecoder<VoidEnum> {
     protected void appendCommonHandlers(ChannelPipeline pipeline) {
         
         ConnectionContext context = new ConnectionContext( );
+        
+        pipeline.addLast( "stomp-frame-encoder", new StompFrameEncoder( ));
+        pipeline.addLast( "stomp-frame-decoder", new StompFrameDecoder( ));
+        
         pipeline.addLast( "stomp-server-connect", new ConnectHandler( provider, context ) );
         pipeline.addLast( "stomp-server-disconnect", new DisconnectHandler( provider, context ) );
         
