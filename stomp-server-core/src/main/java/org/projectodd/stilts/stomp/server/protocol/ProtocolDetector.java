@@ -29,10 +29,7 @@ public class ProtocolDetector extends ReplayingDecoder<VoidEnum> {
 
     @Override
     protected Object decode(ChannelHandlerContext context, Channel channel, ChannelBuffer buffer, VoidEnum state) throws Exception {
-        System.err.println( "decode()" );
         int nonNewlineBytes = buffer.bytesBefore( (byte) '\n' );
-        
-        System.err.println( "NNL: " + nonNewlineBytes);
 
         buffer.markReaderIndex();
 
