@@ -80,5 +80,26 @@ public class StompFrames {
         receipt.setHeader( Header.RECEIPT_ID, receiptId );
         return receipt;
     }
+    
+    // ----------------------------------------
+    // ----------------------------------------
+    
+    public static StompControlFrame newBeginFrame(String transactionId) {
+        StompControlFrame frame = new StompControlFrame( Command.BEGIN );
+        frame.setHeader( Header.TRANSACTION, transactionId );
+        return frame;
+    }
+    
+    public static StompControlFrame newCommitFrame(String transactionId) {
+        StompControlFrame frame = new StompControlFrame( Command.COMMIT );
+        frame.setHeader( Header.TRANSACTION, transactionId );
+        return frame;
+    }
+    
+    public static StompControlFrame newAbortFrame(String transactionId) {
+        StompControlFrame frame = new StompControlFrame( Command.ABORT );
+        frame.setHeader( Header.TRANSACTION, transactionId );
+        return frame;
+    }
 
 }

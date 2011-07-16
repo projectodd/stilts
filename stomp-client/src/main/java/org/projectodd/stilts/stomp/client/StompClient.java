@@ -282,8 +282,7 @@ public class StompClient {
 
     public ClientTransaction begin() throws StompException {
         String transactionId = getNextTransactionId();
-        StompControlFrame frame = new StompControlFrame( Command.BEGIN );
-        frame.setHeader( Header.TRANSACTION, transactionId );
+        StompControlFrame frame = StompFrames.newBeginFrame( transactionId );
         ReceiptFuture future = sendFrame( frame );
         try {
             future.await();
@@ -303,8 +302,7 @@ public class StompClient {
     
     
     public void abort(String transactionId) throws StompException {
-        StompControlFrame frame = new StompControlFrame( Command.ABORT );
-        frame.setHeader( Header.TRANSACTION, transactionId );
+        StompControlFrame frame = StompFrames.newAbortFrame( transactionId );
         ReceiptFuture future = sendFrame( frame );
         try {
             future.await();
@@ -316,8 +314,7 @@ public class StompClient {
     }
     
     public void commit(String transactionId) throws StompException {
-        StompControlFrame frame = new StompControlFrame( Command.COMMIT );
-        frame.setHeader( Header.TRANSACTION, transactionId );
+        StompControlFrame frame = StompFrames.newCommitFrame( transactionId );
         ReceiptFuture future = sendFrame( frame );
         try {
             future.await();
