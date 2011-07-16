@@ -3,28 +3,15 @@ package org.projectodd.stilts.stomp.server.protocol;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-import org.jboss.netty.handler.codec.embedder.DecoderEmbedder;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.projectodd.stilts.stomp.protocol.StompContentFrame;
 import org.projectodd.stilts.stomp.protocol.StompFrame;
 import org.projectodd.stilts.stomp.protocol.StompFrame.Command;
 import org.projectodd.stilts.stomp.protocol.StompFrame.Header;
 import org.projectodd.stilts.stomp.protocol.StompFrame.Version;
-import org.projectodd.stilts.stomp.server.AbstractStompServerTestCase;
-import org.projectodd.stilts.stomp.server.MockStompProvider;
-import org.projectodd.stilts.stomp.server.StompServer;
 import org.projectodd.stilts.stomp.spi.StompConnection;
 
-public class NackHandlerTest extends AbstractStompServerTestCase<MockStompProvider> {
-
-    @Override
-    protected StompServer<MockStompProvider> createServer() throws Exception {
-        StompServer<MockStompProvider> server = new StompServer<MockStompProvider>();
-        server.setStompProvider( new MockStompProvider() );
-        return server;
-    }
+public class NackHandlerTest extends AbstractProtocolHandlerTest<NackHandler> {
 
     @Test
     public void testErrorVersion10() throws Exception {
@@ -106,20 +93,11 @@ public class NackHandlerTest extends AbstractStompServerTestCase<MockStompProvid
         assertEquals( Command.NACK, frame.getCommand() );
         assertEquals( 1, acknowledger.getNacks().size() );
         assertEquals( "tx-1", acknowledger.getNacks().get( 0 ) );
-    }    
-    
-    @After
-    public void after() throws Exception {
-        handler.finish();
     }
 
-    @Before
-    public void before() throws Exception {
-        ctx = new ConnectionContext();
-        handler = new DecoderEmbedder<StompFrame>( new NackHandler( server.getStompProvider(), ctx ) );
+    @Override
+    public NackHandler getHandler() {
+        return new NackHandler( server.getStompProvider(), ctx );
     }
-
-    private DecoderEmbedder<StompFrame> handler;
-    private ConnectionContext ctx;
 
 }
