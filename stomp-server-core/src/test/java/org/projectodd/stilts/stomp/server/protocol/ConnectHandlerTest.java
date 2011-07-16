@@ -44,6 +44,7 @@ public class ConnectHandlerTest extends AbstractStompServerTestCase<MockStompPro
         handler.offer( stompFrame );
         StompFrame frame = handler.poll();
         assertEquals( Command.CONNECTED, frame.getCommand() );
+        assertEquals( "Stilts/0.1-SNAPSHOT", frame.getHeader( Header.SERVER ) );
         assertEquals( "1.1", frame.getHeader( Header.VERSION ) );
     }
 
