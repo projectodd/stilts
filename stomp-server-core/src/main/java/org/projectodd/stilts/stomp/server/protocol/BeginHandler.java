@@ -34,8 +34,9 @@ public class BeginHandler extends AbstractControlFrameHandler {
     public void handleControlFrame(ChannelHandlerContext channelContext, StompFrame frame) {
         try {
             String transactionId = frame.getHeader( Header.TRANSACTION );
-            if (StringUtils.isEmpty( transactionId ))
+            if (StringUtils.isEmpty( transactionId )) {
                 throw new StompException("No transaction ID supplied.");
+            }
             getStompConnection().begin( transactionId, frame.getHeaders() );
         } catch (StompException e) {
             sendError( channelContext, "Unable to begin transaction: " + e.getMessage(), frame );

@@ -37,19 +37,24 @@ public class NackHandler extends AbstractControlFrameHandler {
         try {
 
             Version version = getContext().getStompConnection().getVersion();
-            if (version.isBefore( Version.VERSION_1_1 ))
+            if (version.isBefore( Version.VERSION_1_1 )) {
                 throw new StompException( "NACK unsupported prior to STOMP 1.1." );
+            }
 
             String messageId = frame.getHeader( Header.MESSAGE_ID );
-            if (StringUtils.isEmpty( messageId ))
+            if (StringUtils.isEmpty( messageId )) {
                 throw new StompException( "Cannot NACK without message ID." );
+            }
+            
             String subscription = frame.getHeader( Header.SUBSCRIPTION );
-            if (StringUtils.isEmpty( subscription ))
+            if (StringUtils.isEmpty( subscription )) {
                 throw new StompException( "Cannot NACK without subscription ID." );
+            }
 
             TransactionalAcknowledger acknowledger = getContext().getAckManager().removeAcknowledger( messageId );
-            if (acknowledger == null)
+            if (acknowledger == null) {
                 log.warn( "Attempting to NACK non-existent message ID: " + messageId );
+            }
             else {
                 String transactionId = frame.getHeader( Header.TRANSACTION );
                 acknowledger.nack( transactionId );
