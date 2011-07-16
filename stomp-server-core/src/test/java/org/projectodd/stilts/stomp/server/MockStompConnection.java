@@ -8,17 +8,23 @@ import org.projectodd.stilts.stomp.NotConnectedException;
 import org.projectodd.stilts.stomp.StompException;
 import org.projectodd.stilts.stomp.StompMessage;
 import org.projectodd.stilts.stomp.Subscription;
+import org.projectodd.stilts.stomp.protocol.StompFrame.Version;
 import org.projectodd.stilts.stomp.spi.StompConnection;
 
 public class MockStompConnection implements StompConnection {
 
-    public MockStompConnection(String sessionId) {
+    public MockStompConnection(String sessionId, Version version) {
         this.sessionId = sessionId;
+        this.version = version;
     }
 
     @Override
     public String getSessionId() {
         return this.sessionId;
+    }
+    
+    public Version getVersion() {
+        return this.version;
     }
 
     @Override
@@ -77,6 +83,7 @@ public class MockStompConnection implements StompConnection {
     }
     
     private String sessionId;
+    private Version version;
     private boolean disconnected;
     private List<Send> sends = new ArrayList<Send>();
     private List<String> begins = new ArrayList<String>();

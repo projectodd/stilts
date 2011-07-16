@@ -18,7 +18,8 @@ package org.projectodd.stilts.stomp.spi;
 
 import org.projectodd.stilts.stomp.Headers;
 import org.projectodd.stilts.stomp.StompException;
+import org.projectodd.stilts.stomp.protocol.StompFrame.Version;
 
 public interface StompProvider {
-    StompConnection createConnection(TransactionalAcknowledgeableMessageSink messageSink, Headers headers) throws StompException;
+    StompConnection createConnection(TransactionalAcknowledgeableMessageSink messageSink, Headers headers, Version version) throws StompException;
 }

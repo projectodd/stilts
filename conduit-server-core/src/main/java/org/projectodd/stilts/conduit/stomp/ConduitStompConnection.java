@@ -33,21 +33,27 @@ import org.projectodd.stilts.stomp.NotConnectedException;
 import org.projectodd.stilts.stomp.StompException;
 import org.projectodd.stilts.stomp.StompMessage;
 import org.projectodd.stilts.stomp.Subscription;
+import org.projectodd.stilts.stomp.protocol.StompFrame.Version;
 import org.projectodd.stilts.stomp.spi.StompConnection;
 import org.projectodd.stilts.stomp.spi.StompTransaction;
 
 public class ConduitStompConnection implements StompConnection {
 
-    public ConduitStompConnection(ConduitStompProvider stompProvider, XAMessageConduit messageConduit, String sessionId)
+    public ConduitStompConnection(ConduitStompProvider stompProvider, XAMessageConduit messageConduit, String sessionId, Version version)
             throws StompException {
         this.stompProvider = stompProvider;
         this.messageConduit = messageConduit;
         this.sessionId = sessionId;
+        this.version = version;
     }
 
     @Override
     public String getSessionId() {
         return this.sessionId;
+    }
+    
+    public Version getVersion() {
+        return this.version;
     }
 
     public ConduitStompProvider getStompProvider() {
@@ -217,4 +223,5 @@ public class ConduitStompConnection implements StompConnection {
     private XAMessageConduit messageConduit;
     private ConduitStompProvider stompProvider;
     private String sessionId;
+    private Version version;
 }

@@ -21,10 +21,12 @@ import org.projectodd.stilts.stomp.NotConnectedException;
 import org.projectodd.stilts.stomp.StompException;
 import org.projectodd.stilts.stomp.StompMessage;
 import org.projectodd.stilts.stomp.Subscription;
+import org.projectodd.stilts.stomp.protocol.StompFrame.Version;
 
 public interface StompConnection {
     
     String getSessionId();
+    Version getVersion();
 
     void send(StompMessage message, String transactionId) throws StompException;
     

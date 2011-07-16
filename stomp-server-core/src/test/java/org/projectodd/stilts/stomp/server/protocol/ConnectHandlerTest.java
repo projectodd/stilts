@@ -11,6 +11,7 @@ import org.projectodd.stilts.stomp.protocol.StompContentFrame;
 import org.projectodd.stilts.stomp.protocol.StompFrame;
 import org.projectodd.stilts.stomp.protocol.StompFrame.Command;
 import org.projectodd.stilts.stomp.protocol.StompFrame.Header;
+import org.projectodd.stilts.stomp.protocol.StompFrame.Version;
 import org.projectodd.stilts.stomp.server.AbstractStompServerTestCase;
 import org.projectodd.stilts.stomp.server.MockStompProvider;
 import org.projectodd.stilts.stomp.server.StompServer;
@@ -44,8 +45,9 @@ public class ConnectHandlerTest extends AbstractStompServerTestCase<MockStompPro
         handler.offer( stompFrame );
         StompFrame frame = handler.poll();
         assertEquals( Command.CONNECTED, frame.getCommand() );
-        assertEquals( "Stilts/0.1-SNAPSHOT", frame.getHeader( Header.SERVER ) );
         assertEquals( "1.1", frame.getHeader( Header.VERSION ) );
+        Version version = server.getStompProvider().getConnections().get( 0 ).getVersion();
+        assertEquals( Version.VERSION_1_1, version );
     }
 
     @Test
@@ -77,6 +79,8 @@ public class ConnectHandlerTest extends AbstractStompServerTestCase<MockStompPro
         StompFrame resultFrame = handler.poll();
         assertEquals( Command.CONNECTED, resultFrame.getCommand() );
         assertNull( resultFrame.getHeader( Header.VERSION ) );
+        Version version = server.getStompProvider().getConnections().get( 0 ).getVersion();
+        assertEquals( Version.VERSION_1_0, version );
     }
 
 }

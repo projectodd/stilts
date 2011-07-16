@@ -16,11 +16,15 @@
 
 package org.projectodd.stilts.stomp.server.protocol;
 
+import org.apache.commons.lang.StringUtils;
+import org.jboss.logging.Logger;
 import org.jboss.netty.channel.ChannelHandlerContext;
+import org.projectodd.stilts.stomp.StompException;
 import org.projectodd.stilts.stomp.TransactionalAcknowledger;
 import org.projectodd.stilts.stomp.protocol.StompFrame;
 import org.projectodd.stilts.stomp.protocol.StompFrame.Command;
 import org.projectodd.stilts.stomp.protocol.StompFrame.Header;
+import org.projectodd.stilts.stomp.protocol.StompFrame.Version;
 import org.projectodd.stilts.stomp.spi.StompProvider;
 
 public class NackHandler extends AbstractControlFrameHandler {
@@ -30,16 +34,33 @@ public class NackHandler extends AbstractControlFrameHandler {
     }
 
     public void handleControlFrame(ChannelHandlerContext channelContext, StompFrame frame) {
-        String messageId = frame.getHeader( Header.MESSAGE_ID );
-        TransactionalAcknowledger acknowledger = getContext().getAckManager().removeAcknowledger( messageId );
-        if (acknowledger != null) {
-            String transactionId = frame.getHeader( Header.TRANSACTION );
-            try {
+        try {
+
+            Version version = getContext().getStompConnection().getVersion();
+            if (version.isBefore( Version.VERSION_1_1 ))
+                throw new StompException( "NACK unsupported prior to STOMP 1.1." );
+
+            String messageId = frame.getHeader( Header.MESSAGE_ID );
+            if (StringUtils.isEmpty( messageId ))
+                throw new StompException( "Cannot NACK without message ID." );
+            String subscription = frame.getHeader( Header.SUBSCRIPTION );
+            if (StringUtils.isEmpty( subscription ))
+                throw new StompException( "Cannot NACK without subscription ID." );
+
+            TransactionalAcknowledger acknowledger = getContext().getAckManager().removeAcknowledger( messageId );
+            if (acknowledger == null)
+                log.warn( "Attempting to NACK non-existent message ID: " + messageId );
+            else {
+                String transactionId = frame.getHeader( Header.TRANSACTION );
                 acknowledger.nack( transactionId );
-            } catch (Exception e) {
-                sendError( channelContext, "Unable to ACK", frame );
             }
+        } catch (StompException e) {
+            sendError( channelContext, e.getMessage(), frame );
+        } catch (Exception e) {
+            sendError( channelContext, "Unable to NACK", frame );
         }
     }
+
+    private static Logger log = Logger.getLogger( NackHandler.class );
 
 }

@@ -31,13 +31,19 @@ public class StompFrame {
 
     public enum Version {
 
-        VERSION_1_0("1.0"),
-        VERSION_1_1("1.1");
+        VERSION_1_0("1.0", 1.0F),
+        VERSION_1_1("1.1", 1.1F);
 
         private String versionString;
+        private float versionValue;
 
-        Version(String versionString) {
+        Version(String versionString, float versionValue) {
             this.versionString = versionString;
+            this.versionValue = versionValue;
+        }
+
+        public boolean isBefore(Version version) {
+            return versionValue < version.versionValue;
         }
 
         public static Version forVersionString(String versionString) {
@@ -56,7 +62,7 @@ public class StompFrame {
             }
             return supportedVersions;
         }
-        
+
         public String versionString() {
             return versionString;
         }

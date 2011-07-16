@@ -25,6 +25,7 @@ import javax.transaction.TransactionManager;
 import org.projectodd.stilts.conduit.spi.XAMessageConduitFactory;
 import org.projectodd.stilts.stomp.Headers;
 import org.projectodd.stilts.stomp.StompException;
+import org.projectodd.stilts.stomp.protocol.StompFrame.Version;
 import org.projectodd.stilts.stomp.server.helpers.OpenAuthenticator;
 import org.projectodd.stilts.stomp.spi.Authenticator;
 import org.projectodd.stilts.stomp.spi.StompConnection;
@@ -55,10 +56,10 @@ public class ConduitStompProvider implements StompProvider {
     }
 
     @Override
-    public StompConnection createConnection(TransactionalAcknowledgeableMessageSink messageSink, Headers headers) throws StompException {
+    public StompConnection createConnection(TransactionalAcknowledgeableMessageSink messageSink, Headers headers, Version version) throws StompException {
         if (this.authenticator.authenticate( headers )) {
             try {
-                ConduitStompConnection connection = createStompConnection( messageSink, getNextSessionId(), headers );
+                ConduitStompConnection connection = createStompConnection( messageSink, getNextSessionId(), headers, version );
                 synchronized (this.connections) {
                     this.connections.add( connection );
                 }
@@ -75,7 +76,7 @@ public class ConduitStompProvider implements StompProvider {
         synchronized (this.connections) {
             disconnecting.addAll( this.connections );
         }
-        for ( ConduitStompConnection each : disconnecting ) {
+        for (ConduitStompConnection each : disconnecting) {
             each.disconnect();
         }
     }
@@ -90,9 +91,10 @@ public class ConduitStompProvider implements StompProvider {
         return "session-" + sessionCounter.getAndIncrement();
     }
 
-    protected ConduitStompConnection createStompConnection(TransactionalAcknowledgeableMessageSink messageSink, String sessionId, Headers headers) throws Exception {
+    protected ConduitStompConnection createStompConnection(TransactionalAcknowledgeableMessageSink messageSink, String sessionId, Headers headers, Version version)
+            throws Exception {
         ConduitAcknowledgeableMessageSink conduitSink = new ConduitAcknowledgeableMessageSink( messageSink );
-        ConduitStompConnection connection = new ConduitStompConnection( this, this.messageConduitFactory.createXAMessageConduit( conduitSink, headers ), sessionId );
+        ConduitStompConnection connection = new ConduitStompConnection( this, this.messageConduitFactory.createXAMessageConduit( conduitSink, headers ), sessionId, version );
         conduitSink.setConnection( connection );
         return connection;
     }

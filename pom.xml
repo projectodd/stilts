@@ -340,6 +340,19 @@
     </testResources>
     <plugins>
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <inherited>true</inherited>
+	    <configuration>
+	      <archive>
+	        <manifest>
+	          <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+	          <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+	        </manifest>
+	      </archive>
+	    </configuration>
+      </plugin>
+      <plugin>
         <artifactId>maven-resources-plugin</artifactId>
         <version>2.3</version>
         <configuration>
@@ -378,7 +391,7 @@
         <configuration>
           <instrumentation>
             <includes>
-              <include>org/torquebox/**/*.class</include>
+              <include>org/projectodd/**/*.class</include>
             </includes>
           </instrumentation>
           <formats>

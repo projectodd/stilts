@@ -9,23 +9,24 @@ import org.projectodd.stilts.stomp.DefaultHeaders;
 import org.projectodd.stilts.stomp.StompException;
 import org.projectodd.stilts.stomp.protocol.StompFrame;
 import org.projectodd.stilts.stomp.protocol.StompFrame.Header;
+import org.projectodd.stilts.stomp.protocol.StompFrame.Version;
 import org.projectodd.stilts.stomp.protocol.StompFrames;
 import org.projectodd.stilts.stomp.server.MockStompProvider;
 
 public class AckHandlerTest {
-    
+
     private MockStompProvider stompProvider;
     private DecoderEmbedder<Object> handler;
     private ConnectionContext connectionContext;
-    
+
     @Before
     public void setUp() throws StompException {
         this.stompProvider = new MockStompProvider();
         this.connectionContext = new ConnectionContext();
-        this.connectionContext.setStompConnection( this.stompProvider.createConnection( null, null ) );
+        this.connectionContext.setStompConnection( this.stompProvider.createConnection( null, null, Version.VERSION_1_1 ) );
         this.handler = new DecoderEmbedder<Object>( new AckHandler( this.stompProvider, this.connectionContext ) );
     }
-    
+
     @Test
     public void testAckWithoutTransaction() {
         MockTransactionalAcknowledger acknowledger = new MockTransactionalAcknowledger();
@@ -33,15 +34,15 @@ public class AckHandlerTest {
         StompFrame frame = StompFrames.newAckFrame( new DefaultHeaders() );
         frame.setHeader( Header.SUBSCRIPTION, "subscription-44" );
         frame.setHeader( Header.MESSAGE_ID, "message-98" );
-        
+
         this.handler.offer( frame );
-        
+
         assertEquals( 1, acknowledger.getAcks().size() );
         assertEquals( 0, acknowledger.getNacks().size() );
-        
-        assertNull( acknowledger.getAcks().get(0) );
+
+        assertNull( acknowledger.getAcks().get( 0 ) );
     }
-    
+
     @Test
     public void testAckWithTransaction() {
         MockTransactionalAcknowledger acknowledger = new MockTransactionalAcknowledger();
@@ -50,13 +51,13 @@ public class AckHandlerTest {
         frame.setHeader( Header.SUBSCRIPTION, "subscription-44" );
         frame.setHeader( Header.MESSAGE_ID, "message-98" );
         frame.setHeader( Header.TRANSACTION, "transaction-bob" );
-        
+
         this.handler.offer( frame );
-        
+
         assertEquals( 1, acknowledger.getAcks().size() );
         assertEquals( 0, acknowledger.getNacks().size() );
-        
-        assertEquals( "transaction-bob", acknowledger.getAcks().get(0) );
+
+        assertEquals( "transaction-bob", acknowledger.getAcks().get( 0 ) );
     }
 
 }
