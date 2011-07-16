@@ -16,6 +16,7 @@
 
 package org.projectodd.stilts.stomp.server.protocol;
 
+import org.apache.commons.lang.StringUtils;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.projectodd.stilts.stomp.StompException;
 import org.projectodd.stilts.stomp.protocol.StompFrame;
@@ -31,8 +32,10 @@ public class BeginHandler extends AbstractControlFrameHandler {
 
     @Override
     public void handleControlFrame(ChannelHandlerContext channelContext, StompFrame frame) {
-        String transactionId = frame.getHeader( Header.TRANSACTION );
         try {
+            String transactionId = frame.getHeader( Header.TRANSACTION );
+            if (StringUtils.isEmpty( transactionId ))
+                throw new StompException("No transaction ID supplied.");
             getStompConnection().begin( transactionId, frame.getHeaders() );
         } catch (StompException e) {
             sendError( channelContext, "Unable to begin transaction: " + e.getMessage(), frame );
