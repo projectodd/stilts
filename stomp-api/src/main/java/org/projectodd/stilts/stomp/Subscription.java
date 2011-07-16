@@ -22,7 +22,7 @@ public interface Subscription {
     public static enum AckMode {
         AUTO("auto"),
         CLIENT("client"),
-        CLIENT_INDIVIDUAL("client-individual"),;
+        CLIENT_INDIVIDUAL("client-individual");
         
         private String str;
 

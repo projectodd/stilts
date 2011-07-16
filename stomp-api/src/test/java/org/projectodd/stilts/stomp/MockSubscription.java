@@ -1,8 +1,5 @@
-package org.projectodd.stilts.conduit;
+package org.projectodd.stilts.stomp;
 
-import org.projectodd.stilts.stomp.Headers;
-import org.projectodd.stilts.stomp.StompException;
-import org.projectodd.stilts.stomp.Subscription;
 
 public class MockSubscription implements Subscription {
 

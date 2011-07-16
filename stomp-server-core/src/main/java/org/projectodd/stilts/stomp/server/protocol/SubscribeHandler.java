@@ -16,6 +16,7 @@
 
 package org.projectodd.stilts.stomp.server.protocol;
 
+import org.apache.commons.lang.StringUtils;
 import org.jboss.logging.Logger;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.projectodd.stilts.stomp.StompException;
@@ -25,8 +26,8 @@ import org.projectodd.stilts.stomp.protocol.StompFrame.Header;
 import org.projectodd.stilts.stomp.spi.StompProvider;
 
 public class SubscribeHandler extends AbstractControlFrameHandler {
-	
-	private static Logger log = Logger.getLogger(SubscribeHandler.class);
+
+    private static Logger log = Logger.getLogger( SubscribeHandler.class );
 
     public SubscribeHandler(StompProvider server, ConnectionContext context) {
         super( server, context, Command.SUBSCRIBE );
@@ -34,10 +35,20 @@ public class SubscribeHandler extends AbstractControlFrameHandler {
 
     @Override
     public void handleControlFrame(ChannelHandlerContext channelContext, StompFrame frame) {
-        log.info( "Subscribing for frame: " + frame );
-        String destination = frame.getHeader( Header.DESTINATION );
-        String id = frame.getHeader( Header.ID );
+        String id = null, destination = null;
         try {
+            log.info( "Subscribing for frame: " + frame );
+
+            destination = frame.getHeader( Header.DESTINATION );
+            if (StringUtils.isEmpty( destination )) {
+                throw new StompException( "Cannot subscribe without destination." );
+            }
+
+            id = frame.getHeader( Header.ID );
+            if (StringUtils.isEmpty( id )) {
+                throw new StompException( "Cannot subscribe without ID." );
+            }
+
             getStompConnection().subscribe( destination, id, frame.getHeaders() );
         } catch (StompException e) {
             log.error( "Error performing subscription to '" + destination + "' for id '" + id + "'", e );

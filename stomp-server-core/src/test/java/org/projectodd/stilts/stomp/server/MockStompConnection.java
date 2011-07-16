@@ -1,9 +1,12 @@
 package org.projectodd.stilts.stomp.server;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.projectodd.stilts.stomp.Headers;
+import org.projectodd.stilts.stomp.MockSubscription;
 import org.projectodd.stilts.stomp.NotConnectedException;
 import org.projectodd.stilts.stomp.StompException;
 import org.projectodd.stilts.stomp.StompMessage;
@@ -22,6 +25,10 @@ public class MockStompConnection implements StompConnection {
     public String getSessionId() {
         return this.sessionId;
     }
+
+    public Map<String, Subscription> getSubscriptions() {
+        return subscriptions;
+    }    
     
     public Version getVersion() {
         return this.version;
@@ -31,26 +38,28 @@ public class MockStompConnection implements StompConnection {
     public void send(StompMessage message, String transactionId) throws StompException {
         this.sends.add( new Send( message, transactionId ) );
     }
-    
+
     public List<Send> getSends() {
         return this.sends;
     }
 
     @Override
     public Subscription subscribe(String destination, String subscriptionId, Headers headers) throws StompException {
+        Subscription sub = new MockSubscription( subscriptionId, destination, headers );
+        this.subscriptions.put( subscriptionId, sub );
         return null;
     }
 
     @Override
     public void unsubscribe(String subscriptionId, Headers headers) throws StompException {
-        
+
     }
 
     @Override
     public void begin(String transactionId, Headers headers) throws StompException {
         this.begins.add( transactionId );
     }
-    
+
     public List<String> getBegins() {
         return this.begins;
     }
@@ -59,7 +68,7 @@ public class MockStompConnection implements StompConnection {
     public void commit(String transactionId) throws StompException {
         this.commits.add( transactionId );
     }
-    
+
     public List<String> getCommits() {
         return this.commits;
     }
@@ -68,7 +77,7 @@ public class MockStompConnection implements StompConnection {
     public void abort(String transactionId) throws StompException {
         this.aborts.add( transactionId );
     }
-    
+
     public List<String> getAborts() {
         return this.aborts;
     }
@@ -77,11 +86,11 @@ public class MockStompConnection implements StompConnection {
     public void disconnect() throws NotConnectedException {
         this.disconnected = true;
     }
-    
+
     public boolean isDisconnected() {
         return this.disconnected;
     }
-    
+
     private String sessionId;
     private Version version;
     private boolean disconnected;
@@ -89,14 +98,15 @@ public class MockStompConnection implements StompConnection {
     private List<String> begins = new ArrayList<String>();
     private List<String> commits = new ArrayList<String>();
     private List<String> aborts = new ArrayList<String>();
-    
+    private Map<String, Subscription> subscriptions = new HashMap<String, Subscription>();
+
     public static final class Send {
 
         public Send(StompMessage message, String transactionId) {
             this.message = message;
             this.transactionId = transactionId;
         }
-        
+
         public StompMessage message;
         public String transactionId;
     }

@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.projectodd.stilts.conduit.spi.MessageConduit;
 import org.projectodd.stilts.stomp.Headers;
+import org.projectodd.stilts.stomp.MockSubscription;
 import org.projectodd.stilts.stomp.StompMessage;
 import org.projectodd.stilts.stomp.Subscription;
 
