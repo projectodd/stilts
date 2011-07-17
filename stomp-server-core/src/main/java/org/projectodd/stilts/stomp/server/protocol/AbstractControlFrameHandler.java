@@ -19,13 +19,15 @@ package org.projectodd.stilts.stomp.server.protocol;
 import org.jboss.logging.Logger;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.MessageEvent;
+import org.projectodd.stilts.stomp.Heartbeat;
 import org.projectodd.stilts.stomp.protocol.StompFrame;
 import org.projectodd.stilts.stomp.protocol.StompFrame.Command;
+import org.projectodd.stilts.stomp.spi.StompConnection;
 import org.projectodd.stilts.stomp.spi.StompProvider;
 
 public abstract class AbstractControlFrameHandler extends AbstractProviderHandler {
-	
-	private static final Logger log = Logger.getLogger(AbstractControlFrameHandler.class);
+
+    private static final Logger log = Logger.getLogger( AbstractControlFrameHandler.class );
 
     public AbstractControlFrameHandler(StompProvider provider, ConnectionContext context, Command command) {
         super( provider, context );
@@ -36,6 +38,13 @@ public abstract class AbstractControlFrameHandler extends AbstractProviderHandle
     public void messageReceived(ChannelHandlerContext channelContext, MessageEvent e) throws Exception {
         if (e.getMessage() instanceof StompFrame) {
             handleStompFrame( channelContext, (StompFrame) e.getMessage() );
+        }
+        StompConnection connection = getStompConnection();
+        if (connection != null) {
+            Heartbeat hb = connection.getHeartbeat();
+            if (hb != null) {
+                hb.touch();
+            }
         }
         super.messageReceived( channelContext, e );
     }
@@ -63,7 +72,6 @@ public abstract class AbstractControlFrameHandler extends AbstractProviderHandle
     public abstract void handleControlFrame(ChannelHandlerContext channelContext, StompFrame frame);
 
     private Command command;
-    private ConnectionContext context;
     private boolean requiresClientIdentification = true;
 
 }

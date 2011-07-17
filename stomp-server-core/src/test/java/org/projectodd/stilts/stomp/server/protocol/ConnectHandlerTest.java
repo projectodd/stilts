@@ -2,11 +2,13 @@ package org.projectodd.stilts.stomp.server.protocol;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import org.jboss.netty.handler.codec.embedder.DecoderEmbedder;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.projectodd.stilts.stomp.Heartbeat;
 import org.projectodd.stilts.stomp.protocol.StompContentFrame;
 import org.projectodd.stilts.stomp.protocol.StompFrame;
 import org.projectodd.stilts.stomp.protocol.StompFrame.Command;
@@ -120,7 +122,19 @@ public class ConnectHandlerTest extends AbstractStompServerTestCase<MockStompPro
     }
 
     @Test
-    public void testBadHeartbeatValidValues() {
+    public void testBadHeartbeatNegativeValues() {
+        StompFrame stompFrame = new StompFrame( Command.CONNECT );
+        stompFrame.setHeader( Header.ACCEPT_VERSION, "1.1" );
+        stompFrame.setHeader( Header.HEARTBEAT, "-30000,20000" );
+        handler.offer( stompFrame );
+        StompContentFrame resultFrame = (StompContentFrame) handler.poll();
+        Command command = resultFrame.getCommand();
+        assertEquals( Command.ERROR, command );
+        assertEquals( "Heartbeat must be specified in msec as two comma-separated values.", new String( resultFrame.getContent().array() ) );
+    }
+
+    @Test
+    public void testValidHeartbeatValues() {
         StompFrame stompFrame = new StompFrame( Command.CONNECT );
         stompFrame.setHeader( Header.ACCEPT_VERSION, "1.1" );
         stompFrame.setHeader( Header.HEARTBEAT, "30000,30000" );
@@ -129,6 +143,10 @@ public class ConnectHandlerTest extends AbstractStompServerTestCase<MockStompPro
         Command command = resultFrame.getCommand();
         assertEquals( Command.CONNECTED, command );
         assertEquals( "60000,60000", resultFrame.getHeader( Header.HEARTBEAT ) );
+        Heartbeat hb = server.getStompProvider().getConnections().get( 0 ).getHeartbeat();
+        assertEquals( 30000, hb.getClientReceive() );
+        assertEquals( 30000, hb.getClientSend() );
+        assertTrue( hb.getLastUpdate() > 0 );
     }
 
 }

@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.projectodd.stilts.stomp.Headers;
+import org.projectodd.stilts.stomp.Heartbeat;
 import org.projectodd.stilts.stomp.MockSubscription;
 import org.projectodd.stilts.stomp.NotConnectedException;
 import org.projectodd.stilts.stomp.StompException;
@@ -16,11 +17,16 @@ import org.projectodd.stilts.stomp.spi.StompConnection;
 
 public class MockStompConnection implements StompConnection {
 
-    public MockStompConnection(String sessionId, Version version) {
+    public MockStompConnection(String sessionId, Version version, Heartbeat hb) {
         this.sessionId = sessionId;
         this.version = version;
+        this.heartbeat = hb;
     }
 
+    public Heartbeat getHeartbeat() {
+        return this.heartbeat;
+    }
+    
     @Override
     public String getSessionId() {
         return this.sessionId;
@@ -91,6 +97,7 @@ public class MockStompConnection implements StompConnection {
         return this.disconnected;
     }
 
+    private Heartbeat heartbeat;
     private String sessionId;
     private Version version;
     private boolean disconnected;

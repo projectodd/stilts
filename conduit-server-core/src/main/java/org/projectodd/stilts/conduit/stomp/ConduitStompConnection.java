@@ -27,6 +27,7 @@ import javax.transaction.TransactionManager;
 import org.projectodd.stilts.conduit.spi.XAMessageConduit;
 import org.projectodd.stilts.stomp.Acknowledger;
 import org.projectodd.stilts.stomp.Headers;
+import org.projectodd.stilts.stomp.Heartbeat;
 import org.projectodd.stilts.stomp.InvalidSubscriptionException;
 import org.projectodd.stilts.stomp.InvalidTransactionException;
 import org.projectodd.stilts.stomp.NotConnectedException;
@@ -39,14 +40,19 @@ import org.projectodd.stilts.stomp.spi.StompTransaction;
 
 public class ConduitStompConnection implements StompConnection {
 
-    public ConduitStompConnection(ConduitStompProvider stompProvider, XAMessageConduit messageConduit, String sessionId, Version version)
+    public ConduitStompConnection(ConduitStompProvider stompProvider, XAMessageConduit messageConduit, String sessionId, Version version, Heartbeat hb)
             throws StompException {
         this.stompProvider = stompProvider;
         this.messageConduit = messageConduit;
         this.sessionId = sessionId;
         this.version = version;
+        this.heartbeat = hb;
     }
 
+    public Heartbeat getHeartbeat() {
+        return this.heartbeat;
+    }
+    
     @Override
     public String getSessionId() {
         return this.sessionId;
@@ -224,4 +230,5 @@ public class ConduitStompConnection implements StompConnection {
     private ConduitStompProvider stompProvider;
     private String sessionId;
     private Version version;
+    private Heartbeat heartbeat;
 }

@@ -49,7 +49,7 @@ public class ConnectHandler extends AbstractControlFrameHandler {
             Version version = checkVersion( frame );
             Heartbeat hb = checkHeartbeat( frame, version );
             StompConnection clientAgent = getStompProvider().createConnection( new ChannelMessageSink( channelContext.getChannel(), getContext().getAckManager() ),
-                    frame.getHeaders(), version );
+                    frame.getHeaders(), version, hb );
             if (clientAgent != null) {
                 getContext().setStompConnection( clientAgent );
                 StompFrame connected = StompFrames.newConnectedFrame( clientAgent.getSessionId(), version );

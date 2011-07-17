@@ -52,6 +52,7 @@
 		<version.hamcrest>1.1</version.hamcrest>
 		<version.org.slf4j>1.5.10</version.org.slf4j>
 		<version.org.slf4j-log4j>1.6.1</version.org.slf4j-log4j>
+		<version.cobertura>2.5</version.cobertura>
 	</properties>
 
 	<repositories>
@@ -364,7 +365,7 @@
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>cobertura-maven-plugin</artifactId>
-				<version>2.5</version>
+				<version>${version.cobertura}</version>
 				<configuration>
 					<aggregate>true</aggregate>
 					<instrumentation>
@@ -394,7 +395,7 @@
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>cobertura-maven-plugin</artifactId>
-				<version>2.5</version>
+				<version>${version.cobertura}</version>
 				<configuration>
 					<formats>
 						<format>html</format>
