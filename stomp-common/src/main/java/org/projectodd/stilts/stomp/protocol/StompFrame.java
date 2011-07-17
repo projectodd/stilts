@@ -88,6 +88,7 @@ public class StompFrame {
         public static final String VERSION = "version";
         public static final String SERVER = "server";
         public static final String MESSAGE = "message";
+        public static final String HEARTBEAT = "heart-beat";
     }
 
     public static class Command {

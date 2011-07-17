@@ -21,12 +21,13 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang.StringUtils;
 import org.jboss.logging.Logger;
 import org.jboss.netty.channel.ChannelHandlerContext;
+import org.projectodd.stilts.stomp.Heartbeat;
 import org.projectodd.stilts.stomp.StompException;
 import org.projectodd.stilts.stomp.protocol.StompFrame;
-import org.projectodd.stilts.stomp.protocol.StompFrames;
 import org.projectodd.stilts.stomp.protocol.StompFrame.Command;
 import org.projectodd.stilts.stomp.protocol.StompFrame.Header;
 import org.projectodd.stilts.stomp.protocol.StompFrame.Version;
+import org.projectodd.stilts.stomp.protocol.StompFrames;
 import org.projectodd.stilts.stomp.spi.StompConnection;
 import org.projectodd.stilts.stomp.spi.StompProvider;
 
@@ -34,6 +35,7 @@ public class ConnectHandler extends AbstractControlFrameHandler {
 
     private static Logger log = Logger.getLogger( ConnectHandler.class );
 
+    private static final Pattern HEART_BEAT_PATTERN = Pattern.compile( "^\\d+,\\d+$" );
     private static final Pattern VERSION_PATTERN = Pattern.compile( "^([^\\s]+,)*[^\\s]*$" );
 
     public ConnectHandler(StompProvider server, ConnectionContext context) {
@@ -45,18 +47,40 @@ public class ConnectHandler extends AbstractControlFrameHandler {
     public void handleControlFrame(ChannelHandlerContext channelContext, StompFrame frame) {
         try {
             Version version = checkVersion( frame );
+            Heartbeat hb = checkHeartbeat( frame, version );
             StompConnection clientAgent = getStompProvider().createConnection( new ChannelMessageSink( channelContext.getChannel(), getContext().getAckManager() ),
                     frame.getHeaders(), version );
             if (clientAgent != null) {
                 getContext().setStompConnection( clientAgent );
-                channelContext.setAttachment( version );
                 StompFrame connected = StompFrames.newConnectedFrame( clientAgent.getSessionId(), version );
+                if (hb != null) {
+                    connected.setHeader( Header.HEARTBEAT, hb.getServerSend() + "," + hb.getServerReceive() );
+                }
                 sendFrame( channelContext, connected );
             }
         } catch (StompException e) {
             log.error( "Error connecting", e );
             sendErrorAndClose( channelContext, e.getMessage(), frame );
         }
+    }
+
+    private Heartbeat checkHeartbeat(StompFrame frame, Version version) throws StompException {
+        Heartbeat hb = null;
+        String heartBeat = frame.getHeader( Header.HEARTBEAT );
+        if (StringUtils.isNotEmpty( heartBeat ) && !version.isBefore( Version.VERSION_1_1 )) {
+            if (!HEART_BEAT_PATTERN.matcher( heartBeat ).matches()) {
+                throw new StompException( "Heartbeat must be specified in msec as two comma-separated values." );
+            }
+            String[] components = heartBeat.split( "," );
+            try {
+                hb = new Heartbeat();
+                hb.setClientReceive( Integer.parseInt( components[0] ) );
+                hb.setClientSend( Integer.parseInt( components[1] ) );
+            } catch (Exception ex) {
+                throw new StompException( "Heartbeat values must be integers." );
+            }
+        }
+        return hb;
     }
 
     private Version checkVersion(StompFrame frame) throws StompException {

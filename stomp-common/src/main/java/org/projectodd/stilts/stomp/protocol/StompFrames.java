@@ -24,51 +24,51 @@ import org.projectodd.stilts.stomp.protocol.StompFrame.Header;
 import org.projectodd.stilts.stomp.protocol.StompFrame.Version;
 
 public class StompFrames {
-    
+
     public static StompFrame newAckFrame(Headers headers) {
         StompControlFrame frame = new StompControlFrame( Command.ACK );
         frame.setHeader( Header.MESSAGE_ID, headers.get( Header.MESSAGE_ID ) );
         frame.setHeader( Header.SUBSCRIPTION, headers.get( Header.SUBSCRIPTION ) );
         String transactionId = headers.get( Header.TRANSACTION );
-        if ( transactionId != null ) {
+        if (transactionId != null) {
             frame.setHeader( Header.TRANSACTION, transactionId );
         }
         return frame;
     }
-    
+
     public static StompFrame newNackFrame(Headers headers) {
         StompControlFrame frame = new StompControlFrame( Command.NACK );
         frame.setHeader( Header.MESSAGE_ID, headers.get( Header.MESSAGE_ID ) );
         frame.setHeader( Header.SUBSCRIPTION, headers.get( Header.SUBSCRIPTION ) );
         String transactionId = headers.get( Header.TRANSACTION );
-        if ( transactionId != null ) {
+        if (transactionId != null) {
             frame.setHeader( Header.TRANSACTION, transactionId );
         }
         return frame;
     }
-    
-    
+
     public static StompFrame newSendFrame(StompMessage message) {
         StompContentFrame frame = new StompContentFrame( Command.SEND, message.getHeaders() );
         frame.setContent( ChannelBuffers.copiedBuffer( message.getContent() ) );
         return frame;
     }
-    
+
     public static StompFrame newConnectedFrame(String sessionId, Version version) {
         StompControlFrame frame = new StompControlFrame( Command.CONNECTED );
         frame.setHeader( Header.SESSION, sessionId );
         String implVersion = StompFrames.class.getPackage().getImplementationVersion();
         frame.setHeader( Header.SERVER, "Stilts/" + implVersion );
-        if (version == Version.VERSION_1_1)
+        if (version == Version.VERSION_1_1) {
             frame.setHeader( Header.VERSION, version.versionString() );
+        }
         return frame;
     }
-    
+
     public static StompFrame newErrorFrame(String message, StompFrame inReplyTo) {
         StompContentFrame frame = new StompContentFrame( Command.ERROR );
-        if ( inReplyTo != null ) {
+        if (inReplyTo != null) {
             String receiptId = inReplyTo.getHeader( Header.RECEIPT );
-            if ( receiptId != null ) {
+            if (receiptId != null) {
                 frame.setHeader( Header.RECEIPT_ID, receiptId );
             }
         }
@@ -81,22 +81,22 @@ public class StompFrames {
         receipt.setHeader( Header.RECEIPT_ID, receiptId );
         return receipt;
     }
-    
+
     // ----------------------------------------
     // ----------------------------------------
-    
+
     public static StompControlFrame newBeginFrame(String transactionId) {
         StompControlFrame frame = new StompControlFrame( Command.BEGIN );
         frame.setHeader( Header.TRANSACTION, transactionId );
         return frame;
     }
-    
+
     public static StompControlFrame newCommitFrame(String transactionId) {
         StompControlFrame frame = new StompControlFrame( Command.COMMIT );
         frame.setHeader( Header.TRANSACTION, transactionId );
         return frame;
     }
-    
+
     public static StompControlFrame newAbortFrame(String transactionId) {
         StompControlFrame frame = new StompControlFrame( Command.ABORT );
         frame.setHeader( Header.TRANSACTION, transactionId );

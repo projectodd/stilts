@@ -83,4 +83,52 @@ public class ConnectHandlerTest extends AbstractStompServerTestCase<MockStompPro
         assertEquals( Version.VERSION_1_0, version );
     }
 
+    @Test
+    public void testHeartbeatIgnoredOnV10() {
+        StompFrame stompFrame = new StompFrame( Command.CONNECT );
+        stompFrame.setHeader( Header.HEARTBEAT, "burns_omninet" );
+        handler.offer( stompFrame );
+        StompFrame resultFrame = handler.poll();
+        assertEquals( Command.CONNECTED, resultFrame.getCommand() );
+        assertNull( resultFrame.getHeader( Header.VERSION ) );
+        Version version = server.getStompProvider().getConnections().get( 0 ).getVersion();
+        assertEquals( Version.VERSION_1_0, version );
+    }
+
+    @Test
+    public void testHeartbeatInvalidValues() {
+        StompFrame stompFrame = new StompFrame( Command.CONNECT );
+        stompFrame.setHeader( Header.ACCEPT_VERSION, "1.1" );
+        stompFrame.setHeader( Header.HEARTBEAT, "ahoy,hoy" );
+        handler.offer( stompFrame );
+        StompContentFrame resultFrame = (StompContentFrame) handler.poll();
+        Command command = resultFrame.getCommand();
+        assertEquals( Command.ERROR, command );
+        assertEquals( "Heartbeat must be specified in msec as two comma-separated values.", new String( resultFrame.getContent().array() ) );
+    }
+
+    @Test
+    public void testBadHeartbeatNonIntValues() {
+        StompFrame stompFrame = new StompFrame( Command.CONNECT );
+        stompFrame.setHeader( Header.ACCEPT_VERSION, "1.1" );
+        stompFrame.setHeader( Header.HEARTBEAT, "91895259821759871827598127598715987182975,42" );
+        handler.offer( stompFrame );
+        StompContentFrame resultFrame = (StompContentFrame) handler.poll();
+        Command command = resultFrame.getCommand();
+        assertEquals( Command.ERROR, command );
+        assertEquals( "Heartbeat values must be integers.", new String( resultFrame.getContent().array() ) );
+    }
+
+    @Test
+    public void testBadHeartbeatValidValues() {
+        StompFrame stompFrame = new StompFrame( Command.CONNECT );
+        stompFrame.setHeader( Header.ACCEPT_VERSION, "1.1" );
+        stompFrame.setHeader( Header.HEARTBEAT, "30000,30000" );
+        handler.offer( stompFrame );
+        StompFrame resultFrame = handler.poll();
+        Command command = resultFrame.getCommand();
+        assertEquals( Command.CONNECTED, command );
+        assertEquals( "60000,60000", resultFrame.getHeader( Header.HEARTBEAT ) );
+    }
+
 }
