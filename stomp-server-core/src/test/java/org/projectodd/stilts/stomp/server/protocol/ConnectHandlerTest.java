@@ -131,6 +131,8 @@ public class ConnectHandlerTest extends AbstractStompServerTestCase<MockStompPro
         Command command = resultFrame.getCommand();
         assertEquals( Command.ERROR, command );
         assertEquals( "Heartbeat must be specified in msec as two comma-separated values.", new String( resultFrame.getContent().array() ) );
+        assertEquals( resultFrame.getHeader( Header.CONTENT_LENGTH ), "66" );
+        assertEquals( resultFrame.getHeader( Header.CONTENT_TYPE ), "text/plain" );
     }
 
     @Test

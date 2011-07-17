@@ -16,6 +16,7 @@
 
 package org.projectodd.stilts.stomp.protocol;
 
+import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
 import org.projectodd.stilts.stomp.Headers;
 import org.projectodd.stilts.stomp.StompMessage;
@@ -72,7 +73,10 @@ public class StompFrames {
                 frame.setHeader( Header.RECEIPT_ID, receiptId );
             }
         }
-        frame.setContent( ChannelBuffers.copiedBuffer( message.getBytes() ) );
+        byte[] bytes = message.getBytes();
+        frame.setContent( ChannelBuffers.copiedBuffer( bytes ) );
+        frame.setHeader( Header.CONTENT_LENGTH, String.valueOf( bytes.length ) );
+        frame.setHeader( Header.CONTENT_TYPE, "text/plain" );
         return frame;
     }
 
