@@ -9,7 +9,7 @@ import org.projectodd.stilts.stomp.protocol.StompFrame;
 import org.projectodd.stilts.stomp.protocol.StompFrame.Header;
 import org.projectodd.stilts.stomp.protocol.StompFrames;
 
-public class AckHandlerTest extends AbstractProtocolHandlerTest<AckHandler> {
+public class AckHandlerTest extends AbstractServerProtocolFrameHandlerTest<AckHandler> {
 
     @Test
     public void testAckWithoutTransaction() {

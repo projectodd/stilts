@@ -52,6 +52,10 @@ public class DefaultStompMessage implements StompMessage {
         return this.headers.get( Header.MESSAGE_ID  );
     }
     
+    public void setError(boolean isError) {
+        this.isError = isError;
+    }
+    
     @Override
     public boolean isError() {
         return this.isError;

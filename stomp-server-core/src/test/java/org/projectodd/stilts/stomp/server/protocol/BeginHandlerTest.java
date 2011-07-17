@@ -7,7 +7,7 @@ import org.projectodd.stilts.stomp.protocol.StompContentFrame;
 import org.projectodd.stilts.stomp.protocol.StompFrame;
 import org.projectodd.stilts.stomp.protocol.StompFrame.Command;
 
-public class BeginHandlerTest extends AbstractProtocolHandlerTest<BeginHandler> {
+public class BeginHandlerTest extends AbstractServerProtocolFrameHandlerTest<BeginHandler> {
     
     @Test
     public void testErrorNoTxId() {

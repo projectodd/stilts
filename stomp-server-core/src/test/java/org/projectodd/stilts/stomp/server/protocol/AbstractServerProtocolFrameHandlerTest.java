@@ -11,7 +11,7 @@ import org.projectodd.stilts.stomp.server.MockStompProvider;
 import org.projectodd.stilts.stomp.server.StompServer;
 import org.projectodd.stilts.stomp.spi.StompConnection;
 
-public abstract class AbstractProtocolHandlerTest<T extends ChannelUpstreamHandler> extends AbstractStompServerTestCase<MockStompProvider> {
+public abstract class AbstractServerProtocolFrameHandlerTest<T extends ChannelUpstreamHandler> extends AbstractStompServerTestCase<MockStompProvider> {
 
     @Override
     protected StompServer<MockStompProvider> createServer() throws Exception {

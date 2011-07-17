@@ -11,7 +11,7 @@ import org.projectodd.stilts.stomp.protocol.StompFrame.Command;
 import org.projectodd.stilts.stomp.protocol.StompFrame.Header;
 import org.projectodd.stilts.stomp.server.MockStompConnection;
 
-public class SubscribeHandlerTest extends AbstractProtocolHandlerTest<SubscribeHandler> {
+public class SubscribeHandlerTest extends AbstractServerProtocolFrameHandlerTest<SubscribeHandler> {
 
     @Override
     public SubscribeHandler getHandler() {

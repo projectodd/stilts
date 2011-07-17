@@ -87,6 +87,7 @@ public class StompFrame {
         public static final String ACCEPT_VERSION = "accept-version";
         public static final String VERSION = "version";
         public static final String SERVER = "server";
+        public static final String MESSAGE = "message";
     }
 
     public static class Command {

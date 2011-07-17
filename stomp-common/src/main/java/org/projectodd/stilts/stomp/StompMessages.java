@@ -16,6 +16,8 @@
 
 package org.projectodd.stilts.stomp;
 
+import org.projectodd.stilts.stomp.protocol.StompFrame.Header;
+
 
 public class StompMessages {
 
@@ -38,6 +40,25 @@ public class StompMessages {
         DefaultStompMessage message = new DefaultStompMessage( headers, content );
         message.setDestination( destination );
         return message;
+    }
+    
+    public static StompMessage createStompErrorMessage(String messageHeader) {
+        DefaultStompMessage message = new DefaultStompMessage();
+        message.getHeaders().put(  Header.MESSAGE, messageHeader );
+        message.setError( true );
+        return message;
+    }
+    
+    public static StompMessage createStompErrorMessage(String messageHeader, String content) {
+        DefaultStompMessage message = new DefaultStompMessage();
+        message.getHeaders().put(  Header.MESSAGE, messageHeader );
+        message.setContentAsString( content );
+        message.setError( true );
+        return message;
+    }
+
+    public static StompMessage createStompErrorMessage(Headers headers, String content) {
+        return new DefaultStompMessage( headers, content, true );
     }
 
 }

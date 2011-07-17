@@ -11,7 +11,7 @@ import org.projectodd.stilts.stomp.protocol.StompFrame.Header;
 import org.projectodd.stilts.stomp.protocol.StompFrame.Version;
 import org.projectodd.stilts.stomp.spi.StompConnection;
 
-public class NackHandlerTest extends AbstractProtocolHandlerTest<NackHandler> {
+public class NackHandlerTest extends AbstractServerProtocolFrameHandlerTest<NackHandler> {
 
     @Test
     public void testErrorVersion10() throws Exception {
