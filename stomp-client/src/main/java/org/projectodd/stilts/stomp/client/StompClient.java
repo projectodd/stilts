@@ -46,6 +46,9 @@ import org.projectodd.stilts.stomp.protocol.StompFrames;
 
 public class StompClient {
 
+    private static final long CONNECT_WAIT_TIME = 5000L;
+    private static final long DISCONNECT_WAIT_TIME = 5000L;
+    
     private static Logger log = Logger.getLogger( StompClient.class );
 
     public static enum State {
@@ -104,19 +107,25 @@ public class StompClient {
         }
     }
 
-    void waitForConnected() throws InterruptedException {
-        synchronized (this.stateLock) {
-            while (this.connectionState == State.CONNECTING) {
-                this.stateLock.wait();
+    void waitForConnected() throws InterruptedException, StompException {
+        if (this.connectionState == State.CONNECTING) {
+            synchronized(this.stateLock) {
+                this.stateLock.wait(CONNECT_WAIT_TIME);
             }
+        }
+        if (this.connectionState != State.CONNECTED) {
+            throw new StompException("Connection timed out.");
         }
     }
 
-    void waitForDisconnected() throws InterruptedException {
-        synchronized (this.stateLock) {
-            while (this.connectionState == State.DISCONNECTING) {
-                this.stateLock.wait();
+    void waitForDisconnected() throws InterruptedException, StompException {
+        if (this.connectionState == State.DISCONNECTING) {
+            synchronized(this.stateLock) {
+                this.stateLock.wait(DISCONNECT_WAIT_TIME);
             }
+        }
+        if (this.connectionState != State.DISCONNECTED) {
+            throw new StompException("Connection timed out.");
         }
     }
 
@@ -156,7 +165,7 @@ public class StompClient {
         }
     }
 
-    public void connect() throws InterruptedException {
+    public void connect() throws InterruptedException, StompException {
 
         if (this.executor == null) {
             this.executor = Executors.newFixedThreadPool( 4 );
@@ -170,7 +179,7 @@ public class StompClient {
         connectInternal( bootstrap );
     }
 
-    void connectInternal(ClientBootstrap bootstrap) throws InterruptedException {
+    void connectInternal(ClientBootstrap bootstrap) throws InterruptedException, StompException {
 
         log.info( "Connecting" );
 
@@ -201,7 +210,7 @@ public class StompClient {
         return "transaction-" + this.transactionCounter.getAndIncrement();
     }
 
-    public void disconnect() throws InterruptedException {
+    public void disconnect() throws InterruptedException, StompException {
         StompControlFrame frame = new StompControlFrame( Command.DISCONNECT );
         setConnectionState( State.DISCONNECTING );
         sendFrame( frame, new Callable<Void>() {
