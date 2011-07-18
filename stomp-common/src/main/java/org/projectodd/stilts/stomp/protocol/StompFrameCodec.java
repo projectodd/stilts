@@ -22,7 +22,7 @@ public class StompFrameCodec {
     // ------------------------------------------------------------------------
 
     public StompFrame decode(ChannelBuffer buffer) throws Exception {
-        log.trace( "decode: " + buffer + " // " + buffer.readableBytes() );
+        log.info( "decode: " + buffer + " // " + buffer.readableBytes() );
         FrameHeader header = decodeHeader( buffer );
 
         if (header == null) {

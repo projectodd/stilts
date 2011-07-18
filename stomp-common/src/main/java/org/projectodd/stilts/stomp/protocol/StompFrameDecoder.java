@@ -18,16 +18,25 @@ package org.projectodd.stilts.stomp.protocol;
 
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.channel.Channel;
+import org.jboss.netty.channel.ChannelEvent;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.handler.codec.replay.ReplayingDecoder;
 import org.jboss.netty.handler.codec.replay.VoidEnum;
 
 public class StompFrameDecoder extends ReplayingDecoder<VoidEnum> {
 
+    
 
 	@Override
+    public void handleUpstream(ChannelHandlerContext ctx, ChannelEvent e) throws Exception {
+	    System.err.println( "HANDLE: " + e );
+        super.handleUpstream( ctx, e );
+    }
+
+    @Override
 	protected Object decode(ChannelHandlerContext ctx, Channel channel,
 			ChannelBuffer buffer, VoidEnum state) throws Exception {
+	    System.err.println( "DECODE: " + buffer );
 	    return StompFrameCodec.INSTANCE.decode( buffer );
 	}
 }

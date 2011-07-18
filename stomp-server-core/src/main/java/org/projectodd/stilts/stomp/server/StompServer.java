@@ -22,6 +22,7 @@ import java.util.concurrent.Executors;
 
 import org.jboss.netty.bootstrap.ServerBootstrap;
 import org.jboss.netty.channel.Channel;
+import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.jboss.netty.channel.socket.ServerSocketChannelFactory;
 import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
 import org.jboss.netty.util.VirtualExecutorService;
@@ -90,6 +91,10 @@ public class StompServer<T extends StompProvider> {
         if (this.channelExecutor == null) {
             this.channelExecutor = Executors.newFixedThreadPool( 2 );
         }
+        
+        if ( this.channelPipelineFactory == null ) {
+            this.channelPipelineFactory = new StompServerPipelineFactory( getStompProvider(), getMessageHandlingExector() );
+        }
 
         ServerBootstrap bootstrap = createServerBootstrap();
         this.channel = bootstrap.bind( new InetSocketAddress( this.port ) );
@@ -99,9 +104,16 @@ public class StompServer<T extends StompProvider> {
         ServerBootstrap bootstrap = new ServerBootstrap( createChannelFactory() );
         bootstrap.setOption( "reuseAddress", true );
 
-        StompServerPipelineFactory pipelineFactory = new StompServerPipelineFactory( getStompProvider(), getMessageHandlingExector() );
-        bootstrap.setPipelineFactory( pipelineFactory );
+        bootstrap.setPipelineFactory( getChannelPipelineFactory() );
         return bootstrap;
+    }
+    
+    protected void setChannelPipelineFactory(ChannelPipelineFactory channelPipelineFactory) {
+        this.channelPipelineFactory = channelPipelineFactory;
+    }
+    
+    protected ChannelPipelineFactory getChannelPipelineFactory() {
+        return this.channelPipelineFactory;
     }
 
     protected ServerSocketChannelFactory createChannelFactory() {
@@ -125,6 +137,7 @@ public class StompServer<T extends StompProvider> {
 
     private T stompProvider;
     private Executor channelExecutor;
+    private ChannelPipelineFactory channelPipelineFactory;
     private Executor messageHandlingExecutor;
     private Channel channel;
 
