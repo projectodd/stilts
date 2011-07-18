@@ -16,7 +16,6 @@
 
 package org.projectodd.stilts.stomp.protocol;
 
-import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
 import org.projectodd.stilts.stomp.Headers;
 import org.projectodd.stilts.stomp.StompMessage;

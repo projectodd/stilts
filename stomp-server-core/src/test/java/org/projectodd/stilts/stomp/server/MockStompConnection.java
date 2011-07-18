@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import org.projectodd.stilts.stomp.Headers;
 import org.projectodd.stilts.stomp.Heartbeat;
@@ -13,6 +16,7 @@ import org.projectodd.stilts.stomp.StompException;
 import org.projectodd.stilts.stomp.StompMessage;
 import org.projectodd.stilts.stomp.Subscription;
 import org.projectodd.stilts.stomp.protocol.StompFrame.Version;
+import org.projectodd.stilts.stomp.server.protocol.HeartbeatRunnable;
 import org.projectodd.stilts.stomp.spi.StompConnection;
 
 public class MockStompConnection implements StompConnection {
@@ -21,12 +25,19 @@ public class MockStompConnection implements StompConnection {
         this.sessionId = sessionId;
         this.version = version;
         this.heartbeat = hb;
+
+        if (this.heartbeat != null) {
+            heartbeatMonitor = Executors.newSingleThreadScheduledExecutor();
+            int duration = hb.calculateDuration( hb.getServerSend(), hb.getClientReceive() );
+            heartbeatMonitor.scheduleAtFixedRate( new HeartbeatRunnable( hb, this ), 0L, duration, TimeUnit.MILLISECONDS );
+        }
+
     }
 
     public Heartbeat getHeartbeat() {
         return this.heartbeat;
     }
-    
+
     @Override
     public String getSessionId() {
         return this.sessionId;
@@ -34,8 +45,8 @@ public class MockStompConnection implements StompConnection {
 
     public Map<String, Subscription> getSubscriptions() {
         return subscriptions;
-    }    
-    
+    }
+
     public Version getVersion() {
         return this.version;
     }
@@ -91,12 +102,16 @@ public class MockStompConnection implements StompConnection {
     @Override
     public void disconnect() throws NotConnectedException {
         this.disconnected = true;
+        if (heartbeatMonitor != null) {
+            heartbeatMonitor.shutdown();
+        }
     }
 
     public boolean isDisconnected() {
         return this.disconnected;
     }
 
+    private ScheduledExecutorService heartbeatMonitor;
     private Heartbeat heartbeat;
     private String sessionId;
     private Version version;

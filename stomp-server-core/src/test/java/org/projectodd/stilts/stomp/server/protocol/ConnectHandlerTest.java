@@ -4,6 +4,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.List;
+
 import org.jboss.netty.handler.codec.embedder.DecoderEmbedder;
 import org.junit.After;
 import org.junit.Before;
@@ -15,6 +17,8 @@ import org.projectodd.stilts.stomp.protocol.StompFrame.Command;
 import org.projectodd.stilts.stomp.protocol.StompFrame.Header;
 import org.projectodd.stilts.stomp.protocol.StompFrame.Version;
 import org.projectodd.stilts.stomp.server.AbstractStompServerTestCase;
+import org.projectodd.stilts.stomp.server.MockStompConnection;
+import org.projectodd.stilts.stomp.server.MockStompConnection.Send;
 import org.projectodd.stilts.stomp.server.MockStompProvider;
 import org.projectodd.stilts.stomp.server.StompServer;
 
@@ -144,11 +148,31 @@ public class ConnectHandlerTest extends AbstractStompServerTestCase<MockStompPro
         StompFrame resultFrame = handler.poll();
         Command command = resultFrame.getCommand();
         assertEquals( Command.CONNECTED, command );
-        assertEquals( "60000,60000", resultFrame.getHeader( Header.HEARTBEAT ) );
+        assertEquals( "1000,1000", resultFrame.getHeader( Header.HEARTBEAT ) );
         Heartbeat hb = server.getStompProvider().getConnections().get( 0 ).getHeartbeat();
         assertEquals( 30000, hb.getClientReceive() );
         assertEquals( 30000, hb.getClientSend() );
         assertTrue( hb.getLastUpdate() > 0 );
+    }
+
+    @Test
+    public void testCheckServerHeartbeat() throws Exception {
+        StompFrame stompFrame = new StompFrame( Command.CONNECT );
+        stompFrame.setHeader( Header.ACCEPT_VERSION, "1.1" );
+        stompFrame.setHeader( Header.HEARTBEAT, "1000,1000" );
+        handler.offer( stompFrame );
+        StompFrame resultFrame = handler.poll();
+        Command command = resultFrame.getCommand();
+        assertEquals( Command.CONNECTED, command );
+        assertEquals( "1000,1000", resultFrame.getHeader( Header.HEARTBEAT ) );
+        MockStompConnection connection = (MockStompConnection) server.getStompProvider().getConnections().get( 0 );
+        Heartbeat hb = connection.getHeartbeat();
+        assertEquals( 1000, hb.getClientReceive() );
+        assertEquals( 1000, hb.getClientSend() );
+        assertTrue( hb.getLastUpdate() > 0 );
+        Thread.sleep( 2000L );
+        List<Send> sends = connection.getSends();
+        assertTrue( "Sent " + sends.size() + " instead of 1.", sends.size() >= 1 );
     }
 
 }

@@ -1,7 +1,12 @@
 package org.projectodd.stilts.stomp;
 
+
 public class Heartbeat {
 
+    public int calculateDuration(int senderDuration, int receiverDuration) {
+        return Math.max( senderDuration, receiverDuration );
+    }
+    
     public int getClientReceive() {
         return clientReceive;
     }
@@ -36,7 +41,7 @@ public class Heartbeat {
 
     public void setServerSend(int serverSend) {
         this.serverSend = serverSend;
-    }
+    } 
 
     public synchronized void touch() {
         lastUpdate = System.currentTimeMillis();
@@ -44,8 +49,8 @@ public class Heartbeat {
 
     private int clientSend;
     private int clientReceive;
-    private int serverSend = 60000;
-    private int serverReceive = 60000;
+    private int serverSend = 1000;
+    private int serverReceive = 1000;
     private long lastUpdate = System.currentTimeMillis();
 
 }
