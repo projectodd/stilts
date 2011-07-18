@@ -21,7 +21,7 @@ public class SubscriptionStompletServerTest extends AbstractStompletServerTestCa
     
     @Test
     public void testSubscription() throws Exception {
-        StompClient client = new StompClient( "localhost" );
+        StompClient client = new StompClient( "stomp://localhost/" );
         client.connect();
         
         ClientSubscription subscription = client.subscribe( "/queues/one" ).start();
@@ -43,7 +43,7 @@ public class SubscriptionStompletServerTest extends AbstractStompletServerTestCa
     
     @Test
     public void testSubscriptionImplicitUnsubscribe() throws Exception {
-        StompClient client = new StompClient( "localhost" );
+        StompClient client = new StompClient( "stomp://localhost/" );
         client.connect();
         
         ClientSubscription subscription = client.subscribe( "/queues/one" ).start();

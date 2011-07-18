@@ -29,7 +29,7 @@ public class BasicStompServerTest extends AbstractStompServerTestCase<MockStompP
 
     @Test
     public void testClientConnection() throws Exception {
-        StompClient client = new StompClient( "localhost" );
+        StompClient client = new StompClient( "stomp://localhost/" );
         client.connect();
         assertTrue( client.isConnected() );
         client.disconnect();
@@ -38,7 +38,7 @@ public class BasicStompServerTest extends AbstractStompServerTestCase<MockStompP
 
     @Test
     public void testClientSendWithoutTransaction() throws Exception {
-        StompClient client = new StompClient( "localhost" );
+        StompClient client = new StompClient( "stomp://localhost/" );
         client.connect();
 
         client.send( StompMessages.createStompMessage( "/queues/one", "content 1" ) );
@@ -61,7 +61,7 @@ public class BasicStompServerTest extends AbstractStompServerTestCase<MockStompP
 
     @Test
     public void testClientSendWithTransactionCommit() throws Exception {
-        StompClient client = new StompClient( "localhost" );
+        StompClient client = new StompClient( "stomp://localhost/" );
         client.connect();
 
         ClientTransaction tx = client.begin();
@@ -94,7 +94,7 @@ public class BasicStompServerTest extends AbstractStompServerTestCase<MockStompP
     
     @Test
     public void testClientSendWithTransactionAbort() throws Exception {
-        StompClient client = new StompClient( "localhost" );
+        StompClient client = new StompClient( "stomp://localhost/" );
         client.connect();
 
         ClientTransaction tx = client.begin();

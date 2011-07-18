@@ -29,7 +29,7 @@ public class AckStompletServerTest extends AbstractStompletServerTestCase {
 
     @Test
     public void testAutoAck() throws Exception {
-        StompClient client = new StompClient( "localhost" );
+        StompClient client = new StompClient( "stomp://localhost/" );
         client.connect();
         MessageAccumulator accumulator = new MessageAccumulator();
         ClientSubscription subscription = client.subscribe( "/queues/one" ).withMessageHandler( accumulator ).start();
@@ -49,7 +49,7 @@ public class AckStompletServerTest extends AbstractStompletServerTestCase {
     
     @Test
     public void testClientIndividualAck() throws Exception {
-        StompClient client = new StompClient( "localhost" );
+        StompClient client = new StompClient( "stomp://localhost/" );
         client.connect();
         
         MessageAccumulator accumulator = new MessageAccumulator();
@@ -97,7 +97,7 @@ public class AckStompletServerTest extends AbstractStompletServerTestCase {
     
     @Test
     public void testClientIndividualAckImplicitNack() throws Exception {
-        StompClient client = new StompClient( "localhost" );
+        StompClient client = new StompClient( "stomp://localhost/" );
         client.connect();
         
         MessageAccumulator accumulator = new MessageAccumulator();

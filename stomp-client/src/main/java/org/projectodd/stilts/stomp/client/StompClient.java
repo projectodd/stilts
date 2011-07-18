@@ -18,6 +18,8 @@ package org.projectodd.stilts.stomp.client;
 
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Callable;
@@ -57,24 +59,27 @@ public class StompClient {
         CONNECTED,
         DISCONNECTING,
     }
-
-    public StompClient(String host) {
-        this( host, Constants.DEFAULT_PORT );
+    
+    public StompClient(String uri) throws URISyntaxException {
+        this( new URI( uri ) );
     }
 
-    public StompClient(String host, int port) {
-        this( host, new InetSocketAddress( host, port ) );
-    }
+    public StompClient(URI uri) throws URISyntaxException {
+        String scheme = uri.getScheme();
 
-    public StompClient(String host, SocketAddress serverAddress) {
-        this( serverAddress );
-        this.host = host;
-    }
+        if (scheme.startsWith( "stomp" )) {
+            int port = Constants.DEFAULT_PORT;
+            this.host = uri.getHost();
+            int uriPort = uri.getPort();
+            if (uriPort > 0) {
+                port = uriPort;
+            }
+            this.serverAddress = new InetSocketAddress( this.host, port );
+        } else {
 
-    public StompClient(SocketAddress serverAddress) {
-        this.serverAddress = serverAddress;
+        }
     }
-
+    
     public void setExecutor(Executor executor) {
         this.executor = executor;
     }
