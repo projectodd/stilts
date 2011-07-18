@@ -52,6 +52,7 @@ import org.projectodd.stilts.stomp.protocol.StompFrames;
 
 public class StompClient {
 
+    // TODO: Make these configurable.
     private static final long CONNECT_WAIT_TIME = 5000L;
     private static final long DISCONNECT_WAIT_TIME = 5000L;
 
