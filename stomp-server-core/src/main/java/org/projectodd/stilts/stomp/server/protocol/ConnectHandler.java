@@ -98,7 +98,7 @@ public class ConnectHandler extends AbstractControlFrameHandler {
         }
         if (selectedVersion == null) {
             // no matching version found - send error frame
-            throw new StompException( "Supported protocol versions are " + StringUtils.join( Version.supportedVersions(), " " ) );
+            throw new StompException( "Supported protocol versions are " + Version.supportedVersions() );
         }
         return selectedVersion;
 

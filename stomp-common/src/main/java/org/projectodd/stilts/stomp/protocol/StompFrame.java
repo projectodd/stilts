@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.projectodd.stilts.stomp.Headers;
 
 /**
@@ -41,6 +42,10 @@ public class StompFrame {
             this.versionString = versionString;
             this.versionValue = versionValue;
         }
+        
+        public boolean isAfter(Version version) {
+            return versionValue > version.versionValue;
+        }
 
         public boolean isBefore(Version version) {
             return versionValue < version.versionValue;
@@ -54,13 +59,13 @@ public class StompFrame {
             return null;
         }
 
-        public static String[] supportedVersions() {
+        public static String supportedVersions() {
             Version[] versions = Version.values();
             String[] supportedVersions = new String[versions.length];
             for (int i = 0; i < versions.length; i++) {
                 supportedVersions[i] = versions[i].versionString;
             }
-            return supportedVersions;
+            return StringUtils.join( supportedVersions, "," );
         }
 
         public String versionString() {

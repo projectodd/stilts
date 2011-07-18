@@ -32,7 +32,7 @@ class ClientStompMessageFactory implements StompMessageFactory {
     @Override
     public StompMessage createMessage(Headers headers, ChannelBuffer content, boolean isError) {
         ClientStompMessage message = new ClientStompMessage( headers, content, isError );
-        message.setAcknowledger( new ClientAcknowledger( this.client, message.getHeaders() ) );
+        message.setAcknowledger( new ClientAcknowledger( this.client, message.getHeaders(), client.getVersion() ) );
         return message;
     }
     

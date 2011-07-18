@@ -9,6 +9,8 @@ import org.projectodd.stilts.stomp.spi.StompConnection;
 
 public class HeartbeatRunnable implements Runnable {
 
+    private static final double TOLERANCE_PERCENTAGE = 0.05;
+    
     private static final Logger log = Logger.getLogger( HeartbeatRunnable.class );
 
     public HeartbeatRunnable(Heartbeat hb, StompConnection connection) {
@@ -20,7 +22,7 @@ public class HeartbeatRunnable implements Runnable {
     @Override
     public void run() {
         long diff = System.currentTimeMillis() - heartbeat.getLastUpdate();
-        double tolerance = duration * 0.05;
+        double tolerance = duration * TOLERANCE_PERCENTAGE;
         log.debug( "HEARTBEAT : " + diff + " / " + duration );
 
         if (diff > duration - tolerance) {
@@ -29,7 +31,7 @@ public class HeartbeatRunnable implements Runnable {
                 connection.send( msg, null );
                 heartbeat.touch();
             } catch (StompException e) {
-
+                log.error( "Could not send heartbeat message:", e );
             }
         }
     }

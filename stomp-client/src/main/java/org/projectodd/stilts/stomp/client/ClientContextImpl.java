@@ -19,6 +19,7 @@ package org.projectodd.stilts.stomp.client;
 import org.projectodd.stilts.stomp.StompMessage;
 import org.projectodd.stilts.stomp.client.StompClient.State;
 import org.projectodd.stilts.stomp.client.protocol.ClientContext;
+import org.projectodd.stilts.stomp.protocol.StompFrame.Version;
 
 class ClientContextImpl implements ClientContext {
     
@@ -30,12 +31,21 @@ class ClientContextImpl implements ClientContext {
     public State getConnectionState() {
         return this.client.getConnectionState();
     }
+    
+    public Version getVersion() {
+        return this.client.getVersion();
+    }
 
     @Override
     public void setConnectionState(State connectionState) {
         this.client.setConnectionState( connectionState );
     }
 
+    @Override
+    public void setVersion(Version version) {
+        this.client.setVersion( version );
+    }    
+    
     @Override
     public void messageReceived(StompMessage message) {
         this.client.messageReceived( message );

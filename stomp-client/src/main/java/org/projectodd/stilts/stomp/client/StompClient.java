@@ -41,12 +41,13 @@ import org.projectodd.stilts.stomp.protocol.StompControlFrame;
 import org.projectodd.stilts.stomp.protocol.StompFrame;
 import org.projectodd.stilts.stomp.protocol.StompFrame.Command;
 import org.projectodd.stilts.stomp.protocol.StompFrame.Header;
+import org.projectodd.stilts.stomp.protocol.StompFrame.Version;
 import org.projectodd.stilts.stomp.protocol.StompFrames;
 
 public class StompClient {
-	
-	private static Logger log = Logger.getLogger(StompClient.class);
-	
+
+    private static Logger log = Logger.getLogger( StompClient.class );
+
     public static enum State {
         DISCONNECTED,
         CONNECTING,
@@ -54,20 +55,19 @@ public class StompClient {
         DISCONNECTING,
     }
 
-    
     public StompClient(String host) {
         this( host, Constants.DEFAULT_PORT );
     }
-    
+
     public StompClient(String host, int port) {
         this( host, new InetSocketAddress( host, port ) );
     }
-    
+
     public StompClient(String host, SocketAddress serverAddress) {
         this( serverAddress );
         this.host = host;
     }
-    
+
     public StompClient(SocketAddress serverAddress) {
         this.serverAddress = serverAddress;
     }
@@ -78,6 +78,14 @@ public class StompClient {
 
     public Executor getExecutor() {
         return this.executor;
+    }
+
+    public Version getVersion() {
+        return this.version;
+    }
+    
+    void setVersion(Version version) {
+        this.version = version;
     }
 
     public boolean isConnected() {
@@ -139,9 +147,9 @@ public class StompClient {
         if (receiptId != null) {
             receiptReceived( receiptId, message );
         }
-        
-        synchronized ( this.stateLock ) {
-            if ( this.connectionState == State.CONNECTING ) {
+
+        synchronized (this.stateLock) {
+            if (this.connectionState == State.CONNECTING) {
                 this.connectionState = State.DISCONNECTED;
                 this.stateLock.notifyAll();
             }
@@ -170,11 +178,10 @@ public class StompClient {
 
         this.channel = bootstrap.connect( serverAddress ).await().getChannel();
         StompControlFrame frame = new StompControlFrame( Command.CONNECT );
-        if ( this.host != null ) {
+        if (this.host != null) {
             frame.setHeader( Header.HOST, this.host );
         }
-        // TODO: Figure out a better place to put the accepted versions.
-        frame.setHeader( Header.ACCEPT_VERSION, "1.0,1.1" );
+        frame.setHeader( Header.ACCEPT_VERSION, Version.supportedVersions() );
         sendFrame( frame );
         waitForConnected();
 
@@ -184,8 +191,9 @@ public class StompClient {
                 this.clientListener.connected( this );
             }
         } else {
-            log.info( "Failed to connect" );
             // TODO: Handle error
+            log.info( "Failed to connect" );
+            this.disconnect();
         }
     }
 
@@ -226,7 +234,7 @@ public class StompClient {
             return null;
         } else {
             Executor executor = builder.getExecutor();
-            if ( executor == null ) {
+            if (executor == null) {
                 executor = getExecutor();
             }
             ClientSubscription subscription = new ClientSubscription( this, subscriptionId, builder.getMessageHandler(), executor );
@@ -299,8 +307,7 @@ public class StompClient {
             throw new StompException( e );
         }
     }
-    
-    
+
     public void abort(String transactionId) throws StompException {
         StompControlFrame frame = StompFrames.newAbortFrame( transactionId );
         ReceiptFuture future = sendFrame( frame );
@@ -312,7 +319,7 @@ public class StompClient {
             throw new StompException( e );
         }
     }
-    
+
     public void commit(String transactionId) throws StompException {
         StompControlFrame frame = StompFrames.newCommitFrame( transactionId );
         ReceiptFuture future = sendFrame( frame );
@@ -362,5 +369,6 @@ public class StompClient {
     private Channel channel;
     private SocketAddress serverAddress;
     private String host;
+    private Version version = Version.VERSION_1_0;
 
 }

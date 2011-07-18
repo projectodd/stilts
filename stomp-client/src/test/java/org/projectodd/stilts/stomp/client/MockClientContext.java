@@ -6,12 +6,18 @@ import java.util.List;
 import org.projectodd.stilts.stomp.StompMessage;
 import org.projectodd.stilts.stomp.client.StompClient.State;
 import org.projectodd.stilts.stomp.client.protocol.ClientContext;
+import org.projectodd.stilts.stomp.protocol.StompFrame.Version;
 
 public class MockClientContext implements ClientContext {
 
     @Override
     public State getConnectionState() {
         return this.state;
+    }
+    
+    @Override
+    public Version getVersion() {
+        return this.version;
     }
 
     @Override
@@ -47,10 +53,17 @@ public class MockClientContext implements ClientContext {
         return this.errors;
     }
 
+    @Override
+    public void setVersion(Version version) {
+        this.version = version;
+    }    
+    
     private State state;
+    private Version version = Version.VERSION_1_0;
     
     private List<String> receipts = new ArrayList<String>();
     private List<StompMessage> messages = new ArrayList<StompMessage>();
     private List<StompMessage> errors = new ArrayList<StompMessage>();
+
 
 }

@@ -21,19 +21,25 @@ import org.jboss.netty.channel.ChannelHandlerContext;
 import org.projectodd.stilts.stomp.client.StompClient.State;
 import org.projectodd.stilts.stomp.protocol.StompFrame;
 import org.projectodd.stilts.stomp.protocol.StompFrame.Command;
+import org.projectodd.stilts.stomp.protocol.StompFrame.Header;
+import org.projectodd.stilts.stomp.protocol.StompFrame.Version;
 
 public class ConnectedHandler extends AbstractClientControlFrameHandler {
 
-	private static Logger log = Logger.getLogger(ConnectedHandler.class);	
-	
+    private static Logger log = Logger.getLogger( ConnectedHandler.class );
+
     public ConnectedHandler(ClientContext clientContext) {
         super( clientContext, Command.CONNECTED );
     }
 
     @Override
     public void handleControlFrame(ChannelHandlerContext channelContext, StompFrame frame) {
-        log.info(  "Received: " + frame  );
+        log.info( "Received: " + frame );
         getClientContext().setConnectionState( State.CONNECTED );
+        String version = frame.getHeader( Header.VERSION );
+        if (version != null) {
+            getClientContext().setVersion( Version.forVersionString( version ) );
+        }
     }
 
 }

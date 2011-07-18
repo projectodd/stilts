@@ -18,11 +18,15 @@ package org.projectodd.stilts.stomp.client.protocol;
 
 import org.projectodd.stilts.stomp.StompMessage;
 import org.projectodd.stilts.stomp.client.StompClient.State;
+import org.projectodd.stilts.stomp.protocol.StompFrame.Version;
 
 public interface ClientContext {
     
     State getConnectionState();
+    Version getVersion();
+    
     void setConnectionState(State state);
+    void setVersion(Version version);
     
     void receiptReceived(String receiptId);
     void messageReceived(StompMessage message);

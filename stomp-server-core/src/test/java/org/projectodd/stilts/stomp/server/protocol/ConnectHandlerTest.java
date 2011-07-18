@@ -75,7 +75,7 @@ public class ConnectHandlerTest extends AbstractStompServerTestCase<MockStompPro
         StompContentFrame resultFrame = (StompContentFrame) handler.poll();
         Command command = resultFrame.getCommand();
         assertEquals( Command.ERROR, command );
-        assertEquals( "Supported protocol versions are 1.0 1.1", new String( resultFrame.getContent().array() ) );
+        assertEquals( "Supported protocol versions are 1.0,1.1", new String( resultFrame.getContent().array() ) );
     }
 
     @Test
@@ -169,10 +169,12 @@ public class ConnectHandlerTest extends AbstractStompServerTestCase<MockStompPro
         Heartbeat hb = connection.getHeartbeat();
         assertEquals( 1000, hb.getClientReceive() );
         assertEquals( 1000, hb.getClientSend() );
-        assertTrue( hb.getLastUpdate() > 0 );
+        long lastUpdate = hb.getLastUpdate();
+        assertTrue( lastUpdate > 0 );
         Thread.sleep( 2000L );
         List<Send> sends = connection.getSends();
         assertTrue( "Sent " + sends.size() + " instead of 1.", sends.size() >= 1 );
+        assertTrue( hb.getLastUpdate() > lastUpdate );
     }
 
 }

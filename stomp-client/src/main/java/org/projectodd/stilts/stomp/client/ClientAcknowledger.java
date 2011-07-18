@@ -19,15 +19,18 @@ package org.projectodd.stilts.stomp.client;
 import org.projectodd.stilts.stomp.Acknowledger;
 import org.projectodd.stilts.stomp.DefaultHeaders;
 import org.projectodd.stilts.stomp.Headers;
+import org.projectodd.stilts.stomp.StompException;
 import org.projectodd.stilts.stomp.TransactionalAcknowledger;
 import org.projectodd.stilts.stomp.protocol.StompFrame.Header;
+import org.projectodd.stilts.stomp.protocol.StompFrame.Version;
 import org.projectodd.stilts.stomp.protocol.StompFrames;
 
 class ClientAcknowledger implements Acknowledger, TransactionalAcknowledger {
 
-    ClientAcknowledger(StompClient client, Headers headers) {
+    ClientAcknowledger(StompClient client, Headers headers, Version version) {
         this.client = client;
         this.headers = headers;
+        this.version = version;
     }
 
     @Override
@@ -56,6 +59,10 @@ class ClientAcknowledger implements Acknowledger, TransactionalAcknowledger {
 
     @Override
     public void nack(String transactionId) throws Exception {
+        if (version.isBefore( Version.VERSION_1_1 )) {
+            throw new StompException("Cannot nack prior to STOMP version 1.1.");
+        }
+        
         DefaultHeaders nackHeaders = new DefaultHeaders();
         nackHeaders.put( Header.MESSAGE_ID, this.headers.get( Header.MESSAGE_ID ) );
         nackHeaders.put( Header.SUBSCRIPTION, this.headers.get( Header.SUBSCRIPTION ) );
@@ -70,5 +77,6 @@ class ClientAcknowledger implements Acknowledger, TransactionalAcknowledger {
 
     private StompClient client;
     private Headers headers;
+    private Version version;
 
 }

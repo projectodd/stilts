@@ -58,7 +58,7 @@ public class StompFrames {
         frame.setHeader( Header.SESSION, sessionId );
         String implVersion = StompFrames.class.getPackage().getImplementationVersion();
         frame.setHeader( Header.SERVER, "Stilts/" + implVersion );
-        if (version == Version.VERSION_1_1) {
+        if (version.isAfter( Version.VERSION_1_0 )) {
             frame.setHeader( Header.VERSION, version.versionString() );
         }
         return frame;
