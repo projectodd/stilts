@@ -35,6 +35,10 @@ import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.jboss.netty.channel.socket.ClientSocketChannelFactory;
 import org.jboss.netty.channel.socket.nio.NioClientSocketChannelFactory;
+import org.jboss.netty.handler.codec.http.DefaultHttpRequest;
+import org.jboss.netty.handler.codec.http.HttpMethod;
+import org.jboss.netty.handler.codec.http.HttpRequest;
+import org.jboss.netty.handler.codec.http.HttpVersion;
 import org.jboss.netty.util.VirtualExecutorService;
 import org.projectodd.stilts.stomp.Constants;
 import org.projectodd.stilts.stomp.StompException;
@@ -50,7 +54,7 @@ public class StompClient {
 
     private static final long CONNECT_WAIT_TIME = 5000L;
     private static final long DISCONNECT_WAIT_TIME = 5000L;
-    
+
     private static Logger log = Logger.getLogger( StompClient.class );
 
     public static enum State {
@@ -59,7 +63,7 @@ public class StompClient {
         CONNECTED,
         DISCONNECTING,
     }
-    
+
     public StompClient(String uri) throws URISyntaxException {
         this( new URI( uri ) );
     }
@@ -69,17 +73,22 @@ public class StompClient {
 
         if (scheme.startsWith( "stomp" )) {
             int port = Constants.DEFAULT_PORT;
-            this.host = uri.getHost();
+            String host = uri.getHost();
             int uriPort = uri.getPort();
             if (uriPort > 0) {
                 port = uriPort;
             }
-            this.serverAddress = new InetSocketAddress( this.host, port );
+            
+            this.serverAddress = new InetSocketAddress( host, port );
+
+            if (scheme.endsWith( "+ws" )) {
+                this.useWebSockets = true;
+            }
         } else {
 
         }
     }
-    
+
     public void setExecutor(Executor executor) {
         this.executor = executor;
     }
@@ -91,7 +100,7 @@ public class StompClient {
     public Version getVersion() {
         return this.version;
     }
-    
+
     void setVersion(Version version) {
         this.version = version;
     }
@@ -114,23 +123,23 @@ public class StompClient {
 
     void waitForConnected() throws InterruptedException, StompException {
         if (this.connectionState == State.CONNECTING) {
-            synchronized(this.stateLock) {
-                this.stateLock.wait(CONNECT_WAIT_TIME);
+            synchronized (this.stateLock) {
+                this.stateLock.wait( CONNECT_WAIT_TIME );
             }
         }
         if (this.connectionState != State.CONNECTED) {
-            throw new StompException("Connection timed out.");
+            throw new StompException( "Connection timed out." );
         }
     }
 
     void waitForDisconnected() throws InterruptedException, StompException {
         if (this.connectionState == State.DISCONNECTING) {
-            synchronized(this.stateLock) {
-                this.stateLock.wait(DISCONNECT_WAIT_TIME);
+            synchronized (this.stateLock) {
+                this.stateLock.wait( DISCONNECT_WAIT_TIME );
             }
         }
         if (this.connectionState != State.DISCONNECTED) {
-            throw new StompException("Connection timed out.");
+            throw new StompException( "Connection timed out." );
         }
     }
 
@@ -191,10 +200,13 @@ public class StompClient {
         setConnectionState( State.CONNECTING );
 
         this.channel = bootstrap.connect( serverAddress ).await().getChannel();
-        StompControlFrame frame = new StompControlFrame( Command.CONNECT );
-        if (this.host != null) {
-            frame.setHeader( Header.HOST, this.host );
+
+        if (this.useWebSockets) {
+            connectWebSocket();
         }
+
+        StompControlFrame frame = new StompControlFrame( Command.CONNECT );
+        frame.setHeader( Header.HOST, this.serverAddress.getHostName() );
         frame.setHeader( Header.ACCEPT_VERSION, Version.supportedVersions() );
         sendFrame( frame );
         waitForConnected();
@@ -209,6 +221,12 @@ public class StompClient {
             log.info( "Failed to connect" );
             this.disconnect();
         }
+    }
+
+    void connectWebSocket() {
+        HttpRequest request = new DefaultHttpRequest( HttpVersion.HTTP_1_1, HttpMethod.POST, "http://" + this.serverAddress.getHostName() + ":"
+                + this.serverAddress.getPort() );
+        this.channel.write( request );
     }
 
     String getNextTransactionId() {
@@ -347,7 +365,7 @@ public class StompClient {
     }
 
     protected ChannelPipelineFactory createPipelineFactory() {
-        return new StompClientPipelineFactory( this, new ClientContextImpl( this ) );
+        return new StompClientPipelineFactory( this, new ClientContextImpl( this ), this.useWebSockets );
     }
 
     protected ClientSocketChannelFactory createChannelFactory() {
@@ -381,8 +399,8 @@ public class StompClient {
     private ClientListener clientListener;
     private Executor executor;
     private Channel channel;
-    private SocketAddress serverAddress;
-    private String host;
+    private InetSocketAddress serverAddress;
     private Version version = Version.VERSION_1_0;
+    private boolean useWebSockets = false;
 
 }
