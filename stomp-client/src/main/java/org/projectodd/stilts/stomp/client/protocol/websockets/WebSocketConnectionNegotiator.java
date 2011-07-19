@@ -1,11 +1,11 @@
 package org.projectodd.stilts.stomp.client.protocol.websockets;
 
 import java.security.NoSuchAlgorithmException;
-import java.util.Random;
 
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
 import org.jboss.netty.channel.Channel;
+import org.jboss.netty.channel.ChannelHandler;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.ChannelStateEvent;
@@ -24,7 +24,9 @@ import org.jboss.netty.handler.codec.http.HttpVersion;
 
 public class WebSocketConnectionNegotiator extends SimpleChannelUpstreamHandler {
 
-    public WebSocketConnectionNegotiator() throws NoSuchAlgorithmException {
+    public WebSocketConnectionNegotiator(String host, int port) throws NoSuchAlgorithmException {
+        this.host = host;
+        this.port = port;
         this.challenge = new WebSocketChallenge();
     }
 
@@ -42,7 +44,12 @@ public class WebSocketConnectionNegotiator extends SimpleChannelUpstreamHandler 
         request.addHeader( HttpHeaders.Names.SEC_WEBSOCKET_KEY1, this.challenge.getKey1String() );
         request.addHeader( HttpHeaders.Names.SEC_WEBSOCKET_KEY2, this.challenge.getKey2String() );
 
-        request.setContent( ChannelBuffers.copiedBuffer( this.challenge.getKey3() ) );
+        ChannelBuffer buffer = ChannelBuffers.dynamicBuffer( 6 );
+        buffer.writeBytes( this.challenge.getKey3() );
+        buffer.writeByte( '\r' );
+        buffer.writeByte( '\n' );
+
+        request.setContent( buffer );
 
         Channel channel = context.getChannel();
 
@@ -62,8 +69,14 @@ public class WebSocketConnectionNegotiator extends SimpleChannelUpstreamHandler 
 
             if (this.challenge.verify( challengeResponse )) {
                 ChannelPipeline pipeline = context.getPipeline();
-                pipeline.remove( HttpRequestEncoder.class );
-                pipeline.remove( HttpResponseDecoder.class );
+                ChannelHandler handler = pipeline.get( HttpRequestEncoder.class );
+                if (handler != null) {
+                    pipeline.remove( handler );
+                }
+                handler = pipeline.get( HttpResponseDecoder.class );
+                if (handler != null) {
+                    pipeline.remove( handler );
+                }
                 pipeline.remove( this );
             }
         } else {

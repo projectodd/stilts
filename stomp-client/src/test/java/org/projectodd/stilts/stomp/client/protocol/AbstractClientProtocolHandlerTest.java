@@ -8,7 +8,7 @@ import org.projectodd.stilts.stomp.protocol.StompFrame;
 
 public abstract class AbstractClientProtocolHandlerTest<T extends ChannelUpstreamHandler> {
 
-    public abstract T getHandler();
+    public abstract T getHandler() throws Exception;
 
     @Before
     public void before() throws Exception {

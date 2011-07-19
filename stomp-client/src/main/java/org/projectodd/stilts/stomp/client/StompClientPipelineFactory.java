@@ -54,7 +54,7 @@ public class StompClientPipelineFactory implements ChannelPipelineFactory {
             pipeline.addLast( "http-request-encoder", new HttpRequestEncoder() );
             pipeline.addLast( "websocket-frame-decoder", new WebSocketFrameDecoder() );
             pipeline.addLast( "websocket-frame-encoder", new WebSocketFrameEncoder() );
-            pipeline.addLast( "websocket-connection-negotiator", new WebSocketConnectionNegotiator() );
+            pipeline.addLast( "websocket-connection-negotiator", new WebSocketConnectionNegotiator( null, 8675 ) );
         }
 
         pipeline.addLast( "stomp-frame-decoder", new StompFrameDecoder() );

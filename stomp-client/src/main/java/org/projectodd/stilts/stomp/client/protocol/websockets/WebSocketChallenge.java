@@ -75,6 +75,7 @@ public class WebSocketChallenge {
 
         byte[] solution = new byte[16];
         buffer.readBytes( solution );
+        
 
         MessageDigest digest = MessageDigest.getInstance( "MD5" );
         byte[] solutionMD5 = digest.digest( solution );
@@ -133,7 +134,7 @@ public class WebSocketChallenge {
         String digits = encoded.replaceAll( "[^0-9]", "" );
 
         long product = Long.parseLong( digits );
-        
+
         long key = product / numSpaces;
 
         return key;

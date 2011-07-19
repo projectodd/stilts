@@ -1,4 +1,4 @@
-package org.projectodd.stilts.stomp.server;
+package org.projectodd.stilts.stomp.protocol;
 
 import org.jboss.netty.channel.ChannelEvent;
 import org.jboss.netty.channel.ChannelHandlerContext;

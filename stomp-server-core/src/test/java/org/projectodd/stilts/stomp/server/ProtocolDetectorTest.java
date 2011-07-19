@@ -12,6 +12,7 @@ import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.handler.codec.embedder.DecoderEmbedder;
 import org.junit.Before;
 import org.junit.Test;
+import org.projectodd.stilts.stomp.protocol.PipelineExposer;
 import org.projectodd.stilts.stomp.server.protocol.ProtocolDetector;
 
 public class ProtocolDetectorTest {
