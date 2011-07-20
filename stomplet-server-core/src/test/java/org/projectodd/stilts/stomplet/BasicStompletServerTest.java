@@ -21,6 +21,10 @@ public class BasicStompletServerTest extends AbstractStompletServerTestCase {
         this.queueOneStomplet = new MockAcknowledgeableStomplet();
         this.defaultContainer.addStomplet( "/queues/one", this.queueOneStomplet );
     }
+    
+    public String getConnectionUrl() {
+        return "stomp://localhost/";
+    }
 
 
     @Test
@@ -31,7 +35,7 @@ public class BasicStompletServerTest extends AbstractStompletServerTestCase {
     
     @Test
     public void testClientConnection() throws Exception {
-        StompClient client = new StompClient( "stomp://localhost/" );
+        StompClient client = new StompClient( getConnectionUrl() );
         client.connect();
         assertTrue( client.isConnected() );
         client.disconnect();
@@ -40,7 +44,7 @@ public class BasicStompletServerTest extends AbstractStompletServerTestCase {
     
     @Test
     public void testClientSendWithoutTransaction() throws Exception {
-        StompClient client = new StompClient( "stomp://localhost/" );
+        StompClient client = new StompClient( getConnectionUrl() );
         client.connect();
         
         client.send( StompMessages.createStompMessage( "/queues/one", "content 1" ) );
@@ -58,7 +62,7 @@ public class BasicStompletServerTest extends AbstractStompletServerTestCase {
     
     @Test
     public void testClientSendWithTransactionCommit() throws Exception {
-        StompClient client = new StompClient( "stomp://localhost/" );
+        StompClient client = new StompClient( getConnectionUrl() );
         client.connect();
         
         ClientTransaction tx = client.begin();
@@ -81,7 +85,7 @@ public class BasicStompletServerTest extends AbstractStompletServerTestCase {
     
     @Test
     public void testClientSendWithTransactionAbort() throws Exception {
-        StompClient client = new StompClient( "stomp://localhost/" );
+        StompClient client = new StompClient( getConnectionUrl() );
         client.connect();
         
         ClientTransaction tx = client.begin();
