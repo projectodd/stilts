@@ -2,9 +2,11 @@ package org.projectodd.stilts.stomp.client.protocol.websockets;
 
 import java.security.NoSuchAlgorithmException;
 
+import org.jboss.logging.Logger;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
 import org.jboss.netty.channel.Channel;
+import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.ChannelState;
@@ -35,6 +37,7 @@ import org.projectodd.stilts.stomp.protocol.websocket.WebSocketChallenge;
  * @author Bob McWhirter
  */
 public class WebSocketConnectionNegotiator extends SimpleChannelUpstreamHandler {
+    
 
     public WebSocketConnectionNegotiator(String host, int port) throws NoSuchAlgorithmException {
         this.host = host;
@@ -44,6 +47,7 @@ public class WebSocketConnectionNegotiator extends SimpleChannelUpstreamHandler 
 
     @Override
     public void channelConnected(ChannelHandlerContext context, ChannelStateEvent e) throws Exception {
+        log.info( "Starting websockets connection " + e.getClass() );
         String url = "stomp+ws://" + this.host + ":" + this.port + "/";
 
         HttpRequest request = new DefaultHttpRequest( HttpVersion.HTTP_1_1, HttpMethod.GET, url );
@@ -65,7 +69,10 @@ public class WebSocketConnectionNegotiator extends SimpleChannelUpstreamHandler 
 
         Channel channel = context.getChannel();
 
-        context.sendDownstream( new DownstreamMessageEvent( channel, Channels.future( channel ), request, channel.getRemoteAddress() ) );
+        this.connectedEvent = e;
+        //context.sendDownstream( new DownstreamMessageEvent( channel, Channels.future( channel ), request, channel.getRemoteAddress() ) );
+        Channels.write( channel, request );
+        log.info( "Wrote start handshake" );
     }
 
     @Override
@@ -93,6 +100,7 @@ public class WebSocketConnectionNegotiator extends SimpleChannelUpstreamHandler 
                     pipeline.addAfter( "websockets-decoder", "websockets-encoder", new WebSocketFrameEncoder() );
                 }
                 Channel channel = context.getChannel();
+                //context.sendUpstream( this.connectedEvent );
                 context.sendUpstream( new UpstreamChannelStateEvent( channel, ChannelState.CONNECTED, channel.getRemoteAddress() ) );
             }
         } else {
@@ -100,8 +108,10 @@ public class WebSocketConnectionNegotiator extends SimpleChannelUpstreamHandler 
         }
     }
 
+    private static final Logger log = Logger.getLogger( "stomp.proto.client.websocket" );
     private String host;
     private int port;
     private WebSocketChallenge challenge;
+    private ChannelStateEvent connectedEvent;
 
 }

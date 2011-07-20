@@ -31,6 +31,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.jboss.logging.Logger;
 import org.jboss.netty.bootstrap.ClientBootstrap;
 import org.jboss.netty.channel.Channel;
+import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.jboss.netty.channel.socket.ClientSocketChannelFactory;
 import org.jboss.netty.channel.socket.nio.NioClientSocketChannelFactory;
@@ -48,8 +49,8 @@ import org.projectodd.stilts.stomp.protocol.StompFrames;
 public class StompClient {
 
     // TODO: Make these configurable.
-    private static final long CONNECT_WAIT_TIME = 5000L;
-    private static final long DISCONNECT_WAIT_TIME = 5000L;
+    private static final long DEFAULT_CONNECT_WAIT_TIME = 5000L;
+    private static final long DEFAULT_DISCONNECT_WAIT_TIME = 5000L;
 
     private static Logger log = Logger.getLogger( StompClient.class );
 
@@ -74,7 +75,7 @@ public class StompClient {
             if (uriPort > 0) {
                 port = uriPort;
             }
-            
+
             this.serverAddress = new InetSocketAddress( host, port );
 
             if (scheme.endsWith( "+ws" )) {
@@ -116,10 +117,10 @@ public class StompClient {
         }
     }
 
-    void waitForConnected() throws InterruptedException, StompException {
+    void waitForConnected(long waitTime) throws InterruptedException, StompException {
         if (this.connectionState == State.CONNECTING) {
             synchronized (this.stateLock) {
-                this.stateLock.wait( CONNECT_WAIT_TIME );
+                this.stateLock.wait( waitTime );
             }
         }
         if (this.connectionState != State.CONNECTED) {
@@ -127,10 +128,10 @@ public class StompClient {
         }
     }
 
-    void waitForDisconnected() throws InterruptedException, StompException {
+    void waitForDisconnected(long waitTime) throws InterruptedException, StompException {
         if (this.connectionState == State.DISCONNECTING) {
             synchronized (this.stateLock) {
-                this.stateLock.wait( DISCONNECT_WAIT_TIME );
+                this.stateLock.wait( waitTime );
             }
         }
         if (this.connectionState != State.DISCONNECTED) {
@@ -174,6 +175,10 @@ public class StompClient {
     }
 
     public void connect() throws InterruptedException, StompException {
+        connect( DEFAULT_CONNECT_WAIT_TIME );
+    }
+
+    public void connect(long waitTime) throws InterruptedException, StompException {
 
         if (this.executor == null) {
             this.executor = Executors.newFixedThreadPool( 4 );
@@ -184,13 +189,9 @@ public class StompClient {
         bootstrap.setPipelineFactory( factory );
         bootstrap.setFactory( createChannelFactory() );
 
-        connectInternal( bootstrap );
-    }
-
-    void connectInternal(ClientBootstrap bootstrap) throws InterruptedException, StompException {
         setConnectionState( State.CONNECTING );
         this.channel = bootstrap.connect( serverAddress ).await().getChannel();
-        waitForConnected();
+        waitForConnected( waitTime );
 
         if (this.connectionState == State.CONNECTED) {
             log.info( "Connected" );
@@ -200,7 +201,7 @@ public class StompClient {
         } else {
             // TODO: Handle error
             log.info( "Failed to connect" );
-            this.disconnect();
+            disconnect();
         }
     }
 
@@ -212,6 +213,10 @@ public class StompClient {
     }
 
     public void disconnect() throws InterruptedException, StompException {
+        disconnect( DEFAULT_DISCONNECT_WAIT_TIME );
+    }
+
+    public void disconnect(long waitTime) throws InterruptedException, StompException {
         StompControlFrame frame = new StompControlFrame( Command.DISCONNECT );
         setConnectionState( State.DISCONNECTING );
         sendFrame( frame, new Callable<Void>() {
@@ -221,7 +226,7 @@ public class StompClient {
             }
         } );
 
-        waitForDisconnected();
+        waitForDisconnected( waitTime );
     }
 
     public SubscriptionBuilder subscribe(String destination) {
