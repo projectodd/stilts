@@ -20,6 +20,10 @@ public class BasicStompServerTest extends AbstractStompServerTestCase<MockStompP
         server.setStompProvider( new MockStompProvider() );
         return server;
     }
+    
+    public String getConnectionUrl() {
+        return "stomp://localhost/";
+    }
 
     @Test
     public void testServerCreation() {
@@ -29,7 +33,7 @@ public class BasicStompServerTest extends AbstractStompServerTestCase<MockStompP
 
     @Test
     public void testClientConnection() throws Exception {
-        StompClient client = new StompClient( "stomp://localhost/" );
+        StompClient client = new StompClient( getConnectionUrl() );
         client.connect();
         assertTrue( client.isConnected() );
         client.disconnect();
@@ -37,17 +41,8 @@ public class BasicStompServerTest extends AbstractStompServerTestCase<MockStompP
     }
     
     @Test
-    public void testClientConnectionOverWebSockets() throws Exception {
-        StompClient client = new StompClient( "stomp+ws://localhost/" );
-        client.connect();
-        assertTrue( client.isConnected() );
-        client.disconnect();
-        assertTrue( client.isDisconnected() );
-    }
-
-    @Test
     public void testClientSendWithoutTransaction() throws Exception {
-        StompClient client = new StompClient( "stomp://localhost/" );
+        StompClient client = new StompClient( getConnectionUrl() );
         client.connect();
 
         client.send( StompMessages.createStompMessage( "/queues/one", "content 1" ) );
@@ -70,7 +65,7 @@ public class BasicStompServerTest extends AbstractStompServerTestCase<MockStompP
 
     @Test
     public void testClientSendWithTransactionCommit() throws Exception {
-        StompClient client = new StompClient( "stomp://localhost/" );
+        StompClient client = new StompClient( getConnectionUrl() );
         client.connect();
 
         ClientTransaction tx = client.begin();
@@ -103,7 +98,7 @@ public class BasicStompServerTest extends AbstractStompServerTestCase<MockStompP
     
     @Test
     public void testClientSendWithTransactionAbort() throws Exception {
-        StompClient client = new StompClient( "stomp://localhost/" );
+        StompClient client = new StompClient( getConnectionUrl() );
         client.connect();
 
         ClientTransaction tx = client.begin();
