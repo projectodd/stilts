@@ -19,21 +19,20 @@ package org.projectodd.stilts.stomp.client;
 import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.jboss.netty.channel.Channels;
-import org.jboss.netty.handler.codec.http.HttpRequestDecoder;
 import org.jboss.netty.handler.codec.http.HttpRequestEncoder;
-import org.jboss.netty.handler.codec.http.HttpResponseDecoder;
-import org.jboss.netty.handler.codec.http.websocket.WebSocketFrameDecoder;
-import org.jboss.netty.handler.codec.http.websocket.WebSocketFrameEncoder;
 import org.projectodd.stilts.stomp.client.protocol.ClientContext;
 import org.projectodd.stilts.stomp.client.protocol.ClientMessageHandler;
 import org.projectodd.stilts.stomp.client.protocol.ClientReceiptHandler;
-import org.projectodd.stilts.stomp.client.protocol.ConnectedHandler;
+import org.projectodd.stilts.stomp.client.protocol.StompConnectionNegotiator;
 import org.projectodd.stilts.stomp.client.protocol.websockets.WebSocketConnectionNegotiator;
+import org.projectodd.stilts.stomp.client.protocol.websockets.WebSocketHttpResponseDecoder;
 import org.projectodd.stilts.stomp.protocol.DebugHandler;
 import org.projectodd.stilts.stomp.protocol.StompFrameDecoder;
 import org.projectodd.stilts.stomp.protocol.StompFrameEncoder;
 import org.projectodd.stilts.stomp.protocol.StompMessageDecoder;
 import org.projectodd.stilts.stomp.protocol.StompMessageEncoder;
+import org.projectodd.stilts.stomp.protocol.websocket.WebSocketStompFrameDecoder;
+import org.projectodd.stilts.stomp.protocol.websocket.WebSocketStompFrameEncoder;
 
 public class StompClientPipelineFactory implements ChannelPipelineFactory {
 
@@ -47,26 +46,32 @@ public class StompClientPipelineFactory implements ChannelPipelineFactory {
     public ChannelPipeline getPipeline() throws Exception {
         ChannelPipeline pipeline = Channels.pipeline();
 
-        // pipeline.addLast( "debug-head", new DebugHandler());
+        pipeline.addLast( "debug-head", new DebugHandler( "stomp.proto.CLIENT" ) );
 
         if (this.useWebSockets) {
-            pipeline.addLast( "http-response-decoder", new HttpResponseDecoder() );
-            pipeline.addLast( "http-request-encoder", new HttpRequestEncoder() );
-            pipeline.addLast( "websocket-frame-decoder", new WebSocketFrameDecoder() );
-            pipeline.addLast( "websocket-frame-encoder", new WebSocketFrameEncoder() );
-            pipeline.addLast( "websocket-connection-negotiator", new WebSocketConnectionNegotiator( null, 8675 ) );
+            pipeline.addLast( "debug-transport-head", new DebugHandler( "stomp.proto.CLIENT.TRANSPORT.HEAD" ) );
+            pipeline.addLast( "http-encoder", new HttpRequestEncoder() );
+            pipeline.addLast( "http-decoder", new WebSocketHttpResponseDecoder() );
+            pipeline.addLast( "debug-transport-tail", new DebugHandler( "stomp.proto.CLIENT.TRANSPORT.TAIL" ) );
+            // pipeline.addLast( "websocket-frame-decoder", new
+            // WebSocketFrameDecoder() );
+            // pipeline.addLast( "websocket-frame-encoder", new
+            // WebSocketFrameEncoder() );
+            pipeline.addLast( "websocket-connection-negotiator", new WebSocketConnectionNegotiator( "localhost", 8675 ) );
+            pipeline.addLast( "stomp-frame-decoder", new WebSocketStompFrameDecoder() );
+            pipeline.addLast( "stomp-frame-encoder", new WebSocketStompFrameEncoder() );
+        } else {
+            pipeline.addLast( "stomp-frame-decoder", new StompFrameDecoder() );
+            pipeline.addLast( "stomp-frame-encoder", new StompFrameEncoder() );
         }
+        // pipeline.addLast( "debug-frame-encoders", new DebugHandler() );
 
-        pipeline.addLast( "stomp-frame-decoder", new StompFrameDecoder() );
-        pipeline.addLast( "stomp-frame-encoder", new StompFrameEncoder() );
-        pipeline.addLast( "debug-frame-encoders", new DebugHandler() );
-
-        pipeline.addLast( "stomp-client-connect", new ConnectedHandler( clientContext ) );
+        pipeline.addLast( "stomp-client-connect", new StompConnectionNegotiator( clientContext, "localhost" ) );
         pipeline.addLast( "stomp-client-receipt", new ClientReceiptHandler( clientContext ) );
 
         pipeline.addLast( "stomp-message-encoder", new StompMessageEncoder() );
         pipeline.addLast( "stomp-message-decoder", new StompMessageDecoder( new ClientStompMessageFactory( this.client ) ) );
-        pipeline.addLast( "debug-message-encoders", new DebugHandler() );
+        // pipeline.addLast( "debug-message-encoders", new DebugHandler() );
 
         pipeline.addLast( "stomp-client-message-handler", new ClientMessageHandler( clientContext ) );
 

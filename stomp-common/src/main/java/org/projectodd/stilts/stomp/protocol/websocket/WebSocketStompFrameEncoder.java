@@ -18,7 +18,7 @@ public class WebSocketStompFrameEncoder extends OneToOneEncoder {
             WebSocketFrame webSocketFrame = new DefaultWebSocketFrame(0, buffer);
             return webSocketFrame;
         }
-        return null;
+        return msg;
     }
 
 }

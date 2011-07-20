@@ -14,10 +14,13 @@ import org.jboss.netty.handler.codec.http.HttpResponseEncoder;
 import org.jboss.netty.handler.codec.replay.ReplayingDecoder;
 import org.jboss.netty.handler.codec.replay.VoidEnum;
 import org.jboss.netty.handler.execution.ExecutionHandler;
+import org.projectodd.stilts.stomp.protocol.DebugHandler;
 import org.projectodd.stilts.stomp.protocol.StompFrameDecoder;
 import org.projectodd.stilts.stomp.protocol.StompFrameEncoder;
 import org.projectodd.stilts.stomp.protocol.StompMessageDecoder;
 import org.projectodd.stilts.stomp.protocol.StompMessageEncoder;
+import org.projectodd.stilts.stomp.protocol.websocket.WebSocketStompFrameDecoder;
+import org.projectodd.stilts.stomp.protocol.websocket.WebSocketStompFrameEncoder;
 import org.projectodd.stilts.stomp.server.ServerStompMessageFactory;
 import org.projectodd.stilts.stomp.server.websockets.protocol.HandshakeHandler;
 import org.projectodd.stilts.stomp.spi.StompProvider;
@@ -65,6 +68,12 @@ public class ProtocolDetector extends ReplayingDecoder<VoidEnum> {
         ChannelPipeline pipeline = context.getPipeline();
 
         pipeline.remove( this );
+        
+        pipeline.addLast( "debug-FRAME-HEAD", new DebugHandler( "stomp.proto.SERVER-FRAME-HEAD" ) );
+        pipeline.addLast( "stomp-frame-encoder", new StompFrameEncoder() );
+        pipeline.addLast( "stomp-frame-decoder", new StompFrameDecoder() );
+        pipeline.addLast( "debug-FRAME-TAIL", new DebugHandler( "stomp.proto.SERVER-FRAME-TAIL" ) );
+        
         appendCommonHandlers( pipeline );
 
         return fullBuffer;
@@ -78,7 +87,13 @@ public class ProtocolDetector extends ReplayingDecoder<VoidEnum> {
 
         pipeline.addLast( "http-encoder", new HttpResponseEncoder() );
         pipeline.addLast( "http-decoder", new HttpRequestDecoder() );
+        pipeline.addLast( "debug-b", new DebugHandler( "stomp.proto.SERVER-B" ) );
         pipeline.addLast( "websocket-handshake", new HandshakeHandler() );
+        
+        pipeline.addLast( "debug-FRAME-HEAD", new DebugHandler( "stomp.proto.SERVER-FRAME-HEAD" ) );
+        pipeline.addLast( "stomp-frame-encoder", new WebSocketStompFrameEncoder() );
+        pipeline.addLast( "stomp-frame-decoder", new WebSocketStompFrameDecoder() );
+        pipeline.addLast( "debug-FRAME-TAIL", new DebugHandler( "stomp.proto.SERVER-FRAME-TAIL" ) );
 
         appendCommonHandlers( pipeline );
 
@@ -89,8 +104,6 @@ public class ProtocolDetector extends ReplayingDecoder<VoidEnum> {
 
         ConnectionContext context = new ConnectionContext();
 
-        pipeline.addLast( "stomp-frame-encoder", new StompFrameEncoder() );
-        pipeline.addLast( "stomp-frame-decoder", new StompFrameDecoder() );
 
         pipeline.addLast( "stomp-server-connect", new ConnectHandler( provider, context ) );
         pipeline.addLast( "stomp-server-disconnect", new DisconnectHandler( provider, context ) );
@@ -98,10 +111,11 @@ public class ProtocolDetector extends ReplayingDecoder<VoidEnum> {
         pipeline.addLast( "stomp-server-subscribe", new SubscribeHandler( provider, context ) );
         pipeline.addLast( "stomp-server-unsubscribe", new UnsubscribeHandler( provider, context ) );
 
+        //pipeline.addLast( "debug-MESSAGE-TAIL", new DebugHandler( "stomp.proto.SERVER-FLOW-TAIL" ) );
         pipeline.addLast( "stomp-server-begin", new BeginHandler( provider, context ) );
         pipeline.addLast( "stomp-server-commit", new CommitHandler( provider, context ) );
         pipeline.addLast( "stomp-server-abort", new AbortHandler( provider, context ) );
-
+        
         pipeline.addLast( "stomp-server-ack", new AckHandler( provider, context ) );
         pipeline.addLast( "stomp-server-nack", new NackHandler( provider, context ) );
 
@@ -114,7 +128,9 @@ public class ProtocolDetector extends ReplayingDecoder<VoidEnum> {
             pipeline.addLast( "stomp-server-send-threading", this.executionHandler );
         }
 
+
         pipeline.addLast( "stomp-server-send", new SendHandler( provider, context ) );
+        //pipeline.addLast( "debug-TAIL", new DebugHandler( "stomp.proto.SERVER-TAIL" ) );
     }
 
     private static final Charset UTF_8 = Charset.forName( "UTF-8" );

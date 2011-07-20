@@ -200,6 +200,7 @@ public class StompClient {
         setConnectionState( State.CONNECTING );
 
         this.channel = bootstrap.connect( serverAddress ).await().getChannel();
+        /*
 
         if (this.useWebSockets) {
             connectWebSocket();
@@ -209,6 +210,7 @@ public class StompClient {
         frame.setHeader( Header.HOST, this.serverAddress.getHostName() );
         frame.setHeader( Header.ACCEPT_VERSION, Version.supportedVersions() );
         sendFrame( frame );
+        */
         waitForConnected();
 
         if (this.connectionState == State.CONNECTED) {
@@ -224,9 +226,6 @@ public class StompClient {
     }
 
     void connectWebSocket() {
-        HttpRequest request = new DefaultHttpRequest( HttpVersion.HTTP_1_1, HttpMethod.POST, "http://" + this.serverAddress.getHostName() + ":"
-                + this.serverAddress.getPort() );
-        this.channel.write( request );
     }
 
     String getNextTransactionId() {

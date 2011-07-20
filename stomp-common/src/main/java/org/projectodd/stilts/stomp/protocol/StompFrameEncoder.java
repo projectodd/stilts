@@ -27,7 +27,7 @@ public class StompFrameEncoder extends OneToOneEncoder {
         if (msg instanceof StompFrame) {
             return StompFrameCodec.INSTANCE.encode( (StompFrame) msg );
         }
-        return null;
+        return msg;
     }
 
 }

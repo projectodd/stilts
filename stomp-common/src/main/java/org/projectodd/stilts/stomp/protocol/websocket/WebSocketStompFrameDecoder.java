@@ -37,7 +37,7 @@ public class WebSocketStompFrameDecoder extends OneToOneDecoder {
             ChannelBuffer buffer = webSocketFrame.getBinaryData();
             return StompFrameCodec.INSTANCE.decode( buffer );
         }
-        return null;
+        return msg;
     }
 
 

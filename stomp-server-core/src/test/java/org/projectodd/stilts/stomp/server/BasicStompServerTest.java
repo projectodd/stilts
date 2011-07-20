@@ -35,6 +35,15 @@ public class BasicStompServerTest extends AbstractStompServerTestCase<MockStompP
         client.disconnect();
         assertTrue( client.isDisconnected() );
     }
+    
+    @Test
+    public void testClientConnectionOverWebSockets() throws Exception {
+        StompClient client = new StompClient( "stomp+ws://localhost/" );
+        client.connect();
+        assertTrue( client.isConnected() );
+        client.disconnect();
+        assertTrue( client.isDisconnected() );
+    }
 
     @Test
     public void testClientSendWithoutTransaction() throws Exception {

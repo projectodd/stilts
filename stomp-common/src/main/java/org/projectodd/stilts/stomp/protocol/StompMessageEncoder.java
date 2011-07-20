@@ -29,9 +29,6 @@ public class StompMessageEncoder extends OneToOneEncoder {
 
     @Override
     protected Object encode(ChannelHandlerContext ctx, Channel channel, Object msg) throws Exception {
-        if (msg instanceof StompFrame ) {
-            return msg;
-        }
         if (msg instanceof StompMessage) {
             StompMessage message = (StompMessage) msg;
             log.trace(  "encode: " + message );
@@ -40,7 +37,7 @@ public class StompMessageEncoder extends OneToOneEncoder {
             log.trace(  "encode.frame: " + frame );
             return frame;
         }
-        return null;
+        return msg;
     }
 
 }

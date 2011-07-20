@@ -29,6 +29,7 @@ import org.jboss.netty.handler.codec.http.HttpRequest;
 import org.jboss.netty.handler.codec.http.HttpResponse;
 import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.jboss.netty.handler.codec.http.HttpVersion;
+import org.projectodd.stilts.stomp.client.protocol.websockets.WebSocketChallenge;
 
 /**
  * Handler for ietf-00.
@@ -51,7 +52,11 @@ public class Handshake_Ietf00 extends Handshake {
     public HttpResponse generateResponse(HttpRequest request) throws Exception {
         HttpResponse response = new DefaultHttpResponse( HttpVersion.HTTP_1_1, new HttpResponseStatus( 101, "Web Socket Protocol Handshake - IETF-00" ) );
 
-        response.addHeader( Names.SEC_WEBSOCKET_ORIGIN, request.getHeader( Names.ORIGIN ) );
+        String origin = request.getHeader( Names.ORIGIN );
+
+        if (origin != null) {
+            response.addHeader( Names.SEC_WEBSOCKET_ORIGIN, request.getHeader( Names.ORIGIN ) );
+        }
         response.addHeader( Names.SEC_WEBSOCKET_LOCATION, getWebSocketLocation( request ) );
 
         String protocol = request.getHeader( Names.SEC_WEBSOCKET_PROTOCOL );
@@ -63,24 +68,16 @@ public class Handshake_Ietf00 extends Handshake {
         // Calculate the answer of the challenge.
         String key1 = request.getHeader( Names.SEC_WEBSOCKET_KEY1 );
         String key2 = request.getHeader( Names.SEC_WEBSOCKET_KEY2 );
-        long a = solve( key1 );
-        long b = solve( key2 );
+        byte[] key3 = new byte[8];
+        request.getContent().readBytes( key3 );
+        
+        byte[] solution = WebSocketChallenge.solve( key1, key2, key3 );
+        
+        ChannelBuffer buffer = ChannelBuffers.dynamicBuffer( solution.length + 2 );
+        buffer.writeBytes( solution );
 
-        byte[] c = new byte[8];
-        request.getContent().readBytes( c );
-
-        ChannelBuffer input = ChannelBuffers.buffer( 64 );
-        input.writeBytes( ("" + a).getBytes() );
-        input.writeBytes( ("" + b).getBytes() );
-        input.writeBytes( c );
-
-        byte[] inputArray = input.array();
-
-        int len = input.readableBytes();
-        MessageDigest digester = MessageDigest.getInstance( "MD5" );
-        digester.update( inputArray, 0, len );
-        byte[] hash = digester.digest();
-        response.setContent( ChannelBuffers.wrappedBuffer( ChannelBuffers.wrappedBuffer( hash ), ChannelBuffers.wrappedBuffer( new byte[]{ '\r', '\n' } ) ) );
+        response.setContent( buffer );
+        response.setChunked( false );
 
         return response;
     }

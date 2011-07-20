@@ -24,12 +24,14 @@ import java.util.List;
 
 import org.jboss.logging.Logger;
 import org.jboss.netty.buffer.ChannelBuffers;
+import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelEvent;
 import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.ChannelFutureListener;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.ChannelState;
+import org.jboss.netty.channel.Channels;
 import org.jboss.netty.channel.ExceptionEvent;
 import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.channel.SimpleChannelUpstreamHandler;
@@ -45,6 +47,8 @@ import org.jboss.netty.handler.codec.http.HttpVersion;
 import org.jboss.netty.handler.codec.http.websocket.WebSocketFrameDecoder;
 import org.jboss.netty.handler.codec.http.websocket.WebSocketFrameEncoder;
 import org.jboss.netty.util.CharsetUtil;
+import org.projectodd.stilts.stomp.protocol.DebugHandler;
+
 /**
  * Multi-verison handshake handler for the web-sockets protocol family.
  * 
@@ -83,7 +87,7 @@ public class HandshakeHandler extends SimpleChannelUpstreamHandler {
      * @param request
      * @throws Exception
      */
-    protected void handleHttpRequest(ChannelHandlerContext channelContext, HttpRequest request) throws Exception {
+    protected void handleHttpRequest(final ChannelHandlerContext channelContext, HttpRequest request) throws Exception {
         log.info( "handle HTTP: " + request );
         if (isWebSocketsUpgradeRequest( request )) {
             log.info( "Processo websockets upgrade" );
@@ -98,15 +102,23 @@ public class HandshakeHandler extends SimpleChannelUpstreamHandler {
                 response.addHeader( Names.UPGRADE, Values.WEBSOCKET );
                 response.addHeader( Names.CONNECTION, Values.UPGRADE );
 
-                ChannelPipeline pipeline = channelContext.getChannel().getPipeline();
+                final ChannelPipeline pipeline = channelContext.getChannel().getPipeline();
                 reconfigureUpstream( pipeline );
 
                 // TODO FIXME
-                //addContextHandler( channelContext, context, pipeline );
+                // addContextHandler( channelContext, context, pipeline );
 
-                channelContext.getChannel().write( response );
-                reconfigureDownstream( pipeline );
-                forwardConnectEventUpstream( channelContext );
+                Channel channel = channelContext.getChannel();
+                ChannelFuture future = channelContext.getChannel().write( response );
+                future.addListener( new ChannelFutureListener() {
+                    public void operationComplete(ChannelFuture future) throws Exception {
+                        log.info( "********** Completed write" );
+                        reconfigureDownstream( pipeline );
+                        pipeline.remove( HandshakeHandler.this );
+                        log.info( pipeline.toMap() );
+                        forwardConnectEventUpstream( channelContext );
+                    }
+                } );
 
                 return;
             }
@@ -146,8 +158,8 @@ public class HandshakeHandler extends SimpleChannelUpstreamHandler {
      */
     protected void reconfigureUpstream(ChannelPipeline pipeline) {
         log.info( "reconfiguring upstream pipeline" );
-        pipeline.remove( this );
         pipeline.replace( "http-decoder", "websockets-decoder", new WebSocketFrameDecoder() );
+        pipeline.addAfter(  "websockets-decoder", "debug-websockets-TAIL", new DebugHandler( "websockets.SERVER-TAIL" ) );
     }
 
     /**
@@ -158,8 +170,8 @@ public class HandshakeHandler extends SimpleChannelUpstreamHandler {
     protected void reconfigureDownstream(ChannelPipeline pipeline) {
         log.info( "reconfiguring downstream pipeline" );
         pipeline.replace( "http-encoder", "websockets-encoder", new WebSocketFrameEncoder() );
+        pipeline.addBefore(  "websockets-encoder", "debug-websockets-HEAD", new DebugHandler( "websockets.SERVER-HEAD" ) );
     }
-
 
     /**
      * Determine if this request represents a web-socket upgrade request.
