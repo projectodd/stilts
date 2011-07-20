@@ -365,13 +365,30 @@
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>cobertura-maven-plugin</artifactId>
-				<version>${version.cobertura}</version>
+				<version>2.5</version>
+	            <executions>
+	                <execution>
+	                    <id>site</id>
+	                    <phase>pre-site</phase>
+	                    <goals>
+	                        <goal>clean</goal>
+	                    </goals>
+	                </execution>
+	                <execution>
+	                    <id>instrument</id>
+	                    <phase>site</phase>
+	                    <goals>
+	                        <goal>instrument</goal>
+	                        <goal>cobertura</goal>
+	                    </goals>
+	                </execution>
+	            </executions>
 				<configuration>
 					<aggregate>true</aggregate>
 					<instrumentation>
-						<includes>
-							<include>org/projectodd/**/*.class</include>
-						</includes>
+						<excludes>
+							<exclude>org/projectodd/**/*Test.class</exclude>
+						</excludes>
 					</instrumentation>
 				</configuration>
 			</plugin>
