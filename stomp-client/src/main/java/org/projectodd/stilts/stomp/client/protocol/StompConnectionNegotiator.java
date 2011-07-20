@@ -15,6 +15,13 @@ import org.projectodd.stilts.stomp.protocol.StompFrame.Command;
 import org.projectodd.stilts.stomp.protocol.StompFrame.Header;
 import org.projectodd.stilts.stomp.protocol.StompFrame.Version;
 
+/** Base STOMP protocol connection negotiator.
+ * 
+ * <p>This handler reacts to Netty's CONNECTED event and handles the handshake
+ * of the STOMP CONNECT and CONNECTED interaction.</p>
+ * 
+ * @author Bob McWhirter
+ */
 public class StompConnectionNegotiator extends AbstractClientControlFrameHandler {
 
     public StompConnectionNegotiator(ClientContext clientContext, String host) throws NoSuchAlgorithmException {
@@ -29,7 +36,6 @@ public class StompConnectionNegotiator extends AbstractClientControlFrameHandler
         frame.setHeader( Header.ACCEPT_VERSION, Version.supportedVersions() );
 
         Channels.write( context.getChannel(), frame );
-        //super.channelConnected( context, e );
     }
 
     @Override

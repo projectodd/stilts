@@ -17,7 +17,6 @@
 package org.projectodd.stilts.stomp.client;
 
 import java.net.InetSocketAddress;
-import java.net.SocketAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashMap;
@@ -35,10 +34,6 @@ import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.jboss.netty.channel.socket.ClientSocketChannelFactory;
 import org.jboss.netty.channel.socket.nio.NioClientSocketChannelFactory;
-import org.jboss.netty.handler.codec.http.DefaultHttpRequest;
-import org.jboss.netty.handler.codec.http.HttpMethod;
-import org.jboss.netty.handler.codec.http.HttpRequest;
-import org.jboss.netty.handler.codec.http.HttpVersion;
 import org.jboss.netty.util.VirtualExecutorService;
 import org.projectodd.stilts.stomp.Constants;
 import org.projectodd.stilts.stomp.StompException;
@@ -116,7 +111,6 @@ public class StompClient {
 
     void setConnectionState(State connectionState) {
         synchronized (this.stateLock) {
-            log.info( "Set state: " + connectionState );
             this.connectionState = connectionState;
             this.stateLock.notifyAll();
         }
@@ -151,7 +145,6 @@ public class StompClient {
     }
 
     void messageReceived(StompMessage message) {
-        log.info( "received message: " + message );
         boolean handled = false;
         String subscriptionId = message.getHeaders().get( Header.SUBSCRIPTION );
         if (subscriptionId != null) {
@@ -195,23 +188,8 @@ public class StompClient {
     }
 
     void connectInternal(ClientBootstrap bootstrap) throws InterruptedException, StompException {
-
-        log.info( "Connecting" );
-
         setConnectionState( State.CONNECTING );
-
         this.channel = bootstrap.connect( serverAddress ).await().getChannel();
-        /*
-
-        if (this.useWebSockets) {
-            connectWebSocket();
-        }
-
-        StompControlFrame frame = new StompControlFrame( Command.CONNECT );
-        frame.setHeader( Header.HOST, this.serverAddress.getHostName() );
-        frame.setHeader( Header.ACCEPT_VERSION, Version.supportedVersions() );
-        sendFrame( frame );
-        */
         waitForConnected();
 
         if (this.connectionState == State.CONNECTED) {
@@ -251,7 +229,6 @@ public class StompClient {
     }
 
     public void send(StompMessage message) {
-        log.debug( "Sending outbound message: " + message );
         StompFrame frame = StompFrames.newSendFrame( message );
         sendFrame( frame );
     }

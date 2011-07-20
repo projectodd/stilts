@@ -22,7 +22,6 @@ public class StompFrameCodec {
     // ------------------------------------------------------------------------
 
     public StompFrame decode(ChannelBuffer buffer) throws Exception {
-        log.info( "decode: " + buffer + " // " + buffer.readableBytes() );
         FrameHeader header = decodeHeader( buffer );
 
         if (header == null) {
@@ -30,8 +29,6 @@ public class StompFrameCodec {
         }
 
         int len = header.getContentLength();
-
-        log.trace( "content-length: " + len );
 
         ChannelBuffer content = null;
 
@@ -51,14 +48,11 @@ public class StompFrameCodec {
             }
         }
 
-        log.trace( "decoded to frame: " + frame );
-
         return frame;
     }
 
     protected ChannelBuffer readUntilNull(ChannelBuffer buffer) {
         int nonNullBytes = buffer.bytesBefore( (byte) 0x00 );
-        log.trace( "reading until null: " + nonNullBytes );
 
         ChannelBuffer content = null;
         if (nonNullBytes == 0) {
@@ -93,7 +87,6 @@ public class StompFrameCodec {
             }
             if (nonNewLineBytes >= 0) {
                 ChannelBuffer line = buffer.readBytes( nonNewLineBytes );
-                logBytes( "line", line );
                 buffer.readByte();
                 header = processHeaderLine( header, line.toString( UTF_8 ) );
             }
@@ -116,11 +109,9 @@ public class StompFrameCodec {
     }
 
     protected FrameHeader processHeaderLine(FrameHeader header, String line) {
-        log.trace( "line = " + line );
         if (header == null) {
             header = new FrameHeader();
             Command command = Command.valueOf( line );
-            log.trace( "command =" + command );
             header.setCommand( command );
             return header;
         }

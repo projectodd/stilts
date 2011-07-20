@@ -23,7 +23,8 @@ import org.projectodd.stilts.stomp.StompMessage;
 
 public class ClientMessageHandler extends AbstractClientHandler {
 
-	private static Logger log = Logger.getLogger(ClientMessageHandler.class);
+	@SuppressWarnings("unused")
+    private static Logger log = Logger.getLogger(ClientMessageHandler.class);
 	
     public ClientMessageHandler(ClientContext clientContext) {
         super( clientContext );
@@ -31,7 +32,6 @@ public class ClientMessageHandler extends AbstractClientHandler {
     
     @Override
     public void messageReceived(ChannelHandlerContext channelContext, MessageEvent e) throws Exception {
-        log.info( "reveived: " + e.getMessage() );
         if ( e.getMessage() instanceof StompMessage ) {
             handleStompMessage( channelContext, (StompMessage) e.getMessage() );
         } 

@@ -1,4 +1,4 @@
-package org.projectodd.stilts.stomp.protocol.websockets;
+package org.projectodd.stilts.stomp.protocol.websocket;
 
 import java.nio.ByteOrder;
 import java.nio.charset.Charset;

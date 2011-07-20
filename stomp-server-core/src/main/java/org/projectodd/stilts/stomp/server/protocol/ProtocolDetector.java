@@ -46,8 +46,6 @@ public class ProtocolDetector extends ReplayingDecoder<VoidEnum> {
             ChannelBuffer lineBuffer = buffer.readBytes( nonNewlineBytes );
             String line = lineBuffer.toString( UTF_8 );
 
-            log.info( "LINE: " + line );
-
             buffer.resetReaderIndex();
             ChannelBuffer fullBuffer = null;
             if (line.startsWith( "CONNECT" ) || line.startsWith( "STOMP" )) {
@@ -69,10 +67,10 @@ public class ProtocolDetector extends ReplayingDecoder<VoidEnum> {
 
         pipeline.remove( this );
         
-        pipeline.addLast( "debug-FRAME-HEAD", new DebugHandler( "stomp.proto.SERVER-FRAME-HEAD" ) );
+        //pipeline.addLast( "debug-FRAME-HEAD", new DebugHandler( "stomp.proto.SERVER-FRAME-HEAD" ) );
         pipeline.addLast( "stomp-frame-encoder", new StompFrameEncoder() );
         pipeline.addLast( "stomp-frame-decoder", new StompFrameDecoder() );
-        pipeline.addLast( "debug-FRAME-TAIL", new DebugHandler( "stomp.proto.SERVER-FRAME-TAIL" ) );
+        //pipeline.addLast( "debug-FRAME-TAIL", new DebugHandler( "stomp.proto.SERVER-FRAME-TAIL" ) );
         
         appendCommonHandlers( pipeline );
 
@@ -87,13 +85,13 @@ public class ProtocolDetector extends ReplayingDecoder<VoidEnum> {
 
         pipeline.addLast( "http-encoder", new HttpResponseEncoder() );
         pipeline.addLast( "http-decoder", new HttpRequestDecoder() );
-        pipeline.addLast( "debug-b", new DebugHandler( "stomp.proto.SERVER-B" ) );
+        //pipeline.addLast( "debug-b", new DebugHandler( "stomp.proto.SERVER-B" ) );
         pipeline.addLast( "websocket-handshake", new HandshakeHandler() );
         
-        pipeline.addLast( "debug-FRAME-HEAD", new DebugHandler( "stomp.proto.SERVER-FRAME-HEAD" ) );
+        //pipeline.addLast( "debug-FRAME-HEAD", new DebugHandler( "stomp.proto.SERVER-FRAME-HEAD" ) );
         pipeline.addLast( "stomp-frame-encoder", new WebSocketStompFrameEncoder() );
         pipeline.addLast( "stomp-frame-decoder", new WebSocketStompFrameDecoder() );
-        pipeline.addLast( "debug-FRAME-TAIL", new DebugHandler( "stomp.proto.SERVER-FRAME-TAIL" ) );
+        //pipeline.addLast( "debug-FRAME-TAIL", new DebugHandler( "stomp.proto.SERVER-FRAME-TAIL" ) );
 
         appendCommonHandlers( pipeline );
 

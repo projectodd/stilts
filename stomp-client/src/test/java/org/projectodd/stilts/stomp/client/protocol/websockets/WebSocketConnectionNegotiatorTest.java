@@ -14,7 +14,7 @@ import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.jboss.netty.handler.codec.http.HttpVersion;
 import org.junit.Test;
 import org.projectodd.stilts.stomp.protocol.PipelineExposer;
-import org.projectodd.stilts.stomp.protocol.websockets.WebSocketChallenge;
+import org.projectodd.stilts.stomp.protocol.websocket.WebSocketChallenge;
 
 public class WebSocketConnectionNegotiatorTest {
 

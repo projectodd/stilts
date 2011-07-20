@@ -66,7 +66,6 @@ public class WebSocketHttpResponseDecoder extends ReplayingDecoder<VoidEnum> {
                 String name = line.substring( 0, colonLoc ).trim().toLowerCase();
                 String value = line.substring( colonLoc + 1 ).trim();
 
-                System.err.println( "HEADER: " + name + ":" + value );
                 response.addHeader( name, value );
             }
 
@@ -82,8 +81,6 @@ public class WebSocketHttpResponseDecoder extends ReplayingDecoder<VoidEnum> {
         buffer.readBytes( solution );
 
         response.setContent( ChannelBuffers.copiedBuffer( solution ) );
-
-        System.err.println( "===================>" + response.getContent().toString( Charset.forName( "UTF-8" ) ) );
     }
 
 }

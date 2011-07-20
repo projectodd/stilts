@@ -35,7 +35,6 @@ public class StompMessageDecoder extends OneToOneDecoder {
 
     @Override
     protected Object decode(ChannelHandlerContext ctx, Channel channel, Object msg) throws Exception {
-        log.info( "message decode: " + msg );
         if (msg instanceof StompContentFrame) {
             StompContentFrame frame = (StompContentFrame) msg;
             boolean isError = false;

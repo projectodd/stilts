@@ -76,7 +76,6 @@ public class SubscriberImpl implements Subscriber {
             }
             this.messageConduit.getMessageSink().send( dupe );
         } else {
-            System.err.println( "MSG ID: " + dupe.getId() );
             this.ackSet.addAcknowledger( dupe.getId(), acknowledger );
             SubscriberAcknowledger subscriberAcknowledger = new SubscriberAcknowledger( this, dupe.getId() );
             this.messageConduit.getMessageSink().send( dupe, subscriberAcknowledger );

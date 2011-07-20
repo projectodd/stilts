@@ -20,12 +20,20 @@ import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.jboss.netty.handler.codec.http.HttpRequest;
 import org.jboss.netty.handler.codec.http.HttpRequestEncoder;
 import org.jboss.netty.handler.codec.http.HttpResponse;
-import org.jboss.netty.handler.codec.http.HttpResponseDecoder;
 import org.jboss.netty.handler.codec.http.HttpVersion;
 import org.jboss.netty.handler.codec.http.websocket.WebSocketFrameDecoder;
 import org.jboss.netty.handler.codec.http.websocket.WebSocketFrameEncoder;
-import org.projectodd.stilts.stomp.protocol.websockets.WebSocketChallenge;
+import org.projectodd.stilts.stomp.protocol.websocket.WebSocketChallenge;
 
+/** WebSockets protocol connection negotiator.
+ * 
+ * <p>This handler reacts to Netty's CONNECTED event and handles the handshake
+ * of the WebSockets HTTP upgrade handshake.  Upon successful completion, it forwards
+ * a CONNECTED event upstream to the underlying protocol making use of the websocket
+ * transport. For instance, STOMP.</p>
+ * 
+ * @author Bob McWhirter
+ */
 public class WebSocketConnectionNegotiator extends SimpleChannelUpstreamHandler {
 
     public WebSocketConnectionNegotiator(String host, int port) throws NoSuchAlgorithmException {
@@ -57,25 +65,19 @@ public class WebSocketConnectionNegotiator extends SimpleChannelUpstreamHandler 
 
         Channel channel = context.getChannel();
 
-        System.err.println( "CLIENT SEND WS CHALLENGE: " + request );
-
         context.sendDownstream( new DownstreamMessageEvent( channel, Channels.future( channel ), request, channel.getRemoteAddress() ) );
-        // super.channelConnected( context, e );
     }
 
     @Override
     public void messageReceived(ChannelHandlerContext context, MessageEvent e) throws Exception {
-        System.err.println( "CLIENT messageReceived: " + e );
         if (e.getMessage() instanceof HttpResponse) {
             HttpResponse response = (HttpResponse) e.getMessage();
 
             ChannelBuffer content = response.getContent();
 
             byte[] challengeResponse = new byte[16];
-            System.err.println( "CONTENT: " + HttpHeaders.getContentLength( response ) );
             content.readBytes( challengeResponse );
 
-            System.err.println( "CLIENT verifying: " + challengeResponse.length );
             if (this.challenge.verify( challengeResponse )) {
                 ChannelPipeline pipeline = context.getPipeline();
                 pipeline.remove( this );

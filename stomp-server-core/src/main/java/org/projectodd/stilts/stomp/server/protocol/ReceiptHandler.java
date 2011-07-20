@@ -41,9 +41,7 @@ public class ReceiptHandler extends AbstractProviderHandler {
     }
 
     public void handleStompFrame(ChannelHandlerContext channelContext, StompFrame frame) {
-        log.info(  "Checking receipt for: " + frame  );
         if ( ! getContext().isActive() ) {
-            log.info( "Connection not active, no ACK required" );
             return;
         }
         String receiptId = frame.getHeader( Header.RECEIPT );

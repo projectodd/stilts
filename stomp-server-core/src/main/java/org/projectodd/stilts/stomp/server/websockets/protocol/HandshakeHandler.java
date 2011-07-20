@@ -88,9 +88,7 @@ public class HandshakeHandler extends SimpleChannelUpstreamHandler {
      * @throws Exception
      */
     protected void handleHttpRequest(final ChannelHandlerContext channelContext, HttpRequest request) throws Exception {
-        log.info( "handle HTTP: " + request );
         if (isWebSocketsUpgradeRequest( request )) {
-            log.info( "Processo websockets upgrade" );
 
             Handshake handshake = findHandshake( request );
 
@@ -98,7 +96,6 @@ public class HandshakeHandler extends SimpleChannelUpstreamHandler {
 
                 HttpResponse response = handshake.generateResponse( request );
 
-                log.info( "content: " + response.getContent() );
                 response.addHeader( Names.UPGRADE, Values.WEBSOCKET );
                 response.addHeader( Names.CONNECTION, Values.UPGRADE );
 
@@ -109,13 +106,11 @@ public class HandshakeHandler extends SimpleChannelUpstreamHandler {
                 // addContextHandler( channelContext, context, pipeline );
 
                 Channel channel = channelContext.getChannel();
-                ChannelFuture future = channelContext.getChannel().write( response );
+                ChannelFuture future = channel.write( response );
                 future.addListener( new ChannelFutureListener() {
                     public void operationComplete(ChannelFuture future) throws Exception {
-                        log.info( "********** Completed write" );
                         reconfigureDownstream( pipeline );
                         pipeline.remove( HandshakeHandler.this );
-                        log.info( pipeline.toMap() );
                         forwardConnectEventUpstream( channelContext );
                     }
                 } );
@@ -142,7 +137,6 @@ public class HandshakeHandler extends SimpleChannelUpstreamHandler {
      */
     protected Handshake findHandshake(HttpRequest request) {
         for (Handshake handshake : this.handshakes) {
-            log.info( "Test handshake: " + handshake );
             if (handshake.matches( request )) {
                 return handshake;
             }
@@ -157,7 +151,6 @@ public class HandshakeHandler extends SimpleChannelUpstreamHandler {
      * @param pipeline The pipeline to reconfigure.
      */
     protected void reconfigureUpstream(ChannelPipeline pipeline) {
-        log.info( "reconfiguring upstream pipeline" );
         pipeline.replace( "http-decoder", "websockets-decoder", new WebSocketFrameDecoder() );
         pipeline.addAfter(  "websockets-decoder", "debug-websockets-TAIL", new DebugHandler( "websockets.SERVER-TAIL" ) );
     }
@@ -168,7 +161,6 @@ public class HandshakeHandler extends SimpleChannelUpstreamHandler {
      * @param pipeline The pipeline to reconfigure.
      */
     protected void reconfigureDownstream(ChannelPipeline pipeline) {
-        log.info( "reconfiguring downstream pipeline" );
         pipeline.replace( "http-encoder", "websockets-encoder", new WebSocketFrameEncoder() );
         pipeline.addBefore(  "websockets-encoder", "debug-websockets-HEAD", new DebugHandler( "websockets.SERVER-HEAD" ) );
     }

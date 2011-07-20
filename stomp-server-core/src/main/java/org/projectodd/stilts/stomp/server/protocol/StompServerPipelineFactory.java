@@ -21,7 +21,6 @@ import java.util.concurrent.Executor;
 import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.jboss.netty.channel.DefaultChannelPipeline;
-import org.projectodd.stilts.stomp.protocol.DebugHandler;
 import org.projectodd.stilts.stomp.spi.StompProvider;
 
 public class StompServerPipelineFactory implements ChannelPipelineFactory {
@@ -33,12 +32,8 @@ public class StompServerPipelineFactory implements ChannelPipelineFactory {
     
     @Override
     public ChannelPipeline getPipeline() throws Exception {
-        
         DefaultChannelPipeline pipeline = new DefaultChannelPipeline();
-        
-        pipeline.addLast( "debug-head", new DebugHandler( "stomp.proto.SERVER" ) );
         pipeline.addLast( "protocol-detector", new ProtocolDetector( this.provider, this.executor ) );
-        
         return pipeline;
     }
     

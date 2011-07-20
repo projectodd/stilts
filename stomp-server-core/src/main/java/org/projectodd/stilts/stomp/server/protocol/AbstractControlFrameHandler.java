@@ -55,13 +55,11 @@ public abstract class AbstractControlFrameHandler extends AbstractProviderHandle
         }
 
         if (this.requiresClientIdentification && getContext().getStompConnection() == null) {
-            log.info( "Client not CONNECTED, closing connection" );
+            log.warn( "Client not CONNECTED, closing connection" );
             sendErrorAndClose( channelContext, "Must CONNECT first", frame );
             return;
         }
 
-        log.info( "FRAME command: " + frame.getCommand() );
-        log.info( "         this: " + this.command );
         handleControlFrame( channelContext, frame );
     }
 

@@ -27,8 +27,6 @@ public class AckHandler extends AbstractControlFrameHandler {
 
     public AckHandler(StompProvider provider, ConnectionContext context) {
         super( provider, context, Command.ACK );
-        System.err.println( "provider: " + provider );
-        System.err.println( "context: " + context );
     }
 
     public void handleControlFrame(ChannelHandlerContext channelContext, StompFrame frame) {

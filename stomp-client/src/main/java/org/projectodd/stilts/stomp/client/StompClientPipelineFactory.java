@@ -46,17 +46,12 @@ public class StompClientPipelineFactory implements ChannelPipelineFactory {
     public ChannelPipeline getPipeline() throws Exception {
         ChannelPipeline pipeline = Channels.pipeline();
 
-        pipeline.addLast( "debug-head", new DebugHandler( "stomp.proto.CLIENT" ) );
+        //pipeline.addLast( "debug-head", new DebugHandler( "stomp.proto.CLIENT" ) );
 
         if (this.useWebSockets) {
-            pipeline.addLast( "debug-transport-head", new DebugHandler( "stomp.proto.CLIENT.TRANSPORT.HEAD" ) );
+            //pipeline.addLast( "debug-transport-head", new DebugHandler( "stomp.proto.CLIENT.TRANSPORT.HEAD" ) );
             pipeline.addLast( "http-encoder", new HttpRequestEncoder() );
             pipeline.addLast( "http-decoder", new WebSocketHttpResponseDecoder() );
-            pipeline.addLast( "debug-transport-tail", new DebugHandler( "stomp.proto.CLIENT.TRANSPORT.TAIL" ) );
-            // pipeline.addLast( "websocket-frame-decoder", new
-            // WebSocketFrameDecoder() );
-            // pipeline.addLast( "websocket-frame-encoder", new
-            // WebSocketFrameEncoder() );
             pipeline.addLast( "websocket-connection-negotiator", new WebSocketConnectionNegotiator( "localhost", 8675 ) );
             pipeline.addLast( "stomp-frame-decoder", new WebSocketStompFrameDecoder() );
             pipeline.addLast( "stomp-frame-encoder", new WebSocketStompFrameEncoder() );
@@ -64,14 +59,12 @@ public class StompClientPipelineFactory implements ChannelPipelineFactory {
             pipeline.addLast( "stomp-frame-decoder", new StompFrameDecoder() );
             pipeline.addLast( "stomp-frame-encoder", new StompFrameEncoder() );
         }
-        // pipeline.addLast( "debug-frame-encoders", new DebugHandler() );
 
         pipeline.addLast( "stomp-client-connect", new StompConnectionNegotiator( clientContext, "localhost" ) );
         pipeline.addLast( "stomp-client-receipt", new ClientReceiptHandler( clientContext ) );
 
         pipeline.addLast( "stomp-message-encoder", new StompMessageEncoder() );
         pipeline.addLast( "stomp-message-decoder", new StompMessageDecoder( new ClientStompMessageFactory( this.client ) ) );
-        // pipeline.addLast( "debug-message-encoders", new DebugHandler() );
 
         pipeline.addLast( "stomp-client-message-handler", new ClientMessageHandler( clientContext ) );
 

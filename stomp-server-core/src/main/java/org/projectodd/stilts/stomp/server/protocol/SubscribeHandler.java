@@ -37,8 +37,6 @@ public class SubscribeHandler extends AbstractControlFrameHandler {
     public void handleControlFrame(ChannelHandlerContext channelContext, StompFrame frame) {
         String id = null, destination = null;
         try {
-            log.info( "Subscribing for frame: " + frame );
-
             destination = frame.getHeader( Header.DESTINATION );
             if (StringUtils.isEmpty( destination )) {
                 throw new StompException( "Cannot subscribe without destination." );

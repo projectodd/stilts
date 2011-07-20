@@ -29,7 +29,7 @@ import org.jboss.netty.handler.codec.http.HttpRequest;
 import org.jboss.netty.handler.codec.http.HttpResponse;
 import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.jboss.netty.handler.codec.http.HttpVersion;
-import org.projectodd.stilts.stomp.protocol.websockets.WebSocketChallenge;
+import org.projectodd.stilts.stomp.protocol.websocket.WebSocketChallenge;
 
 /**
  * Handler for ietf-00.
