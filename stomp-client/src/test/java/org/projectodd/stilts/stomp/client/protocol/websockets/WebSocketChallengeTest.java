@@ -3,6 +3,7 @@ package org.projectodd.stilts.stomp.client.protocol.websockets;
 import static org.junit.Assert.*;
 
 import org.junit.Test;
+import org.projectodd.stilts.stomp.protocol.websockets.WebSocketChallenge;
 
 public class WebSocketChallengeTest {
 

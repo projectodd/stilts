@@ -14,17 +14,18 @@ import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.jboss.netty.handler.codec.http.HttpVersion;
 import org.junit.Test;
 import org.projectodd.stilts.stomp.protocol.PipelineExposer;
+import org.projectodd.stilts.stomp.protocol.websockets.WebSocketChallenge;
 
 public class WebSocketConnectionNegotiatorTest {
 
     @Test
     public void testConnect() throws Exception {
         PipelineExposer pipelineExposer = new PipelineExposer();
-        DecoderEmbedder<HttpRequest> handler = new DecoderEmbedder<HttpRequest>( pipelineExposer, new HttpResponseDecoder(), new WebSocketConnectionNegotiator( "localhost", 8675 ) );
+        DecoderEmbedder<HttpRequest> handler = new DecoderEmbedder<HttpRequest>( pipelineExposer, new WebSocketHttpResponseDecoder(), new WebSocketConnectionNegotiator( "localhost", 8675 ) );
         
         ChannelPipeline pipeline = pipelineExposer.getPipeline();
         
-        assertNotNull( pipeline.get( HttpResponseDecoder.class ) );
+        assertNotNull( pipeline.get( WebSocketHttpResponseDecoder.class ) );
 
         HttpRequest result = handler.poll();
         assertNotNull( result );
@@ -50,17 +51,17 @@ public class WebSocketConnectionNegotiatorTest {
         handler.offer( httpResponse); 
         
         // reconfigured
-        assertNull( pipeline.get( HttpResponseDecoder.class ) );
+        assertNull( pipeline.get( WebSocketHttpResponseDecoder.class ) );
     }
     
     @Test
     public void testConnectFailure() throws Exception {
         PipelineExposer pipelineExposer = new PipelineExposer();
-        DecoderEmbedder<HttpRequest> handler = new DecoderEmbedder<HttpRequest>( pipelineExposer, new HttpResponseDecoder(), new WebSocketConnectionNegotiator( "localhost", 8675 ) );
+        DecoderEmbedder<HttpRequest> handler = new DecoderEmbedder<HttpRequest>( pipelineExposer, new WebSocketHttpResponseDecoder(), new WebSocketConnectionNegotiator( "localhost", 8675 ) );
         
         ChannelPipeline pipeline = pipelineExposer.getPipeline();
         
-        assertNotNull( pipeline.get( HttpResponseDecoder.class ) );
+        assertNotNull( pipeline.get( WebSocketHttpResponseDecoder.class ) );
 
         HttpRequest result = handler.poll();
         assertNotNull( result );
@@ -90,7 +91,7 @@ public class WebSocketConnectionNegotiatorTest {
         handler.offer( httpResponse); 
         
         // did not reconfigure
-        assertNotNull( pipeline.get( HttpResponseDecoder.class ) );
+        assertNotNull( pipeline.get( WebSocketHttpResponseDecoder.class ) );
     }
 
 }

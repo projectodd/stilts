@@ -23,7 +23,8 @@ public class StompMessageEncoderTest {
     @Test
     public void testNonMessage() throws Exception {
         boolean result = this.encoder.offer( "Howdy" );
-        assertFalse( result );
+        assertTrue( result );
+        assertEquals( "Howdy", this.encoder.poll() );
     }
 
     @Test

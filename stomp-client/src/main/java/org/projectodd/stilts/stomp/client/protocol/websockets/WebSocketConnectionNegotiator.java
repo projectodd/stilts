@@ -5,7 +5,6 @@ import java.security.NoSuchAlgorithmException;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
 import org.jboss.netty.channel.Channel;
-import org.jboss.netty.channel.ChannelHandler;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.ChannelState;
@@ -25,6 +24,7 @@ import org.jboss.netty.handler.codec.http.HttpResponseDecoder;
 import org.jboss.netty.handler.codec.http.HttpVersion;
 import org.jboss.netty.handler.codec.http.websocket.WebSocketFrameDecoder;
 import org.jboss.netty.handler.codec.http.websocket.WebSocketFrameEncoder;
+import org.projectodd.stilts.stomp.protocol.websockets.WebSocketChallenge;
 
 public class WebSocketConnectionNegotiator extends SimpleChannelUpstreamHandler {
 
@@ -75,12 +75,21 @@ public class WebSocketConnectionNegotiator extends SimpleChannelUpstreamHandler 
             System.err.println( "CONTENT: " + HttpHeaders.getContentLength( response ) );
             content.readBytes( challengeResponse );
 
-            System.err.println( "CLIENT verifying: " + challengeResponse.length);
+            System.err.println( "CLIENT verifying: " + challengeResponse.length );
             if (this.challenge.verify( challengeResponse )) {
                 ChannelPipeline pipeline = context.getPipeline();
                 pipeline.remove( this );
-                pipeline.replace( "http-decoder", "websockets-decoder", new WebSocketFrameDecoder() );
-                pipeline.replace( "http-encoder", "websockets-encoder", new WebSocketFrameEncoder() );
+                if (pipeline.get( WebSocketHttpResponseDecoder.class ) != null) {
+                    pipeline.replace( WebSocketHttpResponseDecoder.class, "websockets-decoder", new WebSocketFrameDecoder() );
+                } else {
+                    pipeline.addFirst( "websockets-decoder", new WebSocketFrameDecoder() );
+                }
+
+                if (pipeline.get( HttpRequestEncoder.class ) != null) {
+                    pipeline.replace( HttpRequestEncoder.class, "websockets-encoder", new WebSocketFrameEncoder() );
+                } else {
+                    pipeline.addAfter( "websockets-decoder", "websockets-encoder", new WebSocketFrameEncoder() );
+                }
                 Channel channel = context.getChannel();
                 context.sendUpstream( new UpstreamChannelStateEvent( channel, ChannelState.CONNECTED, channel.getRemoteAddress() ) );
             }

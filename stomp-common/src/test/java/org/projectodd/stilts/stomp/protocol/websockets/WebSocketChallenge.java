@@ -1,4 +1,4 @@
-package org.projectodd.stilts.stomp.client.protocol.websockets;
+package org.projectodd.stilts.stomp.protocol.websockets;
 
 import java.nio.ByteOrder;
 import java.nio.charset.Charset;
@@ -23,11 +23,11 @@ public class WebSocketChallenge {
         generateKeys();
     }
 
-    protected long getKey1() {
+    public long getKey1() {
         return this.key1;
     }
 
-    protected int getSpaces1() {
+    public int getSpaces1() {
         return this.spaces1;
     }
 
@@ -35,11 +35,11 @@ public class WebSocketChallenge {
         return encodeKey( this.key1, this.spaces1 );
     }
 
-    protected long getKey2() {
+    public long getKey2() {
         return this.key2;
     }
 
-    protected int getSpaces2() {
+    public int getSpaces2() {
         return this.spaces2;
     }
 
