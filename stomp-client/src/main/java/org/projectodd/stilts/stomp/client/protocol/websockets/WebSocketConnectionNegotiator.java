@@ -24,6 +24,7 @@ import org.jboss.netty.handler.codec.http.HttpVersion;
 import org.jboss.netty.handler.codec.http.websocket.WebSocketFrameDecoder;
 import org.jboss.netty.handler.codec.http.websocket.WebSocketFrameEncoder;
 import org.projectodd.stilts.stomp.protocol.websocket.WebSocketChallenge;
+import org.projectodd.stilts.stomp.protocol.websocket.WebSocketDisconnectionNegotiator;
 
 /** WebSockets protocol connection negotiator.
  * 

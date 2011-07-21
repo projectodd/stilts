@@ -40,7 +40,6 @@ public class StompConnectionNegotiator extends AbstractClientControlFrameHandler
 
     @Override
     protected void handleControlFrame(ChannelHandlerContext channelContext, StompFrame frame) {
-        getClientContext().setConnectionState( State.CONNECTED );
         String version = frame.getHeader( Header.VERSION );
         if (version != null) {
             getClientContext().setVersion( Version.forVersionString( version ) );
@@ -50,6 +49,7 @@ public class StompConnectionNegotiator extends AbstractClientControlFrameHandler
         
         channelContext.sendUpstream( new UpstreamChannelStateEvent( channel, ChannelState.CONNECTED, channel.getRemoteAddress() ) );
         channelContext.getPipeline().replace(  this, "stomp-disconnection-negotiator", new StompDisconnectionNegotiator( getClientContext() ) );
+        getClientContext().setConnectionState( State.CONNECTED );
     }
 
     private String host;

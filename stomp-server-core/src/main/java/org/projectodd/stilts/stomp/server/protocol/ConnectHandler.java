@@ -20,7 +20,9 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
 import org.jboss.logging.Logger;
+import org.jboss.netty.channel.ChannelEvent;
 import org.jboss.netty.channel.ChannelHandlerContext;
+import org.projectodd.stilts.stomp.Headers;
 import org.projectodd.stilts.stomp.Heartbeat;
 import org.projectodd.stilts.stomp.StompException;
 import org.projectodd.stilts.stomp.protocol.StompFrame;
@@ -44,13 +46,37 @@ public class ConnectHandler extends AbstractControlFrameHandler {
     }
 
     @Override
+    public void handleUpstream(ChannelHandlerContext ctx, ChannelEvent e) throws Exception {
+        if (e instanceof HostDecodedEvent) {
+            this.host = ((HostDecodedEvent) e).getHost();
+        } else {
+            super.handleUpstream( ctx, e );
+        }
+    }
+
+    @Override
     public void handleControlFrame(ChannelHandlerContext channelContext, StompFrame frame) {
         try {
             Version version = checkVersion( frame );
             checkHost( frame, version );
             Heartbeat hb = checkHeartbeat( frame, version );
+            Headers headers = frame.getHeaders();
+            String hostHeader = headers.get( Header.HOST );
+
+            if (hostHeader == null) {
+                if (this.host != null) {
+                    headers.put( Header.HOST, this.host );
+                }
+            } else {
+                if (this.host != null) {
+                    if (!(hostHeader).equals( this.host )) {
+                        throw new HostMismatchException( this.host, hostHeader );
+                    }
+                }
+            }
+
             StompConnection clientAgent = getStompProvider().createConnection( new ChannelMessageSink( channelContext.getChannel(), getContext().getAckManager() ),
-                    frame.getHeaders(), version, hb );
+                    headers, version, hb );
             if (clientAgent != null) {
                 getContext().setStompConnection( clientAgent );
                 StompFrame connected = StompFrames.newConnectedFrame( clientAgent.getSessionId(), version );
@@ -112,4 +138,6 @@ public class ConnectHandler extends AbstractControlFrameHandler {
         return selectedVersion;
 
     }
+
+    private String host;
 }

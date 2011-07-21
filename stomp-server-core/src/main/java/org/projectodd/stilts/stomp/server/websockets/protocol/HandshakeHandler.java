@@ -47,6 +47,8 @@ import org.jboss.netty.handler.codec.http.websocket.WebSocketFrameDecoder;
 import org.jboss.netty.handler.codec.http.websocket.WebSocketFrameEncoder;
 import org.jboss.netty.util.CharsetUtil;
 import org.projectodd.stilts.stomp.protocol.DebugHandler;
+import org.projectodd.stilts.stomp.protocol.websocket.WebSocketDisconnectionNegotiator;
+import org.projectodd.stilts.stomp.server.protocol.HostDecodedEvent;
 
 /**
  * Multi-verison handshake handler for the web-sockets protocol family.
@@ -86,7 +88,7 @@ public class HandshakeHandler extends SimpleChannelUpstreamHandler {
      * @param request
      * @throws Exception
      */
-    protected void handleHttpRequest(final ChannelHandlerContext channelContext, HttpRequest request) throws Exception {
+    protected void handleHttpRequest(final ChannelHandlerContext channelContext, final HttpRequest request) throws Exception {
         if (isWebSocketsUpgradeRequest( request )) {
 
             Handshake handshake = findHandshake( request );
@@ -101,16 +103,14 @@ public class HandshakeHandler extends SimpleChannelUpstreamHandler {
                 final ChannelPipeline pipeline = channelContext.getChannel().getPipeline();
                 reconfigureUpstream( pipeline );
 
-                // TODO FIXME
-                // addContextHandler( channelContext, context, pipeline );
-
                 Channel channel = channelContext.getChannel();
                 ChannelFuture future = channel.write( response );
                 future.addListener( new ChannelFutureListener() {
                     public void operationComplete(ChannelFuture future) throws Exception {
                         reconfigureDownstream( pipeline );
-                        pipeline.remove( HandshakeHandler.this );
+                        pipeline.replace( HandshakeHandler.this, "websocket-disconnection-negotiator", new WebSocketDisconnectionNegotiator() );
                         forwardConnectEventUpstream( channelContext );
+                        decodeHost( channelContext, request );
                     }
                 } );
 
@@ -125,6 +125,21 @@ public class HandshakeHandler extends SimpleChannelUpstreamHandler {
     protected void forwardConnectEventUpstream(ChannelHandlerContext channelContext) {
         ChannelEvent connectEvent = new UpstreamChannelStateEvent( channelContext.getChannel(), ChannelState.CONNECTED, channelContext.getChannel().getRemoteAddress() );
         channelContext.sendUpstream( connectEvent );
+    }
+
+    protected void decodeHost(ChannelHandlerContext channelContext, HttpRequest request) {
+        String hostPort = request.getHeader( HttpHeaders.Names.HOST );
+        
+        if (hostPort != null) {
+            int colonLoc = hostPort.indexOf( ':' );
+            String host = hostPort;
+            if ( colonLoc > 0 ) {
+                host = hostPort.substring( 0, colonLoc );
+            }
+            
+            ChannelEvent hostDecodedEvent = new HostDecodedEvent( channelContext.getChannel(), host );
+            channelContext.sendUpstream( hostDecodedEvent );
+        }
     }
 
     /**

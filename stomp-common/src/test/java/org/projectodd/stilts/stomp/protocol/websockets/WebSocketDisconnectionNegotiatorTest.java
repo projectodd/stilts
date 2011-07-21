@@ -1,4 +1,4 @@
-package org.projectodd.stilts.stomp.client.protocol.websockets;
+package org.projectodd.stilts.stomp.protocol.websockets;
 
 import static org.junit.Assert.*;
 
@@ -10,22 +10,22 @@ import org.junit.Test;
 import org.projectodd.stilts.stomp.protocol.HandlerEmbedder;
 import org.projectodd.stilts.stomp.protocol.websocket.WebSocketDisconnectionNegotiator;
 
-public class StompWebSocketDisconnectionNegotiationTest {
+public class WebSocketDisconnectionNegotiatorTest {
 
     @Test
     public void testCloseNegotiation() {
-        HandlerEmbedder handler = new HandlerEmbedder( false, new WebSocketDisconnectionNegotiator() ) ;
+        HandlerEmbedder handler = new HandlerEmbedder( false, new WebSocketDisconnectionNegotiator() );
         
         Channel channel = handler.getChannel();
         
         assertNull( handler.poll() );
         channel.close();
         
-        WebSocketFrame closeFrame = (WebSocketFrame) handler.poll();
-        assertNotNull( closeFrame );
+        WebSocketFrame webSocketCloseFrame = (WebSocketFrame) handler.poll();
+        assertNotNull( webSocketCloseFrame );
         
         assertNull( handler.poll() );
-        handler.sendUpstream( closeFrame );
+        handler.sendUpstream( webSocketCloseFrame );
         
         DownstreamChannelStateEvent finalCloseEvent = (DownstreamChannelStateEvent) handler.poll();
         assertNotNull( finalCloseEvent );

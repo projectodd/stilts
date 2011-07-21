@@ -53,6 +53,9 @@ public class ProtocolDetector extends ReplayingDecoder<VoidEnum> {
                 fullBuffer = switchToStompOverWebSockets( context, buffer );
             }
 
+            // We want to restart at the entire head of the pipeline, 
+            // not just the next handler, since we jiggled the whole
+            // thing pretty hard.
             context.getPipeline().sendUpstream( new UpstreamMessageEvent( context.getChannel(), fullBuffer, context.getChannel().getRemoteAddress() ) );
         }
 
@@ -119,13 +122,12 @@ public class ProtocolDetector extends ReplayingDecoder<VoidEnum> {
             pipeline.addLast( "stomp-server-send-threading", this.executionHandler );
         }
 
-
         pipeline.addLast( "stomp-server-send", new SendHandler( provider, context ) );
-        //pipeline.addLast( "debug-TAIL", new DebugHandler( "stomp.proto.SERVER-TAIL" ) );
     }
 
-    private static final Charset UTF_8 = Charset.forName( "UTF-8" );
+    @SuppressWarnings("unused")
     private static final Logger log = Logger.getLogger( "org.projectodd.stilts.stomp.server.protocol" );
+    private static final Charset UTF_8 = Charset.forName( "UTF-8" );
 
     private StompProvider provider;
     private Executor executor;
