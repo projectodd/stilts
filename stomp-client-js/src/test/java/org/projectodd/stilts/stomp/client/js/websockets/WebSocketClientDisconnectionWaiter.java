@@ -8,9 +8,9 @@ import org.jboss.netty.channel.ChannelUpstreamHandler;
 import org.jboss.netty.channel.ExceptionEvent;
 import org.projectodd.stilts.stomp.client.js.websockets.WebSocket.ReadyState;
 
-public class WebSocketClientConnectionWaiter implements ChannelUpstreamHandler {
+public class WebSocketClientDisconnectionWaiter implements ChannelUpstreamHandler {
 
-    public WebSocketClientConnectionWaiter(WebSocket socket) {
+    public WebSocketClientDisconnectionWaiter(WebSocket socket) {
         this.socket = socket;
     }
 
@@ -19,9 +19,9 @@ public class WebSocketClientConnectionWaiter implements ChannelUpstreamHandler {
         System.err.println( "UPSTREAM: "+ e );
         if ( e instanceof ChannelStateEvent ) {
             ChannelStateEvent event = (ChannelStateEvent) e;
-            if ( event.getState() == ChannelState.CONNECTED && event.getValue() != null ) {
-                ctx.getPipeline().replace( this, "websockets-client-disconnection-waiter", new WebSocketClientDisconnectionWaiter( this.socket ) );
-                this.socket.setReadyState( ReadyState.OPEN );
+            if ( event.getState() == ChannelState.CONNECTED && event.getValue() == null ) {
+                ctx.getPipeline().remove( this );
+                this.socket.setReadyState( ReadyState.CLOSED );
             }
         } else if ( e instanceof ExceptionEvent ) {
             ExceptionEvent event = (ExceptionEvent) e;

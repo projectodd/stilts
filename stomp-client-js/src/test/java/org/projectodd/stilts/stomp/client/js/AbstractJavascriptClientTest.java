@@ -1,5 +1,10 @@
 package org.projectodd.stilts.stomp.client.js;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+
 import org.junit.After;
 import org.junit.Before;
 import org.mozilla.javascript.Context;
@@ -21,11 +26,12 @@ public abstract class AbstractJavascriptClientTest extends AbstractStompServerTe
     protected ScriptableObject scope;
 
     @Before
-    public void setUpRhino() {
+    public void setUpRhino() throws Exception {
         this.context = Context.enter();
         this.scope = this.context.initStandardObjects();
         // prepare websocket support;
         evaluate( "var WebSocket = org.projectodd.stilts.stomp.client.js.websockets.WebSocket" );
+        evaluateResource( "test_helper.js" );
     }
 
     @After
@@ -35,6 +41,16 @@ public abstract class AbstractJavascriptClientTest extends AbstractStompServerTe
 
     public Object evaluate(String script) {
         return this.context.evaluateString( this.scope, script, "<cmd>", 1, null );
+    }
+
+    public Object evaluateResource(String name) throws IOException {
+        InputStream in = getClass().getResourceAsStream( name );
+        Reader reader = new InputStreamReader( in );
+        try {
+            return this.context.evaluateReader( this.scope, reader, name, 1, null );
+        } finally {
+            reader.close();
+        }
     }
 
 }

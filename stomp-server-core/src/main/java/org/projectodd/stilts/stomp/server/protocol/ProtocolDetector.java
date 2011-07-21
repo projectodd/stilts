@@ -14,6 +14,7 @@ import org.jboss.netty.handler.codec.http.HttpResponseEncoder;
 import org.jboss.netty.handler.codec.replay.ReplayingDecoder;
 import org.jboss.netty.handler.codec.replay.VoidEnum;
 import org.jboss.netty.handler.execution.ExecutionHandler;
+import org.projectodd.stilts.stomp.protocol.DebugHandler;
 import org.projectodd.stilts.stomp.protocol.StompFrameDecoder;
 import org.projectodd.stilts.stomp.protocol.StompFrameEncoder;
 import org.projectodd.stilts.stomp.protocol.StompMessageDecoder;
@@ -56,6 +57,7 @@ public class ProtocolDetector extends ReplayingDecoder<VoidEnum> {
             // We want to restart at the entire head of the pipeline, 
             // not just the next handler, since we jiggled the whole
             // thing pretty hard.
+            System.err.println( "switched, sending upstream" );
             context.getPipeline().sendUpstream( new UpstreamMessageEvent( context.getChannel(), fullBuffer, context.getChannel().getRemoteAddress() ) );
         }
 
@@ -63,11 +65,14 @@ public class ProtocolDetector extends ReplayingDecoder<VoidEnum> {
     }
 
     protected ChannelBuffer switchToPureStomp(ChannelHandlerContext context, ChannelBuffer buffer) {
+        System.err.println( "***** PURE STOMP" );
         ChannelBuffer fullBuffer = buffer.readBytes( super.actualReadableBytes() );
 
         ChannelPipeline pipeline = context.getPipeline();
 
         pipeline.remove( this );
+        
+        pipeline.addLast( "server-debug-header", new DebugHandler( "SERVER-HEAD" ) );
         
         pipeline.addLast( "stomp-frame-encoder", new StompFrameEncoder() );
         pipeline.addLast( "stomp-frame-decoder", new StompFrameDecoder() );
@@ -79,18 +84,24 @@ public class ProtocolDetector extends ReplayingDecoder<VoidEnum> {
     }
 
     protected ChannelBuffer switchToStompOverWebSockets(ChannelHandlerContext context, ChannelBuffer buffer) {
+        System.err.println( "***** STOMP over WEBSOCKETS" );
         ChannelBuffer fullBuffer = buffer.readBytes( super.actualReadableBytes() );
         ChannelPipeline pipeline = context.getPipeline();
         pipeline.remove( this );
 
+        System.err.println( "***** STOMP over WEBSOCKETS 2" );
+        pipeline.addFirst( "server-debug-header", new DebugHandler( "SERVER-HEAD" ) );
         pipeline.addLast( "http-encoder", new HttpResponseEncoder() );
         pipeline.addLast( "http-decoder", new HttpRequestDecoder() );
         pipeline.addLast( "websocket-handshake", new HandshakeHandler() );
         
+        System.err.println( "***** STOMP over WEBSOCKETS 3" );
         pipeline.addLast( "stomp-frame-encoder", new WebSocketStompFrameEncoder() );
         pipeline.addLast( "stomp-frame-decoder", new WebSocketStompFrameDecoder() );
+        System.err.println( "***** STOMP over WEBSOCKETS 4" );
 
         appendCommonHandlers( pipeline );
+        System.err.println( "***** STOMP over WEBSOCKETS 5" );
 
         return fullBuffer;
     }

@@ -35,12 +35,18 @@ public class WebSocket {
     private Channel channel;
 
     public WebSocket(String url) throws Exception {
-        this.url = url;
-        connect();
+        this( url, true );
     }
 
-    protected void connect() throws InterruptedException, URISyntaxException, ExecutionException, TimeoutException {
-        this.readyState = ReadyState.CONNECTING;
+    public WebSocket(String url, boolean autoConnect) throws Exception {
+        this.url = url;
+        if (autoConnect) {
+            connect();
+        }
+    }
+
+    public void connect() throws InterruptedException, URISyntaxException, ExecutionException, TimeoutException {
+        setReadyState( ReadyState.CONNECTING );
         ClientBootstrap bootstrap = new ClientBootstrap();
 
         this.executor = Executors.newFixedThreadPool( 4 );
@@ -56,18 +62,35 @@ public class WebSocket {
             port = Constants.DEFAULT_PORT;
         }
 
-        ChannelPipelineFactory factory = new WebSocketClientPipelineFactory( host, port );
+        ChannelPipelineFactory factory = new WebSocketClientPipelineFactory( this, host, port );
         bootstrap.setPipelineFactory( factory );
 
         InetSocketAddress addr = new InetSocketAddress( host, port );
         this.channel = bootstrap.connect( addr ).await().getChannel();
-        ((WebSocketClientPipeline) this.channel.getPipeline()).await();
-        this.readyState = ReadyState.OPEN;
-        fireOnOpen();
     }
 
     public int getReadyState() {
         return this.readyState.ordinal();
+    }
+
+    void setReadyState(ReadyState state) {
+        synchronized (this.readyStateLock) {
+            this.readyState = state;
+            if (this.readyState == ReadyState.OPEN) {
+                fireEvent( this.onOpen, "open" );
+            } else if (this.readyState == ReadyState.CLOSED) {
+                fireEvent( this.onClose, "close" );
+            }
+            this.readyStateLock.notifyAll();
+        }
+    }
+
+    public void waitForClosedState() throws InterruptedException {
+        synchronized ( this.readyStateLock ) {
+            while ( this.readyState != ReadyState.CLOSED ) {
+                this.readyStateLock.wait();
+            }
+        }
     }
 
     public int getBufferedAmount() {
@@ -80,6 +103,9 @@ public class WebSocket {
 
     public void setOnopen(Function handler) {
         this.onOpen = handler;
+        if (this.readyState == ReadyState.OPEN) {
+            fireEvent( this.onOpen, "open" );
+        }
     }
 
     protected void fireOnOpen() {
@@ -89,7 +115,7 @@ public class WebSocket {
     public void setOnclose(Function handler) {
         this.onClose = handler;
     }
-    
+
     protected void fireOnClose() {
         fireEvent( this.onClose, null );
     }
@@ -97,7 +123,7 @@ public class WebSocket {
     public void setOnerror(Function handler) {
         this.onError = handler;
     }
-    
+
     protected void fireOnError() {
         fireEvent( this.onError, null );
     }
@@ -105,11 +131,11 @@ public class WebSocket {
     public void setOnmessage(Function handler) {
         this.onMessage = handler;
     }
-    
+
     protected void fireOnMessage() {
         fireEvent( this.onMessage, null );
     }
-    
+
     protected void fireEvent(Function handler, Object event) {
         if (handler != null) {
             Context context = Context.enter();
@@ -135,9 +161,12 @@ public class WebSocket {
     }
 
     public void close(int code) {
+        setReadyState( ReadyState.CLOSING );
+        this.channel.close();
     }
 
     private String url;
     private ReadyState readyState;
+    private final Object readyStateLock = new Object();
 
 }

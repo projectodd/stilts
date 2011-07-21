@@ -58,6 +58,17 @@
 
 
   <build>
+    <testResources>
+      <testResource>
+        <directory>src/test/resources</directory>
+      </testResource>
+      <testResource>
+        <directory>src/test/java</directory>
+        <includes>
+          <include>**/*.js</include>
+        </includes>
+      </testResource>
+    </testResources>
   </build>
 
 </project>
