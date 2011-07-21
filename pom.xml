@@ -428,6 +428,7 @@
 		<module>stomp-common</module>
 
 		<module>stomp-client</module>
+		<module>stomp-client-js</module>
 
 		<module>stomp-server-spi</module>
 		<module>stomp-server-core</module>

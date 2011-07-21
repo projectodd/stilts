@@ -47,9 +47,8 @@ import org.projectodd.stilts.stomp.protocol.StompFrames;
 
 public class StompClient {
 
-    // TODO: Make these configurable.
-    private static final long DEFAULT_CONNECT_WAIT_TIME = 5000L;
-    private static final long DEFAULT_DISCONNECT_WAIT_TIME = 5000L;
+    public static final long DEFAULT_CONNECT_WAIT_TIME = 5000L;
+    public static final long DEFAULT_DISCONNECT_WAIT_TIME = 5000L;
 
     private static Logger log = Logger.getLogger( StompClient.class );
 

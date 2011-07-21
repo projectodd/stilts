@@ -8,12 +8,10 @@ import org.jboss.netty.buffer.ChannelBuffers;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.ChannelPipeline;
-import org.jboss.netty.channel.ChannelState;
 import org.jboss.netty.channel.ChannelStateEvent;
 import org.jboss.netty.channel.Channels;
 import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.channel.SimpleChannelUpstreamHandler;
-import org.jboss.netty.channel.UpstreamChannelStateEvent;
 import org.jboss.netty.handler.codec.http.DefaultHttpRequest;
 import org.jboss.netty.handler.codec.http.HttpHeaders;
 import org.jboss.netty.handler.codec.http.HttpMethod;
@@ -79,6 +77,8 @@ public class WebSocketConnectionNegotiator extends SimpleChannelUpstreamHandler 
 
             ChannelBuffer content = response.getContent();
 
+            
+            System.err.println( "READABLE: " + content.readableBytes() );
             byte[] challengeResponse = new byte[16];
             content.readBytes( challengeResponse );
 
