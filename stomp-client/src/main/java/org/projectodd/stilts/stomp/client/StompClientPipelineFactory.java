@@ -45,10 +45,7 @@ public class StompClientPipelineFactory implements ChannelPipelineFactory {
     public ChannelPipeline getPipeline() throws Exception {
         ChannelPipeline pipeline = Channels.pipeline();
 
-        //pipeline.addLast( "debug-head", new DebugHandler( "stomp.proto.CLIENT" ) );
-
         if (this.useWebSockets) {
-            //pipeline.addLast( "debug-transport-head", new DebugHandler( "stomp.proto.CLIENT.TRANSPORT.HEAD" ) );
             pipeline.addLast( "http-encoder", new HttpRequestEncoder() );
             pipeline.addLast( "http-decoder", new WebSocketHttpResponseDecoder() );
             pipeline.addLast( "websocket-connection-negotiator", new WebSocketConnectionNegotiator( "localhost", 8675 ) );
@@ -59,7 +56,7 @@ public class StompClientPipelineFactory implements ChannelPipelineFactory {
             pipeline.addLast( "stomp-frame-encoder", new StompFrameEncoder() );
         }
 
-        pipeline.addLast( "stomp-client-connect", new StompConnectionNegotiator( clientContext, "localhost" ) );
+        pipeline.addLast( "stomp-connection-negotiator", new StompConnectionNegotiator( clientContext, "localhost" ) );
         pipeline.addLast( "stomp-client-receipt", new ClientReceiptHandler( clientContext ) );
 
         pipeline.addLast( "stomp-message-encoder", new StompMessageEncoder() );

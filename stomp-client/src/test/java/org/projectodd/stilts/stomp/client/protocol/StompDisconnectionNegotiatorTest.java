@@ -6,6 +6,8 @@ import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelState;
 import org.jboss.netty.channel.DownstreamChannelStateEvent;
 import org.junit.Test;
+import org.projectodd.stilts.stomp.client.MockClientContext;
+import org.projectodd.stilts.stomp.client.StompClient.State;
 import org.projectodd.stilts.stomp.protocol.HandlerEmbedder;
 import org.projectodd.stilts.stomp.protocol.StompControlFrame;
 import org.projectodd.stilts.stomp.protocol.StompFrame;
@@ -17,7 +19,8 @@ public class StompDisconnectionNegotiatorTest {
 
     @Test
     public void testCloseNegotiation() {
-        HandlerEmbedder handler = new HandlerEmbedder( false, new StompDisconnectionNegotiator() ) ;
+        MockClientContext clientContext = new MockClientContext();
+        HandlerEmbedder handler = new HandlerEmbedder( false, new StompDisconnectionNegotiator( clientContext ) ) ;
         
         Channel channel = handler.getChannel();
         
@@ -38,6 +41,8 @@ public class StompDisconnectionNegotiatorTest {
         assertNotNull( finalCloseEvent );
         assertEquals( ChannelState.OPEN, finalCloseEvent.getState() );
         assertFalse( Boolean.TRUE.equals( finalCloseEvent.getValue() ) );
+        
+        assertEquals( State.DISCONNECTED, clientContext.getConnectionState() );
     }
 
 }

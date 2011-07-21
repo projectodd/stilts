@@ -216,15 +216,8 @@ public class StompClient {
     }
 
     public void disconnect(long waitTime) throws InterruptedException, StompException {
-        StompControlFrame frame = new StompControlFrame( Command.DISCONNECT );
         setConnectionState( State.DISCONNECTING );
-        sendFrame( frame, new Callable<Void>() {
-            public Void call() throws Exception {
-                setConnectionState( State.DISCONNECTED );
-                return null;
-            }
-        } );
-
+        this.channel.close();
         waitForDisconnected( waitTime );
     }
 

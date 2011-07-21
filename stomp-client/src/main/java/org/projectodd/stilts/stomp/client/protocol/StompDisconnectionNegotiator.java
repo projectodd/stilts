@@ -7,7 +7,7 @@ import org.jboss.netty.channel.ChannelStateEvent;
 import org.jboss.netty.channel.ChannelUpstreamHandler;
 import org.jboss.netty.channel.Channels;
 import org.jboss.netty.channel.MessageEvent;
-import org.jboss.netty.handler.codec.http.websocket.WebSocketFrame;
+import org.projectodd.stilts.stomp.client.StompClient.State;
 import org.projectodd.stilts.stomp.protocol.StompControlFrame;
 import org.projectodd.stilts.stomp.protocol.StompFrame;
 import org.projectodd.stilts.stomp.protocol.StompFrame.Command;
@@ -15,6 +15,10 @@ import org.projectodd.stilts.stomp.protocol.StompFrame.Header;
 import org.projectodd.stilts.stomp.protocol.StompFrames;
 
 public class StompDisconnectionNegotiator implements ChannelDownstreamHandler, ChannelUpstreamHandler {
+    
+    public StompDisconnectionNegotiator(ClientContext clientContext) {
+        this.clientContext = clientContext;
+    }
 
     @Override
     public void handleUpstream(ChannelHandlerContext ctx, ChannelEvent e) throws Exception {
@@ -26,6 +30,7 @@ public class StompDisconnectionNegotiator implements ChannelDownstreamHandler, C
 
                     if ( frame.getCommand() == Command.RECEIPT && frame.getHeader( Header.RECEIPT_ID ).equals( this.receiptId ) ) {
                         ctx.sendDownstream( this.closeRequest );
+                        this.clientContext.setConnectionState( State.DISCONNECTED );
                         return;
                     }
                 }
@@ -55,6 +60,7 @@ public class StompDisconnectionNegotiator implements ChannelDownstreamHandler, C
         Channels.write( ctx.getChannel(), closeFrame );
     }
 
+    private ClientContext clientContext;
     private String receiptId;
     private ChannelStateEvent closeRequest;
 }

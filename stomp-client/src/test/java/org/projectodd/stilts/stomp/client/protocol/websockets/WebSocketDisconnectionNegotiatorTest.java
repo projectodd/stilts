@@ -7,6 +7,8 @@ import org.jboss.netty.channel.ChannelState;
 import org.jboss.netty.channel.DownstreamChannelStateEvent;
 import org.jboss.netty.handler.codec.http.websocket.WebSocketFrame;
 import org.junit.Test;
+import org.projectodd.stilts.stomp.client.MockClientContext;
+import org.projectodd.stilts.stomp.client.StompClient.State;
 import org.projectodd.stilts.stomp.client.protocol.StompDisconnectionNegotiator;
 import org.projectodd.stilts.stomp.protocol.HandlerEmbedder;
 import org.projectodd.stilts.stomp.protocol.StompControlFrame;
@@ -19,7 +21,8 @@ public class WebSocketDisconnectionNegotiatorTest {
 
     @Test
     public void testCloseNegotiation() {
-        HandlerEmbedder handler = new HandlerEmbedder( false, new WebSocketDisconnectionNegotiator(), new StompDisconnectionNegotiator() ) ;
+        MockClientContext clientContext = new MockClientContext();
+        HandlerEmbedder handler = new HandlerEmbedder( false, new WebSocketDisconnectionNegotiator(), new StompDisconnectionNegotiator( clientContext ) ) ;
         
         Channel channel = handler.getChannel();
         
@@ -46,6 +49,8 @@ public class WebSocketDisconnectionNegotiatorTest {
         assertNotNull( finalCloseEvent );
         assertEquals( ChannelState.OPEN, finalCloseEvent.getState() );
         assertFalse( Boolean.TRUE.equals( finalCloseEvent.getValue() ) );
+        
+        assertEquals( State.DISCONNECTED, clientContext.getConnectionState());
     }
 
 }

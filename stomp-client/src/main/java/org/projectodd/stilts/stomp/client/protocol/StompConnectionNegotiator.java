@@ -49,6 +49,7 @@ public class StompConnectionNegotiator extends AbstractClientControlFrameHandler
         Channel channel = channelContext.getChannel();
         
         channelContext.sendUpstream( new UpstreamChannelStateEvent( channel, ChannelState.CONNECTED, channel.getRemoteAddress() ) );
+        channelContext.getPipeline().replace(  this, "stomp-disconnection-negotiator", new StompDisconnectionNegotiator( getClientContext() ) );
     }
 
     private String host;

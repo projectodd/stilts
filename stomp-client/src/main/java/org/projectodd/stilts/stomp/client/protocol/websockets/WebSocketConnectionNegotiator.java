@@ -68,9 +68,7 @@ public class WebSocketConnectionNegotiator extends SimpleChannelUpstreamHandler 
         Channel channel = context.getChannel();
 
         this.connectedEvent = e;
-        //context.sendDownstream( new DownstreamMessageEvent( channel, Channels.future( channel ), request, channel.getRemoteAddress() ) );
         Channels.write( channel, request );
-        log.info( "Wrote start handshake" );
     }
 
     @Override
@@ -85,7 +83,6 @@ public class WebSocketConnectionNegotiator extends SimpleChannelUpstreamHandler 
 
             if (this.challenge.verify( challengeResponse )) {
                 ChannelPipeline pipeline = context.getPipeline();
-                pipeline.remove( this );
                 if (pipeline.get( WebSocketHttpResponseDecoder.class ) != null) {
                     pipeline.replace( WebSocketHttpResponseDecoder.class, "websockets-decoder", new WebSocketFrameDecoder() );
                 } else {
@@ -97,9 +94,8 @@ public class WebSocketConnectionNegotiator extends SimpleChannelUpstreamHandler 
                 } else {
                     pipeline.addAfter( "websockets-decoder", "websockets-encoder", new WebSocketFrameEncoder() );
                 }
-                Channel channel = context.getChannel();
-                //context.sendUpstream( this.connectedEvent );
-                context.sendUpstream( new UpstreamChannelStateEvent( channel, ChannelState.CONNECTED, channel.getRemoteAddress() ) );
+                context.sendUpstream( this.connectedEvent );
+                pipeline.replace( this, "websocket-disconnection-negotiator", new WebSocketDisconnectionNegotiator() );
             }
         } else {
             super.messageReceived( context, e );
