@@ -56,16 +56,11 @@ public class ConnectHandler extends AbstractControlFrameHandler {
 
     @Override
     public void handleControlFrame(ChannelHandlerContext channelContext, StompFrame frame) {
-        System.err.println( "handle control frame A" );
         try {
             Version version = checkVersion( frame );
-            System.err.println( "handle control frame B" );
             Heartbeat hb = checkHeartbeat( frame, version );
-            System.err.println( "handle control frame C" );
             Headers headers = frame.getHeaders();
-            System.err.println( "handle control frame D" );
             String hostHeader = headers.get( Header.HOST );
-            System.err.println( "handle control frame E" );
 
             if (hostHeader == null) {
                 if (this.host != null) {
@@ -78,22 +73,16 @@ public class ConnectHandler extends AbstractControlFrameHandler {
                     }
                 }
             }
-            
-            System.err.println( "handle control frame F" );
 
             checkHost( headers, version );
-            System.err.println( "handle control frame G" );
-
             StompConnection clientAgent = getStompProvider().createConnection( new ChannelMessageSink( channelContext.getChannel(), getContext().getAckManager() ),
                     headers, version, hb );
-            System.err.println( "handle control frame H " + clientAgent );
             if (clientAgent != null) {
                 getContext().setStompConnection( clientAgent );
                 StompFrame connected = StompFrames.newConnectedFrame( clientAgent.getSessionId(), version );
                 if (hb != null) {
                     connected.setHeader( Header.HEARTBEAT, hb.getServerSend() + "," + hb.getServerReceive() );
                 }
-                System.err.println( "replying!" );
                 sendFrame( channelContext, connected );
             }
         } catch (StompException e) {
@@ -105,7 +94,7 @@ public class ConnectHandler extends AbstractControlFrameHandler {
     private Heartbeat checkHeartbeat(StompFrame frame, Version version) throws StompException {
         Heartbeat hb = null;
         String heartBeat = frame.getHeader( Header.HEARTBEAT );
-        if ( heartBeat != null && ( ! heartBeat.trim().equals( "" ) ) && !version.isBefore( Version.VERSION_1_1 )) {
+        if ( StringUtils.isNotBlank( heartBeat ) && !version.isBefore( Version.VERSION_1_1 )) {
             if (!HEART_BEAT_PATTERN.matcher( heartBeat ).matches()) {
                 throw new StompException( "Heartbeat must be specified in msec as two comma-separated values." );
             }
