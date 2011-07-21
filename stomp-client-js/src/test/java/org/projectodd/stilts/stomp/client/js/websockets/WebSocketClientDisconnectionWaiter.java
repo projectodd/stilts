@@ -26,6 +26,8 @@ public class WebSocketClientDisconnectionWaiter implements ChannelUpstreamHandle
         } else if ( e instanceof ExceptionEvent ) {
             ExceptionEvent event = (ExceptionEvent) e;
             event.getCause().printStackTrace();
+        } else {
+            ctx.sendUpstream( e );
         }
     }
     

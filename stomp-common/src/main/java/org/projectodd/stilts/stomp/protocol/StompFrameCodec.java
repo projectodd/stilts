@@ -23,7 +23,7 @@ public class StompFrameCodec {
 
     public StompFrame decode(ChannelBuffer buffer) throws Exception {
         FrameHeader header = decodeHeader( buffer );
-
+        
         if (header == null) {
             return null;
         }

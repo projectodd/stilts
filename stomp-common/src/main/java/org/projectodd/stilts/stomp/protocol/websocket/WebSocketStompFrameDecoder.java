@@ -24,21 +24,25 @@ import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.handler.codec.http.websocket.WebSocketFrame;
 import org.jboss.netty.handler.codec.oneone.OneToOneDecoder;
+import org.projectodd.stilts.stomp.protocol.StompFrame;
 import org.projectodd.stilts.stomp.protocol.StompFrameCodec;
 
 public class WebSocketStompFrameDecoder extends OneToOneDecoder {
 
-	private static final Charset UTF_8 = Charset.forName("UTF-8");
-	private static Logger log = Logger.getLogger(WebSocketStompFrameDecoder.class);
+    private static final Charset UTF_8 = Charset.forName( "UTF-8" );
+    private static Logger log = Logger.getLogger( WebSocketStompFrameDecoder.class );
+
     @Override
     protected Object decode(ChannelHandlerContext ctx, Channel channel, Object msg) throws Exception {
-        if ( msg instanceof WebSocketFrame ) {
+        if (msg instanceof WebSocketFrame) {
             WebSocketFrame webSocketFrame = (WebSocketFrame) msg;
             ChannelBuffer buffer = webSocketFrame.getBinaryData();
-            return StompFrameCodec.INSTANCE.decode( buffer );
+            System.err.println( "DECODE ME! " + msg.getClass() );
+            StompFrame stompFrame = StompFrameCodec.INSTANCE.decode( buffer );
+            System.err.println( "---> " + stompFrame );
+            return stompFrame;
         }
         return msg;
     }
-
 
 }

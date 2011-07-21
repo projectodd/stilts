@@ -18,6 +18,9 @@
             }
           }
         }
+        if ( body ) {
+            out = out + header + ':' + body.length;
+        }
         out = out + '\n';
         if (body) {
           out = out + body;
@@ -28,7 +31,7 @@
   };
 
   trim = function(str) {
-    return str.replace(/^\s+/g,'').replace(/\s+$/g,'');
+    return ("" + str).replace(/^\s+/g,'').replace(/\s+$/g,'');
   };
 
   Stomp.unmarshal = function(data) {
@@ -80,7 +83,10 @@
     onmessage = function(evt) {
       debug('<<< ' + evt.data);
       var frame = Stomp.unmarshal(evt.data);
-      if (frame.command === "CONNECTED" && that.connectCallback) {
+      debug('<<< FRAME [' + frame.command + ']' );
+      debug('<<< FRAME ' + ( frame.command == 'CONNECTED' ) );
+      if (frame.command == "CONNECTED" && that.connectCallback) {
+        debug( "calling callback" );
         that.connectCallback(frame);
       } else if (frame.command === "MESSAGE") {
         var onreceive = subscriptions[frame.headers.subscription];
@@ -129,6 +135,10 @@
       if (disconnectCallback) {
         disconnectCallback();
       }
+    };
+
+    that.waitForDisconnect = function() {
+      ws.waitForClosedState();
     };
 
     that.send = function(destination, headers, body) {

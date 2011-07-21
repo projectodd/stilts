@@ -21,6 +21,7 @@ import org.jboss.netty.handler.codec.http.HttpResponse;
 import org.jboss.netty.handler.codec.http.HttpVersion;
 import org.jboss.netty.handler.codec.http.websocket.WebSocketFrameDecoder;
 import org.jboss.netty.handler.codec.http.websocket.WebSocketFrameEncoder;
+import org.projectodd.stilts.stomp.protocol.DebugHandler;
 import org.projectodd.stilts.stomp.protocol.websocket.WebSocketChallenge;
 import org.projectodd.stilts.stomp.protocol.websocket.WebSocketDisconnectionNegotiator;
 
@@ -95,6 +96,8 @@ public class WebSocketConnectionNegotiator extends SimpleChannelUpstreamHandler 
                 } else {
                     pipeline.addAfter( "websockets-decoder", "websockets-encoder", new WebSocketFrameEncoder() );
                 }
+                pipeline.addBefore( "websockets-encoder", "pre-encoder", new DebugHandler( "PRE_ENCODE" ) );
+                pipeline.addAfter( "websockets-decoder", "post-encoder", new DebugHandler( "POST_ENCODE" ) );
                 context.sendUpstream( this.connectedEvent );
                 pipeline.replace( this, "websocket-disconnection-negotiator", new WebSocketDisconnectionNegotiator() );
             }

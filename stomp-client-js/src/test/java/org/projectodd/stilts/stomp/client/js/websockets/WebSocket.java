@@ -9,14 +9,18 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeoutException;
 
 import org.jboss.netty.bootstrap.ClientBootstrap;
+import org.jboss.netty.buffer.ChannelBuffer;
+import org.jboss.netty.buffer.ChannelBuffers;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.jboss.netty.channel.socket.nio.NioClientSocketChannelFactory;
+import org.jboss.netty.handler.codec.http.websocket.DefaultWebSocketFrame;
 import org.jboss.netty.util.VirtualExecutorService;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Function;
 import org.mozilla.javascript.Scriptable;
 import org.projectodd.stilts.stomp.Constants;
+import org.projectodd.stilts.stomp.client.StompClient;
 
 public class WebSocket {
 
@@ -86,10 +90,21 @@ public class WebSocket {
     }
 
     public void waitForClosedState() throws InterruptedException {
-        synchronized ( this.readyStateLock ) {
-            while ( this.readyState != ReadyState.CLOSED ) {
-                this.readyStateLock.wait();
+        synchronized (this.readyStateLock) {
+            long fullWait = StompClient.DEFAULT_DISCONNECT_WAIT_TIME;
+            long startTime = System.currentTimeMillis();
+            long remainingWait = fullWait;
+
+            System.err.println( "waiting for ws close" );
+            while (remainingWait > 0 && this.readyState != ReadyState.CLOSED) {
+                this.readyStateLock.wait( remainingWait );
+                System.err.println( "wait notified on " + this.readyState );
+                if (this.readyState != ReadyState.CLOSED) {
+                    long elapsed = System.currentTimeMillis() - startTime;
+                    remainingWait = fullWait - elapsed;
+                }
             }
+            System.err.println( "ws closed!" );
         }
     }
 
@@ -98,7 +113,8 @@ public class WebSocket {
     }
 
     public void send(String message) {
-        System.err.println( "sending " + message );
+        DefaultWebSocketFrame frame = new DefaultWebSocketFrame( message );
+        this.channel.write( frame );
     }
 
     public void setOnopen(Function handler) {
@@ -132,8 +148,9 @@ public class WebSocket {
         this.onMessage = handler;
     }
 
-    protected void fireOnMessage() {
-        fireEvent( this.onMessage, null );
+    protected void fireOnMessage(Object message) {
+        System.err.println( "sending message" );
+        fireEvent( this.onMessage, new MessageEvent( message ) );
     }
 
     protected void fireEvent(Function handler, Object event) {
@@ -158,6 +175,10 @@ public class WebSocket {
 
     public String getBinaryType() {
         return "blob";
+    }
+
+    public void close() {
+        close( 0 );
     }
 
     public void close(int code) {
