@@ -78,7 +78,7 @@ public class DefaultStompMessage implements StompMessage {
     
     @Override
     public void setContentType(String contentType) {
-        this.headers.put( Header.CONTENT_LENGTH, contentType);
+        this.headers.put( Header.CONTENT_TYPE, contentType);
     }
 
     @Override
