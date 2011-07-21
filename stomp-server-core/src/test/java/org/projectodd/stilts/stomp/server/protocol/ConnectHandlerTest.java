@@ -48,6 +48,7 @@ public class ConnectHandlerTest extends AbstractStompServerTestCase<MockStompPro
     public void testBothVersionsAccepted() {
         StompFrame stompFrame = new StompFrame( Command.CONNECT );
         stompFrame.setHeader( Header.ACCEPT_VERSION, "1.0,1.1" );
+        stompFrame.setHeader( Header.HOST, "localhost" );
         handler.offer( stompFrame );
         StompFrame frame = handler.poll();
         assertEquals( Command.CONNECTED, frame.getCommand() );
@@ -90,6 +91,26 @@ public class ConnectHandlerTest extends AbstractStompServerTestCase<MockStompPro
     }
 
     @Test
+    public void testV10NoHostsHeaderOk() {
+        StompFrame stompFrame = new StompFrame( Command.CONNECT );
+        handler.offer( stompFrame );
+        StompFrame resultFrame = (StompFrame) handler.poll();
+        assertEquals( Command.CONNECTED, resultFrame.getCommand() );
+        Version version = server.getStompProvider().getConnections().get( 0 ).getVersion();
+        assertEquals( Version.VERSION_1_0, version );
+    }    
+    
+    @Test
+    public void testV11NoHostsHeader() {
+        StompFrame stompFrame = new StompFrame( Command.CONNECT );
+        stompFrame.setHeader( Header.ACCEPT_VERSION, Version.supportedVersions() );
+        handler.offer( stompFrame );
+        StompContentFrame resultFrame = (StompContentFrame) handler.poll();
+        assertEquals( Command.ERROR, resultFrame.getCommand() );
+        assertEquals( "Must specify host in STOMP protocol 1.1 and above.", new String( resultFrame.getContent().array() ) );
+    }    
+    
+    @Test
     public void testHeartbeatIgnoredOnV10() {
         StompFrame stompFrame = new StompFrame( Command.CONNECT );
         stompFrame.setHeader( Header.HEARTBEAT, "burns_omninet" );
@@ -106,6 +127,7 @@ public class ConnectHandlerTest extends AbstractStompServerTestCase<MockStompPro
         StompFrame stompFrame = new StompFrame( Command.CONNECT );
         stompFrame.setHeader( Header.ACCEPT_VERSION, "1.1" );
         stompFrame.setHeader( Header.HEARTBEAT, "ahoy,hoy" );
+        stompFrame.setHeader( Header.HOST, "localhost" );
         handler.offer( stompFrame );
         StompContentFrame resultFrame = (StompContentFrame) handler.poll();
         Command command = resultFrame.getCommand();
@@ -118,6 +140,7 @@ public class ConnectHandlerTest extends AbstractStompServerTestCase<MockStompPro
         StompFrame stompFrame = new StompFrame( Command.CONNECT );
         stompFrame.setHeader( Header.ACCEPT_VERSION, "1.1" );
         stompFrame.setHeader( Header.HEARTBEAT, "91895259821759871827598127598715987182975,42" );
+        stompFrame.setHeader( Header.HOST, "localhost" );
         handler.offer( stompFrame );
         StompContentFrame resultFrame = (StompContentFrame) handler.poll();
         Command command = resultFrame.getCommand();
@@ -129,6 +152,7 @@ public class ConnectHandlerTest extends AbstractStompServerTestCase<MockStompPro
     public void testBadHeartbeatNegativeValues() {
         StompFrame stompFrame = new StompFrame( Command.CONNECT );
         stompFrame.setHeader( Header.ACCEPT_VERSION, "1.1" );
+        stompFrame.setHeader( Header.HOST, "localhost" );
         stompFrame.setHeader( Header.HEARTBEAT, "-30000,20000" );
         handler.offer( stompFrame );
         StompContentFrame resultFrame = (StompContentFrame) handler.poll();
@@ -143,6 +167,7 @@ public class ConnectHandlerTest extends AbstractStompServerTestCase<MockStompPro
     public void testValidHeartbeatValues() {
         StompFrame stompFrame = new StompFrame( Command.CONNECT );
         stompFrame.setHeader( Header.ACCEPT_VERSION, "1.1" );
+        stompFrame.setHeader( Header.HOST, "localhost" );
         stompFrame.setHeader( Header.HEARTBEAT, "30000,30000" );
         handler.offer( stompFrame );
         StompFrame resultFrame = handler.poll();
@@ -159,6 +184,7 @@ public class ConnectHandlerTest extends AbstractStompServerTestCase<MockStompPro
     public void testCheckServerHeartbeat() throws Exception {
         StompFrame stompFrame = new StompFrame( Command.CONNECT );
         stompFrame.setHeader( Header.ACCEPT_VERSION, "1.1" );
+        stompFrame.setHeader( Header.HOST, "localhost" );
         stompFrame.setHeader( Header.HEARTBEAT, "1000,1000" );
         handler.offer( stompFrame );
         StompFrame resultFrame = handler.poll();

@@ -47,6 +47,7 @@ public class ConnectHandler extends AbstractControlFrameHandler {
     public void handleControlFrame(ChannelHandlerContext channelContext, StompFrame frame) {
         try {
             Version version = checkVersion( frame );
+            checkHost( frame, version );
             Heartbeat hb = checkHeartbeat( frame, version );
             StompConnection clientAgent = getStompProvider().createConnection( new ChannelMessageSink( channelContext.getChannel(), getContext().getAckManager() ),
                     frame.getHeaders(), version, hb );
@@ -81,6 +82,14 @@ public class ConnectHandler extends AbstractControlFrameHandler {
             }
         }
         return hb;
+    }
+
+    private String checkHost(StompFrame frame, Version version) throws StompException {
+        String host = frame.getHeader( Header.HOST );
+        if (StringUtils.isBlank( host ) && version.isAfter( Version.VERSION_1_0 )) {
+            throw new StompException( "Must specify host in STOMP protocol 1.1 and above." );
+        }
+        return host;
     }
 
     private Version checkVersion(StompFrame frame) throws StompException {
