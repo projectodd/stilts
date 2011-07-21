@@ -66,10 +66,8 @@ public class ProtocolDetector extends ReplayingDecoder<VoidEnum> {
 
         pipeline.remove( this );
         
-        //pipeline.addLast( "debug-FRAME-HEAD", new DebugHandler( "stomp.proto.SERVER-FRAME-HEAD" ) );
         pipeline.addLast( "stomp-frame-encoder", new StompFrameEncoder() );
         pipeline.addLast( "stomp-frame-decoder", new StompFrameDecoder() );
-        //pipeline.addLast( "debug-FRAME-TAIL", new DebugHandler( "stomp.proto.SERVER-FRAME-TAIL" ) );
         
         appendCommonHandlers( pipeline );
 
@@ -84,13 +82,10 @@ public class ProtocolDetector extends ReplayingDecoder<VoidEnum> {
 
         pipeline.addLast( "http-encoder", new HttpResponseEncoder() );
         pipeline.addLast( "http-decoder", new HttpRequestDecoder() );
-        //pipeline.addLast( "debug-b", new DebugHandler( "stomp.proto.SERVER-B" ) );
         pipeline.addLast( "websocket-handshake", new HandshakeHandler() );
         
-        //pipeline.addLast( "debug-FRAME-HEAD", new DebugHandler( "stomp.proto.SERVER-FRAME-HEAD" ) );
         pipeline.addLast( "stomp-frame-encoder", new WebSocketStompFrameEncoder() );
         pipeline.addLast( "stomp-frame-decoder", new WebSocketStompFrameDecoder() );
-        //pipeline.addLast( "debug-FRAME-TAIL", new DebugHandler( "stomp.proto.SERVER-FRAME-TAIL" ) );
 
         appendCommonHandlers( pipeline );
 
@@ -108,7 +103,6 @@ public class ProtocolDetector extends ReplayingDecoder<VoidEnum> {
         pipeline.addLast( "stomp-server-subscribe", new SubscribeHandler( provider, context ) );
         pipeline.addLast( "stomp-server-unsubscribe", new UnsubscribeHandler( provider, context ) );
 
-        //pipeline.addLast( "debug-MESSAGE-TAIL", new DebugHandler( "stomp.proto.SERVER-FLOW-TAIL" ) );
         pipeline.addLast( "stomp-server-begin", new BeginHandler( provider, context ) );
         pipeline.addLast( "stomp-server-commit", new CommitHandler( provider, context ) );
         pipeline.addLast( "stomp-server-abort", new AbortHandler( provider, context ) );

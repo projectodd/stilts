@@ -151,7 +151,6 @@ public class HandshakeHandler extends SimpleChannelUpstreamHandler {
      */
     protected void reconfigureUpstream(ChannelPipeline pipeline) {
         pipeline.replace( "http-decoder", "websockets-decoder", new WebSocketFrameDecoder() );
-        pipeline.addAfter(  "websockets-decoder", "debug-websockets-TAIL", new DebugHandler( "websockets.SERVER-TAIL" ) );
     }
 
     /**
@@ -161,7 +160,6 @@ public class HandshakeHandler extends SimpleChannelUpstreamHandler {
      */
     protected void reconfigureDownstream(ChannelPipeline pipeline) {
         pipeline.replace( "http-encoder", "websockets-encoder", new WebSocketFrameEncoder() );
-        pipeline.addBefore(  "websockets-encoder", "debug-websockets-HEAD", new DebugHandler( "websockets.SERVER-HEAD" ) );
     }
 
     /**
