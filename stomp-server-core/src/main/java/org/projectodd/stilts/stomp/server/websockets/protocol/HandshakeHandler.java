@@ -46,7 +46,6 @@ import org.jboss.netty.handler.codec.http.HttpVersion;
 import org.jboss.netty.handler.codec.http.websocket.WebSocketFrameDecoder;
 import org.jboss.netty.handler.codec.http.websocket.WebSocketFrameEncoder;
 import org.jboss.netty.util.CharsetUtil;
-import org.projectodd.stilts.stomp.protocol.DebugHandler;
 import org.projectodd.stilts.stomp.protocol.websocket.WebSocketDisconnectionNegotiator;
 import org.projectodd.stilts.stomp.server.protocol.HostDecodedEvent;
 

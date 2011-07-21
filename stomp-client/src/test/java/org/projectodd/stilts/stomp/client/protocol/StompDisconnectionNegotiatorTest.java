@@ -1,6 +1,9 @@
 package org.projectodd.stilts.stomp.client.protocol;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelState;

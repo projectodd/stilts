@@ -1,6 +1,11 @@
 package org.projectodd.stilts.stomp.protocol;
 
-import static org.jboss.netty.channel.Channels.*;
+import static org.jboss.netty.channel.Channels.fireChannelBound;
+import static org.jboss.netty.channel.Channels.fireChannelClosed;
+import static org.jboss.netty.channel.Channels.fireChannelConnected;
+import static org.jboss.netty.channel.Channels.fireChannelDisconnected;
+import static org.jboss.netty.channel.Channels.fireChannelOpen;
+import static org.jboss.netty.channel.Channels.fireChannelUnbound;
 
 import java.lang.reflect.Array;
 import java.util.ConcurrentModificationException;
