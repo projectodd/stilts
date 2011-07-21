@@ -10,6 +10,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.projectodd.stilts.stomp.Headers;
 import org.projectodd.stilts.stomp.Heartbeat;
+import org.projectodd.stilts.stomp.InvalidSubscriptionException;
 import org.projectodd.stilts.stomp.MockSubscription;
 import org.projectodd.stilts.stomp.NotConnectedException;
 import org.projectodd.stilts.stomp.StompException;
@@ -69,7 +70,10 @@ public class MockStompConnection implements StompConnection {
 
     @Override
     public void unsubscribe(String subscriptionId, Headers headers) throws StompException {
-
+        Subscription sub = this.subscriptions.remove( subscriptionId );
+        if (sub == null) {
+            throw new InvalidSubscriptionException( subscriptionId );
+        }
     }
 
     @Override

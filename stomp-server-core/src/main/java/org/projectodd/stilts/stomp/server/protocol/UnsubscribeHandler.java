@@ -16,6 +16,7 @@
 
 package org.projectodd.stilts.stomp.server.protocol;
 
+import org.apache.commons.lang.StringUtils;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.projectodd.stilts.stomp.StompException;
 import org.projectodd.stilts.stomp.protocol.StompFrame;
@@ -33,7 +34,7 @@ public class UnsubscribeHandler extends AbstractControlFrameHandler {
     public void handleControlFrame(ChannelHandlerContext channelContext, StompFrame frame) {
         String subscriptionId = frame.getHeader( Header.ID );
         
-        if ( subscriptionId == null ) {
+        if ( StringUtils.isBlank( subscriptionId ) ) {
             sendError( channelContext, "Must supply 'id' header for UNSUBSCRIBE", frame );
             return;
         }
