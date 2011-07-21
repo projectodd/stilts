@@ -122,7 +122,7 @@ public class HandlerEmbedder {
         return channel;
     }
 
-    public ChannelPipeline getChannelPipeline() {
+    public ChannelPipeline getPipeline() {
         return this.pipeline;
     }
 

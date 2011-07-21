@@ -1,21 +1,17 @@
 package org.projectodd.stilts.stomp.server;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.nio.charset.Charset;
 
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
 import org.jboss.netty.channel.ChannelPipeline;
-import org.jboss.netty.handler.codec.embedder.DecoderEmbedder;
 import org.jboss.netty.handler.codec.http.HttpRequestDecoder;
 import org.jboss.netty.handler.codec.http.HttpResponseEncoder;
 import org.junit.Before;
 import org.junit.Test;
-import org.projectodd.stilts.stomp.protocol.PipelineExposer;
+import org.projectodd.stilts.stomp.protocol.HandlerEmbedder;
 import org.projectodd.stilts.stomp.protocol.StompFrameDecoder;
 import org.projectodd.stilts.stomp.protocol.StompFrameEncoder;
 import org.projectodd.stilts.stomp.protocol.websocket.WebSocketStompFrameDecoder;
@@ -26,16 +22,12 @@ import org.projectodd.stilts.stomp.server.websockets.protocol.HandshakeHandler;
 public class ProtocolDetectorTest {
 
     private MockStompProvider mockProvider;
-    private PipelineExposer pipelineExposer;
-    private ProtocolDetector detector;
-    private DecoderEmbedder<ChannelBuffer> decoder;
+    private HandlerEmbedder decoder;
 
     @Before
     public void setUp() {
         this.mockProvider = new MockStompProvider();
-        this.pipelineExposer = new PipelineExposer();
-        this.detector = new ProtocolDetector( mockProvider, null );
-        this.decoder = new DecoderEmbedder<ChannelBuffer>( this.pipelineExposer, this.detector );
+        this.decoder = new HandlerEmbedder( false, new ProtocolDetector( mockProvider, null ) );
     }
 
     @Test
@@ -43,14 +35,13 @@ public class ProtocolDetectorTest {
         ChannelBuffer buffer = ChannelBuffers.dynamicBuffer();
         buffer.writeBytes( "CONNECT\n".getBytes() );
 
-        boolean result = this.decoder.offer( buffer );
-        assertTrue( result );
+        this.decoder.sendUpstream( buffer );
 
-        ChannelBuffer nextMessage = this.decoder.peek();
+        ChannelBuffer nextMessage = (ChannelBuffer) this.decoder.peek();
         String text = nextMessage.toString( Charset.forName( "UTF-8" ) );
         assertEquals( "CONNECT\n", text );
 
-        ChannelPipeline pipeline = this.pipelineExposer.getPipeline();
+        ChannelPipeline pipeline = this.decoder.getPipeline();
         
         assertNull( pipeline.get( HttpRequestDecoder.class ) );
         assertNull( pipeline.get( HttpResponseEncoder.class ) );
@@ -64,14 +55,13 @@ public class ProtocolDetectorTest {
         ChannelBuffer buffer = ChannelBuffers.dynamicBuffer();
         buffer.writeBytes( "GET / HTTP/1.1\n".getBytes() );
 
-        boolean result = this.decoder.offer( buffer );
-        assertTrue( result );
+        this.decoder.sendUpstream( buffer );
 
-        ChannelBuffer nextMessage = this.decoder.peek();
+        ChannelBuffer nextMessage = (ChannelBuffer) this.decoder.peek();
         String text = nextMessage.toString( Charset.forName( "UTF-8" ) );
         assertEquals( "GET / HTTP/1.1\n", text );
 
-        ChannelPipeline pipeline = this.pipelineExposer.getPipeline();
+        ChannelPipeline pipeline = this.decoder.getPipeline();
         
         assertNotNull( pipeline.get( HttpRequestDecoder.class ) );
         assertNotNull( pipeline.get( HttpResponseEncoder.class ) );

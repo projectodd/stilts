@@ -1,12 +1,12 @@
 package org.projectodd.stilts.stomp.client.protocol.websockets;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.*;
 
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
 import org.jboss.netty.channel.ChannelPipeline;
+import org.jboss.netty.channel.ChannelState;
+import org.jboss.netty.channel.UpstreamChannelStateEvent;
 import org.jboss.netty.handler.codec.embedder.DecoderEmbedder;
 import org.jboss.netty.handler.codec.http.DefaultHttpResponse;
 import org.jboss.netty.handler.codec.http.HttpHeaders;
@@ -14,21 +14,22 @@ import org.jboss.netty.handler.codec.http.HttpRequest;
 import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.jboss.netty.handler.codec.http.HttpVersion;
 import org.junit.Test;
-import org.projectodd.stilts.stomp.protocol.PipelineExposer;
+import org.projectodd.stilts.stomp.protocol.HandlerEmbedder;
 import org.projectodd.stilts.stomp.protocol.websocket.WebSocketChallenge;
 
 public class WebSocketConnectionNegotiatorTest {
 
     @Test
     public void testConnect() throws Exception {
-        PipelineExposer pipelineExposer = new PipelineExposer();
-        DecoderEmbedder<HttpRequest> handler = new DecoderEmbedder<HttpRequest>( pipelineExposer, new WebSocketHttpResponseDecoder(), new WebSocketConnectionNegotiator( "localhost", 8675 ) );
+        HandlerEmbedder handler = new HandlerEmbedder( false, new WebSocketHttpResponseDecoder(), new WebSocketConnectionNegotiator( "localhost", 8675 ) );
         
-        ChannelPipeline pipeline = pipelineExposer.getPipeline();
+        ChannelPipeline pipeline = handler.getPipeline();
         
         assertNotNull( pipeline.get( WebSocketHttpResponseDecoder.class ) );
+        
+        handler.sendUpstream( new UpstreamChannelStateEvent( handler.getChannel(), ChannelState.CONNECTED, handler.getChannel().getRemoteAddress() ) );
 
-        HttpRequest result = handler.poll();
+        HttpRequest result = (HttpRequest) handler.poll();
         assertNotNull( result );
 
         String key1 = result.getHeader( HttpHeaders.Names.SEC_WEBSOCKET_KEY1 );
@@ -49,7 +50,7 @@ public class WebSocketConnectionNegotiatorTest {
         buffer.writeBytes( solution );
         httpResponse.setContent( buffer );
         
-        handler.offer( httpResponse); 
+        handler.sendUpstream( httpResponse); 
         
         // reconfigured
         assertNull( pipeline.get( WebSocketHttpResponseDecoder.class ) );
@@ -57,14 +58,15 @@ public class WebSocketConnectionNegotiatorTest {
     
     @Test
     public void testConnectFailure() throws Exception {
-        PipelineExposer pipelineExposer = new PipelineExposer();
-        DecoderEmbedder<HttpRequest> handler = new DecoderEmbedder<HttpRequest>( pipelineExposer, new WebSocketHttpResponseDecoder(), new WebSocketConnectionNegotiator( "localhost", 8675 ) );
+        HandlerEmbedder handler = new HandlerEmbedder( false, new WebSocketHttpResponseDecoder(), new WebSocketConnectionNegotiator( "localhost", 8675 ) );
         
-        ChannelPipeline pipeline = pipelineExposer.getPipeline();
+        ChannelPipeline pipeline = handler.getPipeline();
         
         assertNotNull( pipeline.get( WebSocketHttpResponseDecoder.class ) );
+        
+        handler.sendUpstream( new UpstreamChannelStateEvent( handler.getChannel(), ChannelState.CONNECTED, handler.getChannel().getRemoteAddress() ) );
 
-        HttpRequest result = handler.poll();
+        HttpRequest result = (HttpRequest) handler.poll();
         assertNotNull( result );
 
         String key1 = result.getHeader( HttpHeaders.Names.SEC_WEBSOCKET_KEY1 );
@@ -89,7 +91,7 @@ public class WebSocketConnectionNegotiatorTest {
         buffer.writeBytes( solution );
         httpResponse.setContent( buffer );
         
-        handler.offer( httpResponse); 
+        handler.sendUpstream( httpResponse); 
         
         // did not reconfigure
         assertNotNull( pipeline.get( WebSocketHttpResponseDecoder.class ) );
