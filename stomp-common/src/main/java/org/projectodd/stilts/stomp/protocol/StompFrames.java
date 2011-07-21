@@ -64,6 +64,12 @@ public class StompFrames {
         return frame;
     }
 
+    public static StompFrame newDisconnectFrame() {
+        StompFrame frame = new StompControlFrame( Command.DISCONNECT );
+        frame.setHeader( Header.RECEIPT, "connection-close" );
+        return frame;
+    }
+
     public static StompFrame newErrorFrame(String message, StompFrame inReplyTo) {
         StompContentFrame frame = new StompContentFrame( Command.ERROR );
         if (inReplyTo != null) {
