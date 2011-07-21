@@ -1,5 +1,11 @@
 package org.projectodd.stilts.stomp.protocol;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertTrue;
+
 import org.jboss.netty.handler.codec.embedder.DecoderEmbedder;
 import org.junit.Before;
 import org.junit.Test;
@@ -7,8 +13,6 @@ import org.projectodd.stilts.stomp.DefaultHeaders;
 import org.projectodd.stilts.stomp.DefaultStompMessageFactory;
 import org.projectodd.stilts.stomp.StompMessage;
 import org.projectodd.stilts.stomp.StompMessages;
-
-import static org.junit.Assert.*;
 
 public class StompMessageDecoderTest {
 

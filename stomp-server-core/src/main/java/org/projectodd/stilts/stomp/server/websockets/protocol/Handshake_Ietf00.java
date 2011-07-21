@@ -19,8 +19,6 @@
 
 package org.projectodd.stilts.stomp.server.websockets.protocol;
 
-import java.security.MessageDigest;
-
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
 import org.jboss.netty.handler.codec.http.DefaultHttpResponse;

@@ -17,9 +17,6 @@
 package org.projectodd.stilts.stomp;
 
 import org.jboss.netty.buffer.ChannelBuffer;
-import org.projectodd.stilts.stomp.Headers;
-import org.projectodd.stilts.stomp.StompMessage;
-import org.projectodd.stilts.stomp.StompMessageFactory;
 
 public class DefaultStompMessageFactory implements StompMessageFactory {
     

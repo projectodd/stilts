@@ -26,7 +26,6 @@ import org.projectodd.stilts.stomp.client.protocol.ClientReceiptHandler;
 import org.projectodd.stilts.stomp.client.protocol.StompConnectionNegotiator;
 import org.projectodd.stilts.stomp.client.protocol.websockets.WebSocketConnectionNegotiator;
 import org.projectodd.stilts.stomp.client.protocol.websockets.WebSocketHttpResponseDecoder;
-import org.projectodd.stilts.stomp.protocol.DebugHandler;
 import org.projectodd.stilts.stomp.protocol.StompFrameDecoder;
 import org.projectodd.stilts.stomp.protocol.StompFrameEncoder;
 import org.projectodd.stilts.stomp.protocol.StompMessageDecoder;

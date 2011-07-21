@@ -1,6 +1,6 @@
 package org.projectodd.stilts.stomp.server.protocol;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import org.jboss.netty.handler.codec.embedder.DecoderEmbedder;
 import org.junit.Before;
