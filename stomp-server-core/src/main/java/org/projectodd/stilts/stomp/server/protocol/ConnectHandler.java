@@ -112,7 +112,7 @@ public class ConnectHandler extends AbstractControlFrameHandler {
 
     private String checkHost(Headers headers, Version version) throws StompException {
         String host = headers.get( Header.HOST );
-        if ( ( host == null || host.trim().equals( "" ) ) && version.isAfter( Version.VERSION_1_0 )) {
+        if ( StringUtils.isBlank( host ) && version.isAfter( Version.VERSION_1_0 )) {
             throw new StompException( "Must specify host in STOMP protocol 1.1 and above." );
         }
         return host;

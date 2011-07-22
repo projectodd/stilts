@@ -19,9 +19,8 @@
 		supportedVersions : function() {
 			return "1.0,1.1";
 		}
+	};
 	
-	}
-
 	Stomp.frame = function(command, headers, body) {
 		return {
 			command : command,
@@ -154,7 +153,6 @@
 					passcode : passcode
 				};
 				headers[Stomp.Headers.ACCEPT_VERSION] = Stomp.Versions.supportedVersions();
-				headers[Stomp.Headers.HOST, url];
 				transmit("CONNECT", headers);
 			};
 			login = login_;
