@@ -37,9 +37,7 @@ public class WebSocketStompFrameDecoder extends OneToOneDecoder {
         if (msg instanceof WebSocketFrame) {
             WebSocketFrame webSocketFrame = (WebSocketFrame) msg;
             ChannelBuffer buffer = webSocketFrame.getBinaryData();
-            System.err.println( "DECODE ME! " + msg.getClass() );
             StompFrame stompFrame = StompFrameCodec.INSTANCE.decode( buffer );
-            System.err.println( "---> " + stompFrame );
             return stompFrame;
         }
         return msg;

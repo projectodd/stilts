@@ -139,12 +139,10 @@ public class HandlerEmbedder {
         return productQueue.isEmpty();
     }
 
-    @SuppressWarnings("unchecked")
     public final Object poll() {
         return productQueue.poll();
     }
 
-    @SuppressWarnings("unchecked")
     public final Object peek() {
         return productQueue.peek();
     }

@@ -48,19 +48,25 @@
       idx = line.indexOf(':');
       headers[trim(line.substring(0, idx))] = trim(line.substring(idx + 1));
     }
-
-    // Parse body, stopping at the first \0 found.
-    // TODO: Add support for content-length header.
-    var chr = null;
-    for (var i = divider + 2; i < data.length; i++) {
-      chr = data.charAt(i);
-      if (chr === '\0') {
-         break;
-      }
-      body += chr;
+    try {
+	    if (headers['content_length']) {
+	    	body = data.substring(divider + 2, parseInt(headers['content_length']));
+	    } 
+	    else {
+	        // Parse body, stopping at the first \0 found.
+	    	var chr = null;
+		    for (var i = divider + 2; i < data.length; i++) {
+		      chr = data.charAt(i);
+		      if (chr === '\0') {
+		         break;
+		      }
+		      body += chr;
+		    }
+	    }
+	    return Stomp.frame(command, headers, body);
+    } catch (err) {
+    	return Stomp.frame('ERROR', headers, "Error parsing frame: " + err.description);
     }
-
-    return Stomp.frame(command, headers, body);
   };
 
   Stomp.marshal = function(command, headers, body) {
