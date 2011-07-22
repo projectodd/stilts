@@ -1,14 +1,16 @@
 package org.projectodd.stilts.stomp.client.js;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
+import java.util.List;
 
+import org.junit.Before;
 import org.junit.runner.Description;
 import org.junit.runner.Runner;
 import org.junit.runner.notification.Failure;
 import org.junit.runner.notification.RunNotifier;
+import org.junit.runners.model.FrameworkField;
+import org.junit.runners.model.FrameworkMethod;
+import org.junit.runners.model.TestClass;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Function;
 import org.mozilla.javascript.NativeArray;
@@ -16,16 +18,16 @@ import org.mozilla.javascript.ScriptableObject;
 
 public class JavascriptTestRunner extends Runner {
 
-    private Class<? extends JavascriptTestCase> testClass;
+    private TestClass testClass;
     private Context context;
     private ScriptableObject scope;
     private ScriptableObject window;
-    private Object server;
     private Description description;
+    private JSpec jspec;
 
     public JavascriptTestRunner(Class<? extends JavascriptTestCase> testClass) throws Exception {
-        this.testClass = testClass;
-        System.err.println( "simpleName = " + testClass.getSimpleName() );
+        this.testClass = new TestClass( testClass );
+        System.err.println( "simpleName = " + getScriptName() );
         setUpRhino();
         loadTests();
     }
@@ -35,22 +37,26 @@ public class JavascriptTestRunner extends Runner {
         this.scope = this.context.initStandardObjects();
         // prepare websocket support;
         this.window = (ScriptableObject) this.context.evaluateString( this.scope, "var window = {}; window;", "<cmd>", 1, null );
-        this.window.put( "server", this.window, this.server );
+
+        this.jspec = new JSpec( this.context, this.scope, this.window );
+        this.window.put( "jspec", this.window, this.jspec );
         evaluateResource( "jspec.js" );
     }
 
-    public Object evaluateResource(String name) throws IOException {
-        InputStream in = getClass().getResourceAsStream( name );
-        Reader reader = new InputStreamReader( in );
-        try {
-            return this.context.evaluateReader( this.window, reader, name, 1, null );
-        } finally {
-            reader.close();
-        }
+    Object evaluateResource(String path) throws IOException {
+        return this.jspec.load( path );
     }
 
+    String getScriptName() {
+        String name = this.testClass.getJavaClass().getSimpleName();
+        name = name.replaceAll( "([A-Z])", "_$1" );
+        name = name.toLowerCase();
+        name = name.replaceAll( "^_+", "" );
+        name = name + ".js";
+        return name;
+    }
     void loadTests() throws Exception {
-        evaluateResource( this.testClass.getSimpleName() + ".js" );
+        evaluateResource( getScriptName() );
         setUpDescription();
     }
 
@@ -60,15 +66,14 @@ public class JavascriptTestRunner extends Runner {
     }
 
     void setUpDescription() {
-        this.description = Description.createSuiteDescription( this.testClass.getSimpleName() );
+        this.description = Description.createSuiteDescription( this.testClass.getJavaClass().getSimpleName() );
         NativeArray result = (NativeArray) this.window.get( "tests", this.window );
         long len = result.getLength();
 
         for (int i = 0; i < len; ++i) {
             ScriptableObject test = (ScriptableObject) result.get( i, result );
             String testName = (String) test.get( "description", test );
-            System.err.println( "testName=" + testName );
-            Description child = Description.createTestDescription( this.testClass, testName );
+            Description child = Description.createTestDescription( this.testClass.getJavaClass(), testName );
             description.addChild( child );
         }
     }
@@ -80,14 +85,27 @@ public class JavascriptTestRunner extends Runner {
         NativeArray tests = (NativeArray) this.window.get( "tests", this.window );
 
         for (Description testDescription : this.description.getChildren()) {
-            System.err.println( "START: " + testDescription.getMethodName() );
             ScriptableObject test = (ScriptableObject) tests.get( i, tests );
             Function body = (Function) test.get( "body", test );
             Context.enter();
             try {
+                Object testObj = this.testClass.getJavaClass().newInstance();
                 notifier.fireTestStarted( testDescription );
+                List<FrameworkMethod> befores = this.testClass.getAnnotatedMethods( Before.class );
+                for (FrameworkMethod each : befores) {
+                    each.invokeExplosively( testObj, new Object[] {} );
+                }
+                
+                List<FrameworkField> exposed = this.testClass.getAnnotatedFields( Expose.class );
+                for ( FrameworkField each : exposed ) {
+                    String name = each.getField().getName();
+                    Object value = each.getField().get( testObj );
+                    body.put( name, body.getParentScope(), value );
+                }
                 body.call( context, body, body, new Object[] {} );
             } catch (AssertionError e) {
+                notifier.fireTestFailure( new Failure( testDescription, e ) );
+            } catch (Throwable e) {
                 notifier.fireTestFailure( new Failure( testDescription, e ) );
             } finally {
                 Context.exit();
@@ -96,5 +114,4 @@ public class JavascriptTestRunner extends Runner {
             ++i;
         }
     }
-
 }

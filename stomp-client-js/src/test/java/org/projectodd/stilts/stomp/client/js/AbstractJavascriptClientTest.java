@@ -9,18 +9,34 @@ import org.junit.After;
 import org.junit.Before;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.ScriptableObject;
-import org.projectodd.stilts.stomp.server.AbstractStompServerTestCase;
 import org.projectodd.stilts.stomp.server.MockStompProvider;
 import org.projectodd.stilts.stomp.server.StompServer;
+import org.projectodd.stilts.stomp.spi.StompProvider;
 
-public abstract class AbstractJavascriptClientTest extends AbstractStompServerTestCase<MockStompProvider> {
+public abstract class AbstractJavascriptClientTest<T extends StompProvider> {
+    
+    @Expose
+    protected StompServer<T> server;
 
-    @Override
-    protected StompServer<MockStompProvider> createServer() throws Exception {
-        StompServer<MockStompProvider> server = new StompServer<MockStompProvider>();
-        server.setStompProvider( new MockStompProvider() );
-        return server;
+    @Before
+    public void setUpServer() throws Exception {
+        this.server = createServer();
+        this.server.start();
     }
+    
+    protected abstract StompServer<T> createServer() throws Exception;
+    
+    @After
+    public void tearDownServer() throws Exception {
+        this.server.stop();
+        this.server = null;
+        
+    }
+    
+    public StompServer<T> getServer() {
+        return this.server;
+    }
+
 
     protected Context context;
     protected ScriptableObject scope;

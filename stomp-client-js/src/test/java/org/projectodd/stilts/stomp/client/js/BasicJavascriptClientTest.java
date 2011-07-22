@@ -1,16 +1,18 @@
 package org.projectodd.stilts.stomp.client.js;
 
-import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.projectodd.stilts.stomp.server.MockStompProvider;
+import org.projectodd.stilts.stomp.server.StompServer;
 
-public class BasicJavascriptClientTest extends AbstractJavascriptClientTest {
+@RunWith(JavascriptTestRunner.class)
+public class BasicJavascriptClientTest extends AbstractJavascriptClientTest<MockStompProvider> {
     
-    public void initJavascript() {
-    }
-    
-    @Test
-    public void testClient() throws Exception {
-        evaluateResource( "/stilts-stomp.js" );
-        evaluateResource( "basic_javascript_client_test.js" );
+    @Override
+    protected StompServer<MockStompProvider> createServer() throws Exception {
+        StompServer<MockStompProvider> server = new StompServer<MockStompProvider>();
+        server.setStompProvider( new MockStompProvider() );
+        return server;
     }
 
+    
 }

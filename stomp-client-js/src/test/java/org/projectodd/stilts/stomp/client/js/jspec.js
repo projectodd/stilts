@@ -2,6 +2,10 @@
 
 var tests = [];
 
+var load = function(path) {
+
+}
+
 var it = function(description, body) {
   java.lang.System.err.println( "added " + description );
   tests.push( { description: description, body: body } );
