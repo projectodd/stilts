@@ -8,6 +8,7 @@ client.connect( null, null, function(frame) {
 } );
 
 client.waitForDisconnect();
+Assert.assertEquals( "1.1", client.version );
 
 connection = server.stompProvider.connections.get(0);
 Assert.assertNotNull( connection );
