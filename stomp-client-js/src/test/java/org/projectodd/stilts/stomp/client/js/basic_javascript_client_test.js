@@ -1,23 +1,30 @@
-client = window.Stomp.client( "ws://localhost:8675/" );
-client.debug = function(msg) { alert( msg ); };
+
+var connected = false;
+
+client = Stomp.client( "ws://localhost:8675/" );
+
 client.connect( null, null, function(frame) {
-  alert( "connected! with frame" + frame );
+  connected = true;
+  client.send("/queues/one", {priority: 9}, "content 1");
   client.disconnect();
 } );
 
 client.waitForDisconnect();
+Assert.assertTrue( connected );
 
-/*
-var ws = new WebSocket( "ws://localhost:8675/" );
+connection = server.stompProvider.connections.get(0);
+Assert.assertNotNull( connection );
 
-ws.onclose = function() {
-  alert( "EVENT closed" );
-}
+Assert.assertEquals( 1, connection.sends.size(), 0 );
 
-ws.onopen = function() { 
-  alert( "EVENT opened" );
-  ws.close( 100 );
-}
+send = connection.sends.get( 0 );
+Assert.assertNull( send.transactionId );
 
-ws.waitForClosedState();
-*/
+message = send.message;
+Assert.assertNotNull( message );
+
+Assert.assertEquals( "/queues/one", message.destination );
+Assert.assertEquals( "content 1", message.contentAsString );
+
+"completed";
+

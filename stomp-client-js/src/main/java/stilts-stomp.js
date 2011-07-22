@@ -19,7 +19,7 @@
           }
         }
         if ( body ) {
-            out = out + header + ':' + body.length;
+            out = out + 'content-length:' + body.length + '\n';
         }
         out = out + '\n';
         if (body) {

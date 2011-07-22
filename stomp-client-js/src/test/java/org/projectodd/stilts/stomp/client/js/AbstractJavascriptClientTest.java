@@ -24,14 +24,22 @@ public abstract class AbstractJavascriptClientTest extends AbstractStompServerTe
 
     protected Context context;
     protected ScriptableObject scope;
+    private ScriptableObject window;
 
     @Before
     public void setUpRhino() throws Exception {
         this.context = Context.enter();
         this.scope = this.context.initStandardObjects();
         // prepare websocket support;
+        this.window = (ScriptableObject) this.context.evaluateString( this.scope, "var window = {}; window;", "<cmd>", 1, null );
+        this.window.put( "server", this.window, this.server );
+        System.err.println( "WINDOW: " + this.window );
         evaluate( "var WebSocket = org.projectodd.stilts.stomp.client.js.websockets.WebSocket" );
         evaluateResource( "test_helper.js" );
+        initJavascript();
+    }
+    
+    public void initJavascript() {
     }
 
     @After
@@ -40,14 +48,14 @@ public abstract class AbstractJavascriptClientTest extends AbstractStompServerTe
     }
 
     public Object evaluate(String script) {
-        return this.context.evaluateString( this.scope, script, "<cmd>", 1, null );
+        return this.context.evaluateString( this.window, script, "<cmd>", 1, null );
     }
 
     public Object evaluateResource(String name) throws IOException {
         InputStream in = getClass().getResourceAsStream( name );
         Reader reader = new InputStreamReader( in );
         try {
-            return this.context.evaluateReader( this.scope, reader, name, 1, null );
+            return this.context.evaluateReader( this.window, reader, name, 1, null );
         } finally {
             reader.close();
         }

@@ -1,16 +1,21 @@
 package org.projectodd.stilts.stomp.client.js;
 
+import static org.junit.Assert.*;
+
 import org.junit.Test;
 
 public class BasicJavascriptClientTest extends AbstractJavascriptClientTest {
     
+    public void initJavascript() {
+    }
+    
     @Test
     public void testClient() throws Exception {
-        evaluate("var window = {};" );
         evaluateResource( "/stilts-stomp.js" );
-        evaluateResource( "basic_javascript_client_test.js" );
+        Object result = evaluateResource( "basic_javascript_client_test.js" );
         
-        //Thread.sleep( 5000 );
+        assertNotNull( result );
+        assertEquals( "completed", result.toString() );
     }
 
 }
