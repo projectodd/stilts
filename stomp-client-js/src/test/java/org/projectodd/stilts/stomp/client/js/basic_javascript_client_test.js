@@ -1,6 +1,4 @@
 
-var connected = false;
-
 client = Stomp.client( "ws://localhost:8675/" );
 
 client.connect( null, null, function(frame) {
@@ -10,7 +8,6 @@ client.connect( null, null, function(frame) {
 } );
 
 client.waitForDisconnect();
-Assert.assertTrue( connected );
 
 connection = server.stompProvider.connections.get(0);
 Assert.assertNotNull( connection );
@@ -25,6 +22,3 @@ Assert.assertNotNull( message );
 
 Assert.assertEquals( "/queues/one", message.destination );
 Assert.assertEquals( "content 1", message.contentAsString );
-
-"completed";
-
