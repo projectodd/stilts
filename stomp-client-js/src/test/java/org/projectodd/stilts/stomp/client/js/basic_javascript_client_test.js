@@ -1,15 +1,7 @@
 
 jspec.load( "/stilts-stomp.js" );
 
-var alert = function(msg) {
-  java.lang.System.err.println( msg );
-};
-
-
 it( "should be able to send a message", function() {
-
-  alert( "server-b: " + window.server );
-
   client = Stomp.client( "ws://localhost:8675/" );
 
   client.connect( null, null, function(frame) {
