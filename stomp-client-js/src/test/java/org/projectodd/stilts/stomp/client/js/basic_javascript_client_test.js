@@ -2,6 +2,8 @@
 jspec.load( "/stilts-stomp.js" );
 
 it( "should be able to send a message", function() {
+  log( Assert );
+  
   client = Stomp.client( "ws://localhost:8675/" );
 
   client.connect( null, null, function(frame) {
@@ -52,7 +54,7 @@ it( "should be able to manage subscriptions", function() {
   client.waitForDisconnect();
 } );
 
-it( "should be able to manage transactions", function() {
+it( "should be able to commit a transaction", function() {
   client = Stomp.client( "ws://localhost:8675/" );
 
   client.connect( null, null, function(frame) {
@@ -93,7 +95,7 @@ it( "should be able to manage transactions", function() {
 
 });
 
-it( "should be implicitly abort open transactions upon disconnect", function() {
+it( "should be able to abort a transactions", function() {
   client = Stomp.client( "ws://localhost:8675/" );
 
   client.connect( null, null, function(frame) {
@@ -118,17 +120,24 @@ it( "should be implicitly abort open transactions upon disconnect", function() {
     
     Assert.assertEquals( 0, connection.commits.size(), 0 );
     
-    client.disconnect();
+    client.abort( "tx-1" );
+    pause();
     
     Assert.assertEquals( 1, connection.begins.size(), 0 );
     Assert.assertEquals( "tx-1", connection.begins.get( 0 ) );
     
-    Assert.assertEquals( 0, connection.commits.size(), 0 );
-    
-    Assert.assertEquals( 0, connection.aborts.size(), 0 );
+    Assert.assertEquals( 1, connection.aborts.size(), 0 );
     Assert.assertEquals( "tx-1", connection.aborts.get( 0 ) );
+    
+    client.disconnect();
   } );
   
   client.waitForDisconnect();
 
 });
+
+
+
+
+
+

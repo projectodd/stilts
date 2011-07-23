@@ -6,11 +6,11 @@ import org.jboss.netty.channel.ChannelState;
 import org.jboss.netty.channel.ChannelStateEvent;
 import org.jboss.netty.channel.ChannelUpstreamHandler;
 import org.jboss.netty.channel.ExceptionEvent;
-import org.projectodd.stilts.stomp.client.js.websockets.WebSocket.ReadyState;
+import org.projectodd.stilts.stomp.client.js.websockets.TestableWebSocket.ReadyState;
 
 public class WebSocketClientDisconnectionWaiter implements ChannelUpstreamHandler {
 
-    public WebSocketClientDisconnectionWaiter(WebSocket socket) {
+    public WebSocketClientDisconnectionWaiter(TestableWebSocket socket) {
         this.socket = socket;
     }
 
@@ -31,6 +31,6 @@ public class WebSocketClientDisconnectionWaiter implements ChannelUpstreamHandle
         }
     }
     
-    private WebSocket socket;
+    private TestableWebSocket socket;
 
 }

@@ -19,8 +19,9 @@ import org.mozilla.javascript.Function;
 import org.mozilla.javascript.Scriptable;
 import org.projectodd.stilts.stomp.Constants;
 import org.projectodd.stilts.stomp.client.StompClient;
+import org.projectodd.stilts.stomp.client.js.JSpec;
 
-public class WebSocket {
+public class TestableWebSocket {
 
     public enum ReadyState {
         CONNECTING,
@@ -36,11 +37,11 @@ public class WebSocket {
     private ExecutorService executor;
     private Channel channel;
 
-    public WebSocket(String url) throws Exception {
+    public TestableWebSocket(String url) throws Exception {
         this( url, true );
     }
 
-    public WebSocket(String url, boolean autoConnect) throws Exception {
+    public TestableWebSocket(String url, boolean autoConnect) throws Exception {
         this.url = url;
         if (autoConnect) {
             connect();
@@ -138,7 +139,10 @@ public class WebSocket {
         this.onError = handler;
     }
 
-    protected void fireOnError() {
+    protected void fireOnError(Object error) {
+        if (error instanceof Throwable) {
+            JSpec.getCurrent().addError( (Throwable) error );
+        }
         fireEvent( this.onError, null );
     }
 

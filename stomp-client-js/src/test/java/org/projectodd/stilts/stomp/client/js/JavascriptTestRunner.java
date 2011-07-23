@@ -94,6 +94,8 @@ public class JavascriptTestRunner extends Runner {
             Function body = (Function) test.get( "body", test );
             Context.enter();
             try {
+                this.jspec.reset();
+                JSpec.setCurrent( this.jspec );
                 Object testObj = this.testClass.getJavaClass().newInstance();
                 notifier.fireTestStarted( testDescription );
                 List<FrameworkMethod> befores = this.testClass.getAnnotatedMethods( Before.class );
@@ -127,9 +129,17 @@ public class JavascriptTestRunner extends Runner {
                     each.invokeExplosively( testObj, new Object[] {} );
                 }
                 
+                List<Throwable> errors = this.jspec.getErrors();
+                
+                if ( ! errors.isEmpty() ) {
+                    notifier.fireTestFailure( new Failure( testDescription, errors.get(0) )  );
+                }
+                
             } catch (AssertionError e) {
+                System.err.println( "1 caught: " + e );
                 notifier.fireTestFailure( new Failure( testDescription, e ) );
             } catch (Throwable e) {
+                System.err.println( "2 caught: " + e );
                 notifier.fireTestFailure( new Failure( testDescription, e ) );
             } finally {
                 Context.exit();

@@ -14,8 +14,21 @@ var pause = function(time) {
   java.lang.Thread.sleep( time );
 };
 
-var Assert    = org.junit.Assert;
-var WebSocket = org.projectodd.stilts.stomp.client.js.websockets.WebSocket;
+var Assert = {
+  assertEquals: function(expected, actual) {
+    if ( expected != actual ) {
+      Assert.fail( "Expected: " + expected + ", was: " + actual );
+    }
+  },
+  
+  fail: function(msg) {
+    org.junit.Assert.fail( msg );
+  },
+};
+
+//var Assert = org.junit.Assert;
+
+var WebSocket = org.projectodd.stilts.stomp.client.js.websockets.TestableWebSocket;
 
 var log = function(msg) {
   java.lang.System.err.println( "TEST: " + msg );
