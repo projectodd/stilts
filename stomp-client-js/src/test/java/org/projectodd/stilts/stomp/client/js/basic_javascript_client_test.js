@@ -29,7 +29,6 @@ it( "should be able to manage subscriptions", function() {
   client = Stomp.client( "ws://localhost:8675/" );
 
   client.connect( null, null, function(frame) {
-    connected = true;
     Assert.assertEquals( "1.1", client.version );
     
     subscription_id = client.subscribe("/queues/one", function(msg) {
@@ -52,3 +51,84 @@ it( "should be able to manage subscriptions", function() {
   
   client.waitForDisconnect();
 } );
+
+it( "should be able to manage transactions", function() {
+  client = Stomp.client( "ws://localhost:8675/" );
+
+  client.connect( null, null, function(frame) {
+    Assert.assertEquals( "1.1", client.version );
+    
+    client.begin( "tx-1" );
+    client.send("/queues/one", {transaction: "tx-1"}, "message in a transaction");
+    
+    pause();
+    
+    connection = server.stompProvider.connections.get(0);
+    Assert.assertEquals( 1, connection.sends.size(), 0 );
+  
+    send = connection.sends.get( 0 );
+    message = send.message;
+    Assert.assertEquals( "/queues/one", message.destination );
+    Assert.assertEquals( "message in a transaction", message.contentAsString );
+    Assert.assertEquals( "tx-1", message.headers.get( "transaction" ) );
+    
+    Assert.assertEquals( 1, connection.begins.size(), 0 );
+    Assert.assertEquals( "tx-1", connection.begins.get( 0 ) );
+    
+    Assert.assertEquals( 0, connection.commits.size(), 0 );
+    
+    client.commit( "tx-1" );
+    pause();
+    
+    Assert.assertEquals( 1, connection.begins.size(), 0 );
+    Assert.assertEquals( "tx-1", connection.begins.get( 0 ) );
+    
+    Assert.assertEquals( 1, connection.commits.size(), 0 );
+    Assert.assertEquals( "tx-1", connection.commits.get( 0 ) );
+    
+    client.disconnect();
+  } );
+  
+  client.waitForDisconnect();
+
+});
+
+it( "should be implicitly abort open transactions upon disconnect", function() {
+  client = Stomp.client( "ws://localhost:8675/" );
+
+  client.connect( null, null, function(frame) {
+    Assert.assertEquals( "1.1", client.version );
+    
+    client.begin( "tx-1" );
+    client.send("/queues/one", {transaction: "tx-1"}, "message in a transaction");
+    
+    pause();
+    
+    connection = server.stompProvider.connections.get(0);
+    Assert.assertEquals( 1, connection.sends.size(), 0 );
+  
+    send = connection.sends.get( 0 );
+    message = send.message;
+    Assert.assertEquals( "/queues/one", message.destination );
+    Assert.assertEquals( "message in a transaction", message.contentAsString );
+    Assert.assertEquals( "tx-1", message.headers.get( "transaction" ) );
+    
+    Assert.assertEquals( 1, connection.begins.size(), 0 );
+    Assert.assertEquals( "tx-1", connection.begins.get( 0 ) );
+    
+    Assert.assertEquals( 0, connection.commits.size(), 0 );
+    
+    client.disconnect();
+    
+    Assert.assertEquals( 1, connection.begins.size(), 0 );
+    Assert.assertEquals( "tx-1", connection.begins.get( 0 ) );
+    
+    Assert.assertEquals( 0, connection.commits.size(), 0 );
+    
+    Assert.assertEquals( 0, connection.aborts.size(), 0 );
+    Assert.assertEquals( "tx-1", connection.aborts.get( 0 ) );
+  } );
+  
+  client.waitForDisconnect();
+
+});
