@@ -6,7 +6,7 @@ import org.jboss.netty.channel.ChannelPipelineFactory;
 public class WebSocketClientPipelineFactory implements ChannelPipelineFactory {
 
 
-    public WebSocketClientPipelineFactory(TestableWebSocket socket, String host, int port) {
+    public WebSocketClientPipelineFactory(InstrumentedWebSocket socket, String host, int port) {
         this.socket = socket;
         this.host = host;
         this.port = port;
@@ -17,7 +17,7 @@ public class WebSocketClientPipelineFactory implements ChannelPipelineFactory {
         return new WebSocketClientPipeline( this.socket, this.host, this.port );
     }
 
-    private TestableWebSocket socket;
+    private InstrumentedWebSocket socket;
     private String host;
     private int port;
 }

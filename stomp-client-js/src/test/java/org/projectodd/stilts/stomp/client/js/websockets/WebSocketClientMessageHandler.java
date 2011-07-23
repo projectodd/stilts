@@ -7,7 +7,7 @@ import org.jboss.netty.handler.codec.http.websocket.WebSocketFrame;
 
 public class WebSocketClientMessageHandler extends SimpleChannelUpstreamHandler {
 
-    public WebSocketClientMessageHandler(TestableWebSocket socket) {
+    public WebSocketClientMessageHandler(InstrumentedWebSocket socket) {
         this.socket = socket;
     }
     
@@ -23,6 +23,6 @@ public class WebSocketClientMessageHandler extends SimpleChannelUpstreamHandler 
         }
     }
 
-    private TestableWebSocket socket;
+    private InstrumentedWebSocket socket;
 
 }

@@ -10,7 +10,7 @@ import org.projectodd.stilts.stomp.protocol.DebugHandler;
 
 public class WebSocketClientPipeline extends DefaultChannelPipeline {
     
-    public WebSocketClientPipeline(TestableWebSocket socket, String host, int port) throws NoSuchAlgorithmException {
+    public WebSocketClientPipeline(InstrumentedWebSocket socket, String host, int port) throws NoSuchAlgorithmException {
         addLast( "error-handler", new WebSocketClientErrorHandler( socket ) );
         addLast( "debug-HEAD", new DebugHandler( "CLIENT_HEAD"  ) );
         addLast( "http-encoder", new HttpRequestEncoder() );

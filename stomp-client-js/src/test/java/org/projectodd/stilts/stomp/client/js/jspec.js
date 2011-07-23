@@ -28,7 +28,7 @@ var Assert = {
 
 //var Assert = org.junit.Assert;
 
-var WebSocket = org.projectodd.stilts.stomp.client.js.websockets.TestableWebSocket;
+var WebSocket = org.projectodd.stilts.stomp.client.js.websockets.InstrumentedWebSocket;
 
 var log = function(msg) {
   java.lang.System.err.println( "TEST: " + msg );

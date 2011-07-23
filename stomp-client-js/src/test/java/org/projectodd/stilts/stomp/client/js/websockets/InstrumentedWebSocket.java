@@ -21,7 +21,7 @@ import org.projectodd.stilts.stomp.Constants;
 import org.projectodd.stilts.stomp.client.StompClient;
 import org.projectodd.stilts.stomp.client.js.JSpec;
 
-public class TestableWebSocket {
+public class InstrumentedWebSocket {
 
     public enum ReadyState {
         CONNECTING,
@@ -37,11 +37,11 @@ public class TestableWebSocket {
     private ExecutorService executor;
     private Channel channel;
 
-    public TestableWebSocket(String url) throws Exception {
+    public InstrumentedWebSocket(String url) throws Exception {
         this( url, true );
     }
 
-    public TestableWebSocket(String url, boolean autoConnect) throws Exception {
+    public InstrumentedWebSocket(String url, boolean autoConnect) throws Exception {
         this.url = url;
         if (autoConnect) {
             connect();

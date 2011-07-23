@@ -6,7 +6,7 @@ import org.jboss.netty.channel.SimpleChannelUpstreamHandler;
 
 public class WebSocketClientErrorHandler extends SimpleChannelUpstreamHandler {
 
-    public WebSocketClientErrorHandler(TestableWebSocket socket) {
+    public WebSocketClientErrorHandler(InstrumentedWebSocket socket) {
         this.socket = socket;
     }
 
@@ -18,6 +18,6 @@ public class WebSocketClientErrorHandler extends SimpleChannelUpstreamHandler {
     }
 
 
-    private TestableWebSocket socket;
+    private InstrumentedWebSocket socket;
 
 }
