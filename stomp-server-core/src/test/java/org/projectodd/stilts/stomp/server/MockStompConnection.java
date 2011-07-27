@@ -19,10 +19,12 @@ import org.projectodd.stilts.stomp.Subscription;
 import org.projectodd.stilts.stomp.protocol.StompFrame.Version;
 import org.projectodd.stilts.stomp.server.protocol.HeartbeatRunnable;
 import org.projectodd.stilts.stomp.spi.StompConnection;
+import org.projectodd.stilts.stomp.spi.TransactionalAcknowledgeableMessageSink;
 
 public class MockStompConnection implements StompConnection {
 
-    public MockStompConnection(String sessionId, Version version, Heartbeat hb) {
+	public MockStompConnection(TransactionalAcknowledgeableMessageSink messageSink, String sessionId, Version version, Heartbeat hb) {
+    	this.messageSink = messageSink;
         this.sessionId = sessionId;
         this.version = version;
         this.heartbeat = hb;
@@ -34,6 +36,10 @@ public class MockStompConnection implements StompConnection {
         }
 
     }
+	
+	public TransactionalAcknowledgeableMessageSink getMessageSink() {
+		return this.messageSink;
+	}
 
     public Heartbeat getHeartbeat() {
         return this.heartbeat;
@@ -115,6 +121,8 @@ public class MockStompConnection implements StompConnection {
         return this.disconnected;
     }
 
+
+    private TransactionalAcknowledgeableMessageSink messageSink;
     private ScheduledExecutorService heartbeatMonitor;
     private Heartbeat heartbeat;
     private String sessionId;

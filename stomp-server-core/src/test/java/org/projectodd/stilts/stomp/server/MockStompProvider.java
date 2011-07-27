@@ -18,7 +18,7 @@ public class MockStompProvider implements StompProvider {
     
     @Override
     public MockStompConnection createConnection(TransactionalAcknowledgeableMessageSink messageSink, Headers headers, Version version, Heartbeat hb) throws StompException {
-        MockStompConnection connection = new MockStompConnection( "session-" + (++this.sessionCounter), version, hb );
+        MockStompConnection connection = new MockStompConnection( messageSink, "session-" + (++this.sessionCounter), version, hb );
         this.connections.add( connection );
         return connection;
     }

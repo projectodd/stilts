@@ -52,21 +52,25 @@
 	};
 
 	Stomp.unmarshal = function(data) {
-		var divider = data.search(/\n\n/), headerLines = data.substring(0,
-				divider).split('\n'), command = headerLines.shift(), headers = {}, body = '';
+		var divider     = data.search(/\n\n/);
+		var headerLines = data.substring(0, divider).split('\n');
+		var command     = headerLines.shift(), headers = {}, body = '';
+		
+		debug( headerLines );
 
 		// Parse headers
 		var line = idx = null;
 		for ( var i = 0; i < headerLines.length; i++) {
-			line = headerLines[i];
+			line = '' + headerLines[i];
 			idx = line.indexOf(':');
 			headers[trim(line.substring(0, idx))] = trim(line
 					.substring(idx + 1));
 		}
 		try {
 			if (headers[Stomp.Headers.CONTENT_LENGTH]) {
-				body = data.substring(divider + 2,
-						parseInt(headers[Stomp.Headers.CONTENT_LENGTH]));
+			    var len = parseInt( headers[Stomp.Headers.CONTENT_LENGTH] );
+			    var start = divider + 2;
+				body = (''+ data).substring(start, start+len);
 			} else {
 				// Parse body, stopping at the first \0 found.
 				var chr = null;
@@ -80,6 +84,7 @@
 			}
 			return Stomp.frame(command, headers, body);
 		} catch (err) {
+		    debug( err );
 			return Stomp.frame('ERROR', headers, "Error parsing frame: "
 					+ err.description);
 		}
@@ -105,23 +110,21 @@
 		onmessage = function(evt) {
 			debug('<<< ' + evt.data);
 			var frame = Stomp.unmarshal(evt.data);
-			debug('<<< FRAME [' + frame.command + ']');
-			debug('<<< FRAME ' + (frame.command == 'CONNECTED'));
 			if (frame.command == "CONNECTED") {
 				var version = frame.headers[Stomp.Headers.VERSION];
 				that.version = version;
 				if (that.connectCallback) {
-					debug("calling callback");
 					that.connectCallback(frame);
 				}
-			} else if (frame.command === "MESSAGE") {
-				var onreceive = subscriptions[frame.headers.subscription];
+			} else if (frame.command == "MESSAGE") {
+			    var subscription_id = '' + frame.headers.subscription;
+				var onreceive = subscriptions['' + frame.headers.subscription];
 				if (onreceive) {
 					onreceive(frame);
 				}
-			} else if (frame.command === "RECEIPT" && that.onreceipt) {
+			} else if (frame.command == "RECEIPT" && that.onreceipt) {
 				that.onreceipt(frame);
-			} else if (frame.command === "ERROR" && that.onerror) {
+			} else if (frame.command == "ERROR" && that.onerror) {
 				that.onerror(frame);
 			}
 		};
@@ -180,12 +183,14 @@
 
 		that.subscribe = function(destination, callback, headers) {
 			var headers = headers || {};
-			var id = "sub-" + counter++;
+			var subscription_id = "sub-" + counter++;
 			headers.destination = destination;
-			headers.id = id;
-			subscriptions[id] = callback;
+			headers.id = subscription_id;
+			debug( "SUBSCRIBE---> " + subscription_id + " == " + callback );
+			subscriptions['' + subscription_id] = callback;
+			debug( subscriptions['' + subscription_id] );
 			transmit("SUBSCRIBE", headers);
-			return id;
+			return subscription_id;
 		};
 
 		that.unsubscribe = function(id, headers) {

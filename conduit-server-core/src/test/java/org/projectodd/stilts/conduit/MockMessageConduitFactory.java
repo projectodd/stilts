@@ -12,7 +12,7 @@ public class MockMessageConduitFactory implements MessageConduitFactory {
 
     @Override
     public MessageConduit createMessageConduit(AcknowledgeableMessageSink messageSink, Headers headers) throws Exception {
-        MockMessageConduit conduit = new MockMessageConduit();
+        MockMessageConduit conduit = new MockMessageConduit( messageSink );
         this.conduits.add( conduit );
         return conduit;
     }

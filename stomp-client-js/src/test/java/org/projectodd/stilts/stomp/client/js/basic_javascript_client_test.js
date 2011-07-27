@@ -136,8 +136,39 @@ it( "should be able to abort a transactions", function() {
 
 });
 
+it( "should be able to receive messages", function() {
+  client = Stomp.client( "ws://localhost:8675/" );
+  client.debug = log;
+  
+  var receivedMessage = null;
 
-
-
-
-
+  client.connect( null, null, function(frame) {
+    Assert.assertEquals( "1.1", client.version );
+    
+    subscription_id = client.subscribe("/queues/one", function(msg) {
+      log( "INVOKING HANDLER ON " + msg );
+      receivedMessage  = msg;
+      client.disconnect();
+    } );
+    pause();
+    
+    connection = server.stompProvider.connections.get(0);
+    Assert.assertEquals( 1, connection.subscriptions.size(), 0 );
+    
+    subscription = connection.subscriptions.get( subscription_id );
+    Assert.assertEquals( "/queues/one", subscription.destination );
+    
+    sink = connection.messageSink;
+    log( "message sink: " + sink );
+    stompMessage = org.projectodd.stilts.stomp.StompMessages.createStompMessage( "/queues/one", "this is a sent message" );
+    stompMessage.headers.put( "subscription", subscription_id );
+    
+    sink.send( stompMessage, null );
+    pause();
+  } );
+  
+  client.waitForDisconnect();
+  
+  Assert.assertEquals( "/queues/one", receivedMessage.headers.destination );
+  Assert.assertEquals( "this is a sent message", receivedMessage.body );
+} );

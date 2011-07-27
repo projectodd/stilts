@@ -8,11 +8,17 @@ import org.projectodd.stilts.stomp.Headers;
 import org.projectodd.stilts.stomp.MockSubscription;
 import org.projectodd.stilts.stomp.StompMessage;
 import org.projectodd.stilts.stomp.Subscription;
+import org.projectodd.stilts.stomp.spi.AcknowledgeableMessageSink;
 
 public class MockMessageConduit implements MessageConduit {
 
-    public MockMessageConduit() {
+	public MockMessageConduit(AcknowledgeableMessageSink messageSink) {
+    	this.messageSink = messageSink;
     }
+	
+	public AcknowledgeableMessageSink getMessageSink() {
+		return this.messageSink;
+	}
 
     @Override
     public void send(StompMessage message) throws Exception {
@@ -34,6 +40,7 @@ public class MockMessageConduit implements MessageConduit {
         return this.subscriptions;
     }
 
+    private AcknowledgeableMessageSink messageSink;
     private List<StompMessage> messages = new ArrayList<StompMessage>();
     private List<Subscription> subscriptions = new ArrayList<Subscription>();
 
