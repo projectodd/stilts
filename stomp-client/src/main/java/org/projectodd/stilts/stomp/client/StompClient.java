@@ -25,6 +25,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -180,13 +181,14 @@ public class StompClient {
 
         if (this.executor == null) {
             this.executor = Executors.newFixedThreadPool( 4 );
+            this.destroyExecutor = true;
         }
 
-        ClientBootstrap bootstrap = new ClientBootstrap();
+        this.bootstrap = new ClientBootstrap();
         ChannelPipelineFactory factory = createPipelineFactory();
         bootstrap.setPipelineFactory( factory );
         bootstrap.setFactory( createChannelFactory() );
-
+        
         setConnectionState( State.CONNECTING );
         this.channel = bootstrap.connect( serverAddress ).await().getChannel();
         waitForConnected( waitTime );
@@ -203,9 +205,6 @@ public class StompClient {
         }
     }
 
-    void connectWebSocket() {
-    }
-
     String getNextTransactionId() {
         return "transaction-" + this.transactionCounter.getAndIncrement();
     }
@@ -218,6 +217,13 @@ public class StompClient {
         setConnectionState( State.DISCONNECTING );
         this.channel.close();
         waitForDisconnected( waitTime );
+        
+        if ( this.destroyExecutor ) {
+            if ( this.executor instanceof ExecutorService ) {
+                ((ExecutorService)this.executor).shutdown();
+            }
+            this.destroyExecutor = false;
+        }
     }
 
     public SubscriptionBuilder subscribe(String destination) {
@@ -347,10 +353,6 @@ public class StompClient {
         return new NioClientSocketChannelFactory( bossExecutor, workerExecutor );
     }
 
-    public void close() throws InterruptedException {
-        this.channel.getCloseFuture().await();
-    }
-
     private static final Callable<Void> NOOP = new Callable<Void>() {
         public Void call() throws Exception {
             return null;
@@ -368,9 +370,12 @@ public class StompClient {
 
     private final Object stateLock = new Object();
     private State connectionState;
+    
+    private ClientBootstrap bootstrap;
 
     private ClientListener clientListener;
     private Executor executor;
+    private boolean destroyExecutor = false;
     private Channel channel;
     private InetSocketAddress serverAddress;
     private Version version = Version.VERSION_1_0;
