@@ -41,6 +41,8 @@ public class SubscriberImpl implements Subscriber {
             this.ackSet = new CumulativeAckSet();
         } else if (this.ackMode == AckMode.CLIENT_INDIVIDUAL) {
             this.ackSet = new IndividualAckSet();
+        } else {
+            this.ackMode = AckMode.AUTO;
         }
     }
 
@@ -68,14 +70,22 @@ public class SubscriberImpl implements Subscriber {
             acknowledger = new StompletAcknowledger( (AcknowledgeableStomplet) this.stomplet, this, dupe );
         }
 
-        if (this.ackMode == AckMode.AUTO && acknowledger != null) {
-            try {
-                acknowledger.ack();
-            } catch (Exception e) {
-                throw new StompException( e );
+        if (this.ackMode == AckMode.AUTO) {
+            if (acknowledger != null) {
+                try {
+                    acknowledger.ack();
+                } catch (Exception e) {
+                    throw new StompException( e );
+                }
             }
+            System.err.println( "messageConduit: " + this.messageConduit );
+            System.err.println( "messageConduit.sink: " + this.messageConduit.getMessageSink() );
+            System.err.println( "dupe: " + dupe );
             this.messageConduit.getMessageSink().send( dupe );
         } else {
+            if ( acknowledger == null ) {
+                acknowledger = new NoOpAcknowledger();
+            }
             this.ackSet.addAcknowledger( dupe.getId(), acknowledger );
             SubscriberAcknowledger subscriberAcknowledger = new SubscriberAcknowledger( this, dupe.getId() );
             this.messageConduit.getMessageSink().send( dupe, subscriberAcknowledger );
