@@ -87,6 +87,7 @@
         <configuration>
           <jrubyVersion>${version.jruby}</jrubyVersion>
           <jrubyArgs>-Xmx768m</jrubyArgs>
+          <includeDependencies>true</includeDependencies>
         </configuration>
         <executions>
           <execution>

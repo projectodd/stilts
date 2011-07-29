@@ -26,6 +26,14 @@
     <url>http://github.com/bobmcwhirter/stilts</url>
   </scm>
 
+  <developers>
+    <developer>
+      <id>stilts-team</id>
+      <name>The Stilts Team</name>
+      <email>stilts-dev@projectodd.org</email>
+    </developer>
+  </developers>
+
   <properties>
     <version.jta>1.1</version.jta>
     <version.netty>3.2.1.Final</version.netty>
