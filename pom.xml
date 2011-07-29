@@ -53,6 +53,7 @@
     <version.org.slf4j>1.5.10</version.org.slf4j>
     <version.org.slf4j-log4j>1.6.1</version.org.slf4j-log4j>
     <version.cobertura>2.5</version.cobertura>
+    <version.jruby-maven-plugins>0.28.4-SNAPSHOT</version.jruby-maven-plugins>
   </properties>
 
   <repositories>

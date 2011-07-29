@@ -1,0 +1,2 @@
+
+require 'stilts/stomp/client'
