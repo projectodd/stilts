@@ -16,26 +16,31 @@
 
 package org.projectodd.stilts.conduit.xa;
 
-import javax.transaction.xa.XAResource;
+import javax.transaction.Transaction;
+import javax.transaction.TransactionManager;
 
-import org.projectodd.stilts.conduit.spi.XAMessageConduit;
+import org.projectodd.stilts.conduit.spi.MessageConduit;
 import org.projectodd.stilts.stomp.Headers;
 import org.projectodd.stilts.stomp.StompMessage;
 import org.projectodd.stilts.stomp.Subscription;
 
-public class PseudoXAMessageConduit implements XAMessageConduit {
+public class PseudoXAMessageConduit implements MessageConduit {
 
-    public PseudoXAMessageConduit(PseudoXAResourceManager resourceManager) {
+    public PseudoXAMessageConduit(TransactionManager transactionManager, PseudoXAResourceManager resourceManager) {
+        this.transactionManager = transactionManager;
         this.resourceManager = resourceManager;
     }
 
     @Override
     public void send(StompMessage stompMessage) throws Exception {
-        PseudoXATransaction tx = this.resourceManager.currentTransaction();
-        if ( tx == null ) {
-            this.resourceManager.getMessageConduit().send( stompMessage );
-        } else {
+        Transaction jtaTransaction = this.transactionManager.getTransaction();
+
+        if (jtaTransaction != null) {
+            jtaTransaction.enlistResource( this.resourceManager );
+            PseudoXATransaction tx = this.resourceManager.currentTransaction();
             tx.addSentMessage( stompMessage );
+        } else {
+            this.resourceManager.getMessageConduit().send( stompMessage );
         }
     }
 
@@ -44,12 +49,7 @@ public class PseudoXAMessageConduit implements XAMessageConduit {
         return this.resourceManager.getMessageConduit().subscribe( subscriptionId, destination, headers );
     }
 
-    @Override
-    public XAResource getXAResource() {
-        return this.resourceManager;
-    }
-
-
+    private TransactionManager transactionManager;
     private PseudoXAResourceManager resourceManager;
 
 }

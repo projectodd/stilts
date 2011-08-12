@@ -91,14 +91,11 @@ public class ConduitStompTransaction implements StompTransaction {
 
     @Override
     public void send(StompMessage message) throws StompException {
-        XAResource xaResource = this.stompConnection.getMessageConduit().getXAResource();
         try {
             TransactionManager tm = this.stompConnection.getStompProvider().getTransactionManager();
             tm.resume( this.transaction );
-            this.transaction.enlistResource( xaResource );
             message.getHeaders().remove( Header.TRANSACTION );
             this.stompConnection.send( message );
-            this.transaction.delistResource( xaResource, XAResource.TMSUSPEND );
             tm.suspend();
         } catch (StompException e) {
             throw e;
@@ -108,13 +105,10 @@ public class ConduitStompTransaction implements StompTransaction {
     }
 
     public void ack(Acknowledger acknowledger) throws StompException {
-        XAResource xaResource = this.stompConnection.getMessageConduit().getXAResource();
         try {
             TransactionManager tm = this.stompConnection.getStompProvider().getTransactionManager();
             tm.resume( this.transaction );
-            this.transaction.enlistResource( xaResource );
             acknowledger.ack();
-            this.transaction.delistResource( xaResource, XAResource.TMSUSPEND );
             tm.suspend();
         } catch (Exception e) {
             throw new StompException( e );
@@ -122,11 +116,9 @@ public class ConduitStompTransaction implements StompTransaction {
     }
 
     public void nack(Acknowledger acknowledger) throws StompException {
-        XAResource xaResource = this.stompConnection.getMessageConduit().getXAResource();
         try {
             TransactionManager tm = this.stompConnection.getStompProvider().getTransactionManager();
             tm.resume( this.transaction );
-            this.transaction.enlistResource( xaResource );
             acknowledger.nack();
             tm.suspend();
         } catch (Exception e) {

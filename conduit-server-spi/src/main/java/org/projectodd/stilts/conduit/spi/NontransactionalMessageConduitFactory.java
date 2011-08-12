@@ -19,11 +19,8 @@ package org.projectodd.stilts.conduit.spi;
 import org.projectodd.stilts.stomp.Headers;
 import org.projectodd.stilts.stomp.spi.AcknowledgeableMessageSink;
 
-public abstract class AbstractXAMessageConduitFactory implements XAMessageConduitFactory {
-
-    @Override
-    public MessageConduit createMessageConduit(AcknowledgeableMessageSink messageSink, Headers headers) throws Exception {
-        return createXAMessageConduit( messageSink, headers );
-    }
+public interface NontransactionalMessageConduitFactory extends MessageConduitFactory {
+    
+    MessageConduit createMessageConduit(AcknowledgeableMessageSink messageSink, Headers headers) throws Exception;
 
 }

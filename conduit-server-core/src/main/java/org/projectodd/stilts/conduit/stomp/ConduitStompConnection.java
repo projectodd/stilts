@@ -24,7 +24,7 @@ import javax.transaction.SystemException;
 import javax.transaction.Transaction;
 import javax.transaction.TransactionManager;
 
-import org.projectodd.stilts.conduit.spi.XAMessageConduit;
+import org.projectodd.stilts.conduit.spi.MessageConduit;
 import org.projectodd.stilts.stomp.Acknowledger;
 import org.projectodd.stilts.stomp.Headers;
 import org.projectodd.stilts.stomp.Heartbeat;
@@ -40,7 +40,7 @@ import org.projectodd.stilts.stomp.spi.StompTransaction;
 
 public class ConduitStompConnection implements StompConnection {
 
-    public ConduitStompConnection(ConduitStompProvider stompProvider, XAMessageConduit messageConduit, String sessionId, Version version, Heartbeat hb)
+    public ConduitStompConnection(ConduitStompProvider stompProvider, MessageConduit messageConduit, String sessionId, Version version, Heartbeat hb)
             throws StompException {
         this.stompProvider = stompProvider;
         this.messageConduit = messageConduit;
@@ -66,7 +66,7 @@ public class ConduitStompConnection implements StompConnection {
         return this.stompProvider;
     }
 
-    public XAMessageConduit getMessageConduit() {
+    public MessageConduit getMessageConduit() {
         return this.messageConduit;
     }
 
@@ -226,7 +226,7 @@ public class ConduitStompConnection implements StompConnection {
 
     private Map<String, ConduitStompTransaction> namedTransactions = new HashMap<String, ConduitStompTransaction>();
 
-    private XAMessageConduit messageConduit;
+    private MessageConduit messageConduit;
     private ConduitStompProvider stompProvider;
     private String sessionId;
     private Version version;

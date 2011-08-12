@@ -16,10 +16,13 @@
 
 package org.projectodd.stilts.conduit.spi;
 
+import javax.transaction.TransactionManager;
+
 import org.projectodd.stilts.stomp.Headers;
 import org.projectodd.stilts.stomp.spi.AcknowledgeableMessageSink;
 
-public interface XAMessageConduitFactory extends MessageConduitFactory {
+public interface TransactionalMessageConduitFactory extends MessageConduitFactory {
+    
+    MessageConduit createMessageConduit(TransactionManager transactionManager, AcknowledgeableMessageSink messageSink, Headers headers) throws Exception;
 
-    XAMessageConduit createXAMessageConduit(AcknowledgeableMessageSink messageSink, Headers headers) throws Exception;
 }

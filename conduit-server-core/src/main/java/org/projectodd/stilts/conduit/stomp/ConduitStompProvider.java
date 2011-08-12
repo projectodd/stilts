@@ -22,7 +22,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.transaction.TransactionManager;
 
-import org.projectodd.stilts.conduit.spi.XAMessageConduitFactory;
+import org.projectodd.stilts.conduit.spi.TransactionalMessageConduitFactory;
 import org.projectodd.stilts.stomp.Headers;
 import org.projectodd.stilts.stomp.Heartbeat;
 import org.projectodd.stilts.stomp.StompException;
@@ -35,11 +35,11 @@ import org.projectodd.stilts.stomp.spi.TransactionalAcknowledgeableMessageSink;
 
 public class ConduitStompProvider implements StompProvider {
 
-    public ConduitStompProvider(TransactionManager transactionManager, XAMessageConduitFactory messageConduitFactory) {
+    public ConduitStompProvider(TransactionManager transactionManager, TransactionalMessageConduitFactory messageConduitFactory) {
         this( transactionManager, messageConduitFactory, null );
     }
 
-    public ConduitStompProvider(TransactionManager transactionManager, XAMessageConduitFactory messageConduitFactory, Authenticator authenticator) {
+    public ConduitStompProvider(TransactionManager transactionManager, TransactionalMessageConduitFactory messageConduitFactory, Authenticator authenticator) {
         this.transactionManager = transactionManager;
         if (authenticator == null) {
             authenticator = OpenAuthenticator.INSTANCE;
@@ -95,16 +95,16 @@ public class ConduitStompProvider implements StompProvider {
     protected ConduitStompConnection createStompConnection(TransactionalAcknowledgeableMessageSink messageSink, String sessionId, Headers headers, Version version, Heartbeat hb)
             throws Exception {
         ConduitAcknowledgeableMessageSink conduitSink = new ConduitAcknowledgeableMessageSink( messageSink );
-        ConduitStompConnection connection = new ConduitStompConnection( this, this.messageConduitFactory.createXAMessageConduit( conduitSink, headers ), sessionId, version, hb );
+        ConduitStompConnection connection = new ConduitStompConnection( this, this.messageConduitFactory.createMessageConduit( this.transactionManager, conduitSink, headers ), sessionId, version, hb );
         conduitSink.setConnection( connection );
         return connection;
     }
 
-    XAMessageConduitFactory getMessageConduitFactory() {
+    TransactionalMessageConduitFactory getMessageConduitFactory() {
         return this.messageConduitFactory;
     }
 
-    private XAMessageConduitFactory messageConduitFactory;
+    private TransactionalMessageConduitFactory messageConduitFactory;
     private TransactionManager transactionManager;
     private Authenticator authenticator;
     private AtomicInteger sessionCounter = new AtomicInteger();

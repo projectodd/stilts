@@ -4,11 +4,11 @@ import javax.transaction.TransactionManager;
 
 import org.junit.After;
 import org.junit.Before;
-import org.projectodd.stilts.conduit.spi.MessageConduitFactory;
+import org.projectodd.stilts.conduit.spi.NontransactionalMessageConduitFactory;
 
 import com.arjuna.ats.jta.common.jtaPropertyManager;
 
-public abstract class AbstractConduitServerTestCase<T extends MessageConduitFactory> {
+public abstract class AbstractConduitServerTestCase<T extends NontransactionalMessageConduitFactory> {
 	
 	protected ConduitServer<T> server;
 

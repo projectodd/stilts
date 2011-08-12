@@ -16,32 +16,32 @@
 
 package org.projectodd.stilts.conduit.xa;
 
+import javax.transaction.TransactionManager;
+
+import org.projectodd.stilts.conduit.spi.TransactionalMessageConduitFactory;
 import org.projectodd.stilts.conduit.spi.MessageConduit;
-import org.projectodd.stilts.conduit.spi.MessageConduitFactory;
-import org.projectodd.stilts.conduit.spi.XAMessageConduit;
-import org.projectodd.stilts.conduit.spi.XAMessageConduitFactory;
+import org.projectodd.stilts.conduit.spi.NontransactionalMessageConduitFactory;
 import org.projectodd.stilts.stomp.Headers;
 import org.projectodd.stilts.stomp.spi.AcknowledgeableMessageSink;
 
-public class PseudoXAMessageConduitFactory implements XAMessageConduitFactory {
+public class PseudoXAMessageConduitFactory implements TransactionalMessageConduitFactory {
 
-    private MessageConduitFactory factory;
+    private NontransactionalMessageConduitFactory factory;
 
-    public PseudoXAMessageConduitFactory(MessageConduitFactory factory) {
+    public PseudoXAMessageConduitFactory(NontransactionalMessageConduitFactory factory) {
         this.factory = factory;
     }
     
-    @Override
     public MessageConduit createMessageConduit(AcknowledgeableMessageSink messageSink, Headers headers) throws Exception {
         return this.factory.createMessageConduit( messageSink, headers );
     }
 
     @Override
-    public XAMessageConduit createXAMessageConduit(AcknowledgeableMessageSink messageSink, Headers headers) throws Exception {
+    public MessageConduit createMessageConduit(TransactionManager transactionManager, AcknowledgeableMessageSink messageSink, Headers headers) throws Exception {
         PseudoXAAcknowledgeableMessageSink xaMessageSink = new PseudoXAAcknowledgeableMessageSink( messageSink );
         MessageConduit conduit = createMessageConduit( xaMessageSink, headers );
         PseudoXAResourceManager resourceManager = new PseudoXAResourceManager( conduit );
         xaMessageSink.setResourceManager( resourceManager );
-        return new PseudoXAMessageConduit( resourceManager );
+        return new PseudoXAMessageConduit( transactionManager, resourceManager );
     }
 }

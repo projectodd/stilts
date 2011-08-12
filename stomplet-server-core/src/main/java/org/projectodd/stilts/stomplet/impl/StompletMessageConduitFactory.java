@@ -22,14 +22,14 @@ import java.util.Map;
 import java.util.Set;
 
 import org.projectodd.stilts.conduit.spi.MessageConduit;
-import org.projectodd.stilts.conduit.spi.MessageConduitFactory;
+import org.projectodd.stilts.conduit.spi.NontransactionalMessageConduitFactory;
 import org.projectodd.stilts.stomp.Headers;
 import org.projectodd.stilts.stomp.protocol.StompFrame.Header;
 import org.projectodd.stilts.stomp.spi.AcknowledgeableMessageSink;
 import org.projectodd.stilts.stomplet.container.NoSuchHostException;
 import org.projectodd.stilts.stomplet.container.StompletContainer;
 
-public class StompletMessageConduitFactory implements MessageConduitFactory {
+public class StompletMessageConduitFactory implements NontransactionalMessageConduitFactory {
 
     @Override
     public MessageConduit createMessageConduit(AcknowledgeableMessageSink messageSink, Headers headers) throws Exception {

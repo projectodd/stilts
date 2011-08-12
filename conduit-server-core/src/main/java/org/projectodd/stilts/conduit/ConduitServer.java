@@ -19,7 +19,8 @@ package org.projectodd.stilts.conduit;
 import javax.transaction.TransactionManager;
 
 import org.projectodd.stilts.conduit.spi.MessageConduitFactory;
-import org.projectodd.stilts.conduit.spi.XAMessageConduitFactory;
+import org.projectodd.stilts.conduit.spi.NontransactionalMessageConduitFactory;
+import org.projectodd.stilts.conduit.spi.TransactionalMessageConduitFactory;
 import org.projectodd.stilts.conduit.stomp.ConduitStompProvider;
 import org.projectodd.stilts.conduit.xa.PseudoXAMessageConduitFactory;
 import org.projectodd.stilts.stomp.Constants;
@@ -57,10 +58,12 @@ public class ConduitServer<T extends MessageConduitFactory> {
     
     public void setMessageConduitFactory(T messageConduitFactory) {
         this.messageConduitFactory = messageConduitFactory;
-        if ( messageConduitFactory instanceof XAMessageConduitFactory ) {
-            this.xaMessageConduitFactory = (XAMessageConduitFactory) messageConduitFactory;
+        if ( messageConduitFactory instanceof TransactionalMessageConduitFactory ) {
+            this.transactionalMessageConduitFactory = (TransactionalMessageConduitFactory) messageConduitFactory;
+        } else if ( messageConduitFactory instanceof NontransactionalMessageConduitFactory ) {
+            this.transactionalMessageConduitFactory = new PseudoXAMessageConduitFactory( (NontransactionalMessageConduitFactory) messageConduitFactory );
         } else {
-            this.xaMessageConduitFactory = new PseudoXAMessageConduitFactory( messageConduitFactory );
+            throw new IllegalArgumentException( "Unknown conduit factory type: " + messageConduitFactory.getClass().getName() + "; factory must be either Transactional or Nontransaction" );
         }
     }
     
@@ -68,12 +71,12 @@ public class ConduitServer<T extends MessageConduitFactory> {
         return this.messageConduitFactory;
     }
     
-    public XAMessageConduitFactory getXAMessageConduitFactory() {
-        return this.xaMessageConduitFactory;
+    public TransactionalMessageConduitFactory getTransactionalMessageConduitFactory() {
+        return this.transactionalMessageConduitFactory;
     }
     
     public void start() throws Exception {
-        ConduitStompProvider provider = new ConduitStompProvider( this.transactionManager, getXAMessageConduitFactory() );
+        ConduitStompProvider provider = new ConduitStompProvider( this.transactionManager, getTransactionalMessageConduitFactory() );
         this.server.setStompProvider( provider );
         this.server.start();
     }
@@ -85,6 +88,6 @@ public class ConduitServer<T extends MessageConduitFactory> {
     private StompServer<ConduitStompProvider> server;
     private TransactionManager transactionManager;
     private T messageConduitFactory;
-    private XAMessageConduitFactory xaMessageConduitFactory;
+    private TransactionalMessageConduitFactory transactionalMessageConduitFactory;
 
 }
