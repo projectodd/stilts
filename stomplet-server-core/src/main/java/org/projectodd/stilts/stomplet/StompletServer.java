@@ -21,7 +21,7 @@ import javax.transaction.TransactionManager;
 import org.projectodd.stilts.conduit.ConduitServer;
 import org.projectodd.stilts.stomp.Constants;
 import org.projectodd.stilts.stomplet.container.StompletContainer;
-import org.projectodd.stilts.stomplet.impl.StompletMessageConduitFactory;
+import org.projectodd.stilts.stomplet.container.StompletMessageConduitFactory;
 
 /**
  * Virtual-hosting server supporting <code>StompletContainers</code>.

@@ -14,76 +14,78 @@
  * limitations under the License.
  */
 
-package org.projectodd.stilts.stomplet.impl;
+package org.projectodd.stilts.stomplet.container;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicLong;
+
+import javax.transaction.RollbackException;
+import javax.transaction.SystemException;
+import javax.transaction.Transaction;
+import javax.transaction.TransactionManager;
+import javax.transaction.xa.XAResource;
 
 import org.projectodd.stilts.conduit.spi.MessageConduit;
 import org.projectodd.stilts.stomp.Headers;
 import org.projectodd.stilts.stomp.StompException;
 import org.projectodd.stilts.stomp.StompMessage;
 import org.projectodd.stilts.stomp.Subscription;
-import org.projectodd.stilts.stomp.Subscription.AckMode;
-import org.projectodd.stilts.stomp.protocol.StompFrame.Header;
 import org.projectodd.stilts.stomp.spi.AcknowledgeableMessageSink;
-import org.projectodd.stilts.stomplet.Stomplet;
-import org.projectodd.stilts.stomplet.container.RouteMatch;
-import org.projectodd.stilts.stomplet.container.StompletContainer;
 
 public class StompletMessageConduit implements MessageConduit {
 
-    public StompletMessageConduit(StompletContainer stompletContainer, AcknowledgeableMessageSink messageSink) throws StompException {
+    public StompletMessageConduit(TransactionManager transactionManager, StompletContainer stompletContainer, AcknowledgeableMessageSink messageSink)
+            throws StompException {
+        this.transactionManager = transactionManager;
         this.stompletContainer = stompletContainer;
         this.messageSink = messageSink;
     }
-    
+
     AcknowledgeableMessageSink getMessageSink() {
         return this.messageSink;
     }
 
     @Override
     public void send(StompMessage message) throws StompException {
-        this.stompletContainer.send( message );
+        StompletActivator activator = this.stompletContainer.getActivator( message.getDestination() );
+        if (activator == null) {
+            return;
+        }
+
+        try {
+            Transaction tx = this.transactionManager.getTransaction();
+            if (tx != null) {
+                for (XAResource each : activator.getXAResources()) {
+                    try {
+                        tx.enlistResource( each );
+                    } catch (IllegalStateException e) {
+                        throw new StompException( e );
+                    } catch (RollbackException e) {
+                        throw new StompException( e );
+                    }
+                }
+            }
+            activator.send( message );
+        } catch (SystemException e) {
+            throw new StompException( e );
+        }
     }
 
     @Override
     public Subscription subscribe(String subscriptionId, String destination, Headers headers) throws Exception {
-        RouteMatch match = this.stompletContainer.match( destination );
-        if (match == null) {
+        StompletActivator activator = this.stompletContainer.getActivator( destination );
+        if (activator == null) {
             return null;
         }
 
-        Stomplet stomplet = match.getRoute().getStomplet();
-
-        String ackHeader = headers.get( Header.ACK );
-
-        AckMode ackMode = AckMode.AUTO;
-
-        if (ackHeader == null || "auto".equalsIgnoreCase( ackHeader )) {
-            ackMode = AckMode.AUTO;
-        } else if ("client".equalsIgnoreCase( ackHeader )) {
-            ackMode = AckMode.CLIENT;
-        } else if ("client-individual".equalsIgnoreCase( ackHeader )) {
-            ackMode = AckMode.CLIENT_INDIVIDUAL;
-        }
-
-        SubscriberImpl subscriber = new SubscriberImpl( stomplet, subscriptionId, destination, this, ackMode );
-        stomplet.onSubscribe( subscriber );
-        SubscriptionImpl subscription = new SubscriptionImpl( stomplet, subscriber );
+        Subscription subscription = activator.subscribe( this, subscriptionId, destination, headers );
         this.subscriptions.put( subscriptionId, subscription );
         return subscription;
     }
-    
-    String getNextMessageId() {
-        return "message-" + this.messageCounter.getAndIncrement();
-    }
 
+    private TransactionManager transactionManager;
     private StompletContainer stompletContainer;
     private AcknowledgeableMessageSink messageSink;
     private Map<String, Subscription> subscriptions = new HashMap<String, Subscription>();
-
-    private AtomicLong messageCounter = new AtomicLong();
 
 }

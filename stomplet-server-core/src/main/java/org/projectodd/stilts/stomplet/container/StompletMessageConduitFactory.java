@@ -14,22 +14,30 @@
  * limitations under the License.
  */
 
-package org.projectodd.stilts.stomplet.impl;
+package org.projectodd.stilts.stomplet.container;
 
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import javax.transaction.TransactionManager;
+
 import org.projectodd.stilts.conduit.spi.MessageConduit;
-import org.projectodd.stilts.conduit.spi.NontransactionalMessageConduitFactory;
+import org.projectodd.stilts.conduit.spi.TransactionalMessageConduitFactory;
 import org.projectodd.stilts.stomp.Headers;
 import org.projectodd.stilts.stomp.protocol.StompFrame.Header;
 import org.projectodd.stilts.stomp.spi.AcknowledgeableMessageSink;
-import org.projectodd.stilts.stomplet.container.NoSuchHostException;
-import org.projectodd.stilts.stomplet.container.StompletContainer;
 
-public class StompletMessageConduitFactory implements NontransactionalMessageConduitFactory {
+public class StompletMessageConduitFactory implements TransactionalMessageConduitFactory {
+    
+    public void setTransactionManager(TransactionManager transactionManager) {
+        this.transactionManager = transactionManager;
+    }
+    
+    public TransactionManager getTransactionManager() {
+        return this.transactionManager;
+    }
 
     @Override
     public MessageConduit createMessageConduit(AcknowledgeableMessageSink messageSink, Headers headers) throws Exception {
@@ -49,7 +57,7 @@ public class StompletMessageConduitFactory implements NontransactionalMessageCon
             throw new NoSuchHostException( host );
         }
 
-        return new StompletMessageConduit( container, messageSink );
+        return new StompletMessageConduit( this.transactionManager, container, messageSink );
     }
 
     public void registerVirtualHost(final String host, final StompletContainer container) {
@@ -96,6 +104,7 @@ public class StompletMessageConduitFactory implements NontransactionalMessageCon
         }
     }
 
+    private TransactionManager transactionManager;
     private Map<String, StompletContainer> virtualHosts = new HashMap<String, StompletContainer>();
     private StompletContainer defaultContainer = null;
 

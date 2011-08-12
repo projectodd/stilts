@@ -42,6 +42,7 @@ public class ConduitStompConnection implements StompConnection {
 
     public ConduitStompConnection(ConduitStompProvider stompProvider, MessageConduit messageConduit, String sessionId, Version version, Heartbeat hb)
             throws StompException {
+        System.err.println( "NEW CONNECTION: " + messageConduit );
         this.stompProvider = stompProvider;
         this.messageConduit = messageConduit;
         this.sessionId = sessionId;
@@ -82,6 +83,7 @@ public class ConduitStompConnection implements StompConnection {
         try {
             this.messageConduit.send( message );
         } catch (Exception e) {
+            e.printStackTrace();
             throw new StompException( e );
         }
     }

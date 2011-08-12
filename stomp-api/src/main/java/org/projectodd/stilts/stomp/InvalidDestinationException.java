@@ -16,9 +16,12 @@
 
 package org.projectodd.stilts.stomp;
 
-
 public class InvalidDestinationException extends StompException {
 
     private static final long serialVersionUID = 1L;
+
+    public InvalidDestinationException(String destinationName) {
+        super( "Invalid destination: " + destinationName );
+    }
 
 }

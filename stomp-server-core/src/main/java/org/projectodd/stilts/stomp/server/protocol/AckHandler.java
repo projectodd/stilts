@@ -37,6 +37,7 @@ public class AckHandler extends AbstractControlFrameHandler {
             try {
                 acknowledger.ack( transactionId );
             } catch (Exception e) {
+                e.printStackTrace();
                 sendError( channelContext, "Unable to ACK", frame );
             }
         }

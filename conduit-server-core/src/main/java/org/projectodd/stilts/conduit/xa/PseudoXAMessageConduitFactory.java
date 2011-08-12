@@ -18,30 +18,32 @@ package org.projectodd.stilts.conduit.xa;
 
 import javax.transaction.TransactionManager;
 
-import org.projectodd.stilts.conduit.spi.TransactionalMessageConduitFactory;
 import org.projectodd.stilts.conduit.spi.MessageConduit;
-import org.projectodd.stilts.conduit.spi.NontransactionalMessageConduitFactory;
+import org.projectodd.stilts.conduit.spi.MessageConduitFactory;
+import org.projectodd.stilts.conduit.spi.TransactionalMessageConduitFactory;
 import org.projectodd.stilts.stomp.Headers;
 import org.projectodd.stilts.stomp.spi.AcknowledgeableMessageSink;
 
 public class PseudoXAMessageConduitFactory implements TransactionalMessageConduitFactory {
 
-    private NontransactionalMessageConduitFactory factory;
 
-    public PseudoXAMessageConduitFactory(NontransactionalMessageConduitFactory factory) {
+    public PseudoXAMessageConduitFactory(MessageConduitFactory factory) {
         this.factory = factory;
     }
     
-    public MessageConduit createMessageConduit(AcknowledgeableMessageSink messageSink, Headers headers) throws Exception {
-        return this.factory.createMessageConduit( messageSink, headers );
+    public void setTransactionManager(TransactionManager transactionManager) {
+        this.transactionManager = transactionManager;
     }
-
+    
     @Override
-    public MessageConduit createMessageConduit(TransactionManager transactionManager, AcknowledgeableMessageSink messageSink, Headers headers) throws Exception {
+    public MessageConduit createMessageConduit(AcknowledgeableMessageSink messageSink, Headers headers) throws Exception {
         PseudoXAAcknowledgeableMessageSink xaMessageSink = new PseudoXAAcknowledgeableMessageSink( messageSink );
-        MessageConduit conduit = createMessageConduit( xaMessageSink, headers );
+        MessageConduit conduit = this.factory.createMessageConduit( xaMessageSink, headers );
         PseudoXAResourceManager resourceManager = new PseudoXAResourceManager( conduit );
         xaMessageSink.setResourceManager( resourceManager );
-        return new PseudoXAMessageConduit( transactionManager, resourceManager );
+        return new PseudoXAMessageConduit( this.transactionManager, resourceManager );
     }
+    
+    private TransactionManager transactionManager;
+    private MessageConduitFactory factory;
 }

@@ -40,6 +40,7 @@ public class PseudoXAMessageConduit implements MessageConduit {
             PseudoXATransaction tx = this.resourceManager.currentTransaction();
             tx.addSentMessage( stompMessage );
         } else {
+            System.err.println( "NO TX, forward SEND" );
             this.resourceManager.getMessageConduit().send( stompMessage );
         }
     }

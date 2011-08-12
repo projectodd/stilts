@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.projectodd.stilts.stomplet.impl;
+package org.projectodd.stilts.stomplet.container;
 
 import org.projectodd.stilts.stomp.StompException;
 import org.projectodd.stilts.stomp.Subscription;

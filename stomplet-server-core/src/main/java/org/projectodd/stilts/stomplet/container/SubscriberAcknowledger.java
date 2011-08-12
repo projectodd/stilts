@@ -1,4 +1,4 @@
-package org.projectodd.stilts.stomplet.impl;
+package org.projectodd.stilts.stomplet.container;
 
 import org.projectodd.stilts.stomp.Acknowledger;
 

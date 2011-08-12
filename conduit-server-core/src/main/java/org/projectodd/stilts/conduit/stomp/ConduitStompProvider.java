@@ -95,7 +95,7 @@ public class ConduitStompProvider implements StompProvider {
     protected ConduitStompConnection createStompConnection(TransactionalAcknowledgeableMessageSink messageSink, String sessionId, Headers headers, Version version, Heartbeat hb)
             throws Exception {
         ConduitAcknowledgeableMessageSink conduitSink = new ConduitAcknowledgeableMessageSink( messageSink );
-        ConduitStompConnection connection = new ConduitStompConnection( this, this.messageConduitFactory.createMessageConduit( this.transactionManager, conduitSink, headers ), sessionId, version, hb );
+        ConduitStompConnection connection = new ConduitStompConnection( this, this.messageConduitFactory.createMessageConduit( conduitSink, headers ), sessionId, version, hb );
         conduitSink.setConnection( connection );
         return connection;
     }

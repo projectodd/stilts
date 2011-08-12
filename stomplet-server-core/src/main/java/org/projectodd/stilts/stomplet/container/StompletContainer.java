@@ -18,11 +18,12 @@ package org.projectodd.stilts.stomplet.container;
 
 import org.projectodd.stilts.stomplet.MessageRouter;
 
+
 public interface StompletContainer extends MessageRouter {
     
-    RouteMatch match(String destination);
     void start() throws Exception;
-
     void stop() throws Exception;
+    
+    StompletActivator getActivator(String destination);
 
 }

@@ -14,27 +14,28 @@
  * limitations under the License.
  */
 
-package org.projectodd.stilts.stomplet.impl;
+package org.projectodd.stilts.stomplet.container;
+
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.projectodd.stilts.stomp.Acknowledger;
 import org.projectodd.stilts.stomp.StompException;
 import org.projectodd.stilts.stomp.StompMessage;
 import org.projectodd.stilts.stomp.Subscription.AckMode;
 import org.projectodd.stilts.stomp.protocol.StompFrame.Header;
+import org.projectodd.stilts.stomp.spi.AcknowledgeableMessageSink;
 import org.projectodd.stilts.stomplet.AcknowledgeableStomplet;
 import org.projectodd.stilts.stomplet.Stomplet;
 import org.projectodd.stilts.stomplet.Subscriber;
-import org.projectodd.stilts.stomplet.container.AckSet;
-import org.projectodd.stilts.stomplet.container.CumulativeAckSet;
-import org.projectodd.stilts.stomplet.container.IndividualAckSet;
 
 public class SubscriberImpl implements Subscriber {
 
-    public SubscriberImpl(Stomplet stomplet, String subscriptionId, String destination, StompletMessageConduit messageConduit, AckMode ackMode) {
+    public SubscriberImpl(Stomplet stomplet, String subscriptionId, String destination, AcknowledgeableMessageSink messageSink, AckMode ackMode) {
         this.stomplet = stomplet;
         this.subscriptionId = subscriptionId;
         this.destination = destination;
-        this.messageConduit = messageConduit;
+        this.messageSink = messageSink;
+        //this.messageConduit = messageConduit;
         this.ackMode = ackMode;
 
         if (this.ackMode == AckMode.CLIENT) {
@@ -64,7 +65,7 @@ public class SubscriberImpl implements Subscriber {
     public void send(StompMessage message, Acknowledger acknowledger) throws StompException {
         StompMessage dupe = message.duplicate();
         dupe.getHeaders().put( Header.SUBSCRIPTION, this.subscriptionId );
-        dupe.getHeaders().put( Header.MESSAGE_ID, this.messageConduit.getNextMessageId() );
+        dupe.getHeaders().put( Header.MESSAGE_ID, getNextMessageId() );
 
         if ((acknowledger == null) && (this.stomplet instanceof AcknowledgeableStomplet)) {
             acknowledger = new StompletAcknowledger( (AcknowledgeableStomplet) this.stomplet, this, dupe );
@@ -78,17 +79,14 @@ public class SubscriberImpl implements Subscriber {
                     throw new StompException( e );
                 }
             }
-            System.err.println( "messageConduit: " + this.messageConduit );
-            System.err.println( "messageConduit.sink: " + this.messageConduit.getMessageSink() );
-            System.err.println( "dupe: " + dupe );
-            this.messageConduit.getMessageSink().send( dupe );
+            this.messageSink.send( dupe );
         } else {
             if ( acknowledger == null ) {
                 acknowledger = new NoOpAcknowledger();
             }
             this.ackSet.addAcknowledger( dupe.getId(), acknowledger );
             SubscriberAcknowledger subscriberAcknowledger = new SubscriberAcknowledger( this, dupe.getId() );
-            this.messageConduit.getMessageSink().send( dupe, subscriberAcknowledger );
+            this.messageSink.send( dupe, subscriberAcknowledger );
         }
     }
 
@@ -110,9 +108,15 @@ public class SubscriberImpl implements Subscriber {
     public String getDestination() {
         return this.destination;
     }
+    
+    protected String getNextMessageId() {
+        return this.subscriptionId + "-message-" + messageCounter.getAndIncrement();
+    }
 
+    private AtomicLong messageCounter = new AtomicLong();
     private Stomplet stomplet;
-    private StompletMessageConduit messageConduit;
+    //private StompletMessageConduit messageConduit;
+    private AcknowledgeableMessageSink messageSink;
     private String subscriptionId;
     private String destination;
     private AckMode ackMode;

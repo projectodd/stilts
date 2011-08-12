@@ -20,72 +20,77 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
-import org.projectodd.stilts.stomp.Headers;
+import javax.transaction.TransactionManager;
+import javax.transaction.xa.XAResource;
+
+import org.projectodd.stilts.stomp.InvalidDestinationException;
 import org.projectodd.stilts.stomp.StompException;
 import org.projectodd.stilts.stomp.StompMessage;
 import org.projectodd.stilts.stomplet.MessageRouter;
 import org.projectodd.stilts.stomplet.Stomplet;
 import org.projectodd.stilts.stomplet.StompletConfig;
+import org.projectodd.stilts.stomplet.XAStomplet;
+import org.projectodd.stilts.stomplet.container.xa.PseudoXAStomplet;
 
 public class SimpleStompletContainer implements StompletContainer, MessageRouter {
 
     public SimpleStompletContainer() {
     }
-    
+
     public void start() throws Exception {
         this.stompletContext = new DefaultStompletContext( this );
     }
-    
+
     public void stop() throws Exception {
-        while ( ! this.routes.isEmpty() ) {
+        while (!this.routes.isEmpty()) {
             Route route = this.routes.remove( 0 );
             destroy( route.getStomplet() );
         }
     }
-    
+
     protected void destroy(Stomplet stomplet) throws StompException {
         stomplet.destroy();
     }
-    
+
     public void addStomplet(String destinationPattern, Stomplet stomplet) throws StompException {
-        addStomplet( destinationPattern, stomplet, new HashMap<String,String>() );
+        addStomplet( destinationPattern, stomplet, new HashMap<String, String>() );
     }
-    
-    public void addStomplet(String destinationPattern, Stomplet stomplet, Map<String,String> properties) throws StompException {
+
+    public void addStomplet(String destinationPattern, Stomplet stomplet, Map<String, String> properties) throws StompException {
         StompletConfig config = new DefaultStompletConfig( this.stompletContext, properties );
         stomplet.initialize( config );
-        Route route = new Route( destinationPattern, stomplet );
+        XAStomplet xaStomplet = null;
+        if (stomplet instanceof XAStomplet) {
+            xaStomplet = (XAStomplet) xaStomplet;
+        } else {
+            xaStomplet = new PseudoXAStomplet( stomplet );
+        }
+        Route route = new Route( destinationPattern, xaStomplet );
         this.routes.add( route );
     }
 
-    @Override
     public void send(StompMessage message) throws StompException {
-        RouteMatch match = match( message.getDestination() );
-
-        if (match != null) {
-            Stomplet stomplet = match.getRoute().getStomplet();
-            Map<String, String> matches = match.getMatches();
-            Headers headers = message.getHeaders();
-            for (String name : matches.keySet()) {
-                headers.put( "stomplet." + name, matches.get( name ) );
-            }
-            stomplet.onMessage( message );
+        StompletActivator activator = getActivator( message.getDestination() );
+        if (activator == null) {
+            throw new InvalidDestinationException( message.getDestination() );
         }
+        activator.send( message );
     }
 
-    public RouteMatch match(String destination) {
-        RouteMatch match = null;
+    @Override
+    public StompletActivator getActivator(String destination) {
+        StompletActivator activator = null;
         for (Route route : this.routes) {
-            match = route.match( destination );
-            if (match != null) {
+            activator = route.match( destination );
+            if (activator != null) {
                 break;
             }
         }
 
-        return match;
+        return activator;
     }
-
 
     private DefaultStompletContext stompletContext;
     private final List<Route> routes = new ArrayList<Route>();

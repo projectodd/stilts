@@ -28,7 +28,7 @@ public class RouteTest {
     public void testStraightMatch() throws Exception {
         Route route = new Route( "/queues/foo", null );
         
-        RouteMatch match = route.match( "/queues/bar" );
+        StompletActivator match = route.match( "/queues/bar" );
         assertNull( match );
         
         match = route.match( "/queues/foo" );
@@ -39,7 +39,7 @@ public class RouteTest {
     public void testMatchWithSegments() throws Exception {
         Route route = new Route( "/stocks/:stock", null );
         
-        RouteMatch match = route.match( "/stocks/AAPL" );
+        StompletActivator match = route.match( "/stocks/AAPL" );
         assertNotNull( match );
         assertEquals( "AAPL", match.get( "stock" ) );
         
@@ -55,7 +55,7 @@ public class RouteTest {
     public void testMatchWithSeveralSegments() throws Exception {
         Route route = new Route( "/stocks/:exchange/:stock", null );
         
-        RouteMatch match = route.match( "/stocks/NASDAQ/AAPL" );
+        StompletActivator match = route.match( "/stocks/NASDAQ/AAPL" );
         assertNotNull( match );
         assertEquals( "NASDAQ", match.get( "exchange" ) );
         assertEquals( "AAPL", match.get( "stock" ) );
