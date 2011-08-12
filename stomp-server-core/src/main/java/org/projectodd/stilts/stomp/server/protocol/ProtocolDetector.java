@@ -70,7 +70,7 @@ public class ProtocolDetector extends ReplayingDecoder<VoidEnum> {
 
         pipeline.remove( this );
         
-        //pipeline.addLast( "server-debug-header", new DebugHandler( "SERVER-HEAD" ) );
+        pipeline.addLast( "server-debug-header", new DebugHandler( "SERVER-HEAD" ) );
         
         pipeline.addLast( "stomp-frame-encoder", new StompFrameEncoder() );
         pipeline.addLast( "stomp-frame-decoder", new StompFrameDecoder() );
