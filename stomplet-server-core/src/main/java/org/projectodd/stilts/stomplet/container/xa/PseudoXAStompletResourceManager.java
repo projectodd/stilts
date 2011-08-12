@@ -129,7 +129,7 @@ public class PseudoXAStompletResourceManager implements XAResource {
         return null;
     }
     
-    PseudoXAStompletTransaction currentTransaction() {
+    public PseudoXAStompletTransaction currentTransaction() {
         return currentTransaction.get();
     }
 

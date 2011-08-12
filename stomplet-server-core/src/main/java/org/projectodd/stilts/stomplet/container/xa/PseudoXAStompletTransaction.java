@@ -22,17 +22,17 @@ import org.projectodd.stilts.stomp.Acknowledger;
 import org.projectodd.stilts.stomp.StompMessage;
 import org.projectodd.stilts.stomplet.Stomplet;
 
-class PseudoXAStompletTransaction {
+public class PseudoXAStompletTransaction {
     
     PseudoXAStompletTransaction(Stomplet stomplet) {
         this.stomplet = stomplet;
     }
     
-    void setRollbackOnly(boolean rollbackOnly) {
+    public void setRollbackOnly(boolean rollbackOnly) {
         this.rollbackOnly = rollbackOnly;
     }
     
-    boolean isRollbackOnly() {
+    public boolean isRollbackOnly() {
         return this.rollbackOnly;
     }
     
@@ -40,7 +40,7 @@ class PseudoXAStompletTransaction {
         return (this.sentMessages.isEmpty() && this.acks.isEmpty() && this.nacks.isEmpty() );
     }
     
-    void addSentMessage(StompMessage message) {
+    public void addSentMessage(StompMessage message) {
         this.sentMessages.add( message );
     }
     
@@ -48,7 +48,7 @@ class PseudoXAStompletTransaction {
         return ! this.sentMessages.isEmpty();
     }
     
-    void addAck(Acknowledger acknowledger) {
+    public void addAck(Acknowledger acknowledger) {
         this.acks.add(  acknowledger );
     }
     
@@ -56,7 +56,7 @@ class PseudoXAStompletTransaction {
         return ! this.acks.isEmpty();
     }
     
-    void addNack(Acknowledger acknowledger) {
+    public void addNack(Acknowledger acknowledger) {
         this.nacks.add(acknowledger);
     }
     
