@@ -60,13 +60,13 @@ public class SimpleStompletContainer implements StompletContainer, MessageRouter
 
     public void addStomplet(String destinationPattern, Stomplet stomplet, Map<String, String> properties) throws StompException {
         StompletConfig config = new DefaultStompletConfig( this.stompletContext, properties );
-        stomplet.initialize( config );
         XAStomplet xaStomplet = null;
         if (stomplet instanceof XAStomplet) {
-            xaStomplet = (XAStomplet) xaStomplet;
+            xaStomplet = (XAStomplet) stomplet;
         } else {
             xaStomplet = new PseudoXAStomplet( stomplet );
         }
+        xaStomplet.initialize( config );
         Route route = new Route( destinationPattern, xaStomplet );
         this.routes.add( route );
     }

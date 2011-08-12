@@ -32,6 +32,7 @@ import org.projectodd.stilts.stomp.spi.AcknowledgeableMessageSink;
 public class StompletMessageConduitFactory implements TransactionalMessageConduitFactory {
     
     public void setTransactionManager(TransactionManager transactionManager) {
+        System.err.println( "StompletMessageConduitFactory.setTM " + transactionManager );
         this.transactionManager = transactionManager;
     }
     

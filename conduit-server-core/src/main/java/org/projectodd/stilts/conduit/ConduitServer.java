@@ -74,6 +74,7 @@ public class ConduitServer<T extends MessageConduitFactory> {
     }
     
     public void start() throws Exception {
+        System.err.println( "CONDUIT_SERVER.start " + this.transactionManager );
         this.transactionalMessageConduitFactory.setTransactionManager( this.transactionManager );
         ConduitStompProvider provider = new ConduitStompProvider( this.transactionManager, getTransactionalMessageConduitFactory() );
         this.server.setStompProvider( provider );

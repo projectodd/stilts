@@ -41,13 +41,10 @@ public class PseudoXAStomplet implements XAStomplet {
 
     @Override
     public void onMessage(StompMessage message) throws StompException {
-        System.err.println( "PXA: onMessage" );
         PseudoXAStompletTransaction tx = this.resourceManager.currentTransaction();
         if (tx == null) {
-            System.err.println( "PXA: onMessage -- no transaction" );
             this.stomplet.onMessage( message );
         } else {
-            System.err.println( "PXA: onMessage -- with transaction" );
             tx.addSentMessage( message );
         }
     }

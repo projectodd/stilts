@@ -81,7 +81,7 @@ public class Route {
     }
 
     public String toString() {
-        return "[Route: pattern=" + this.pattern + "]";
+        return "[Route: pattern=" + this.pattern + "; stomplet=" + this.stomplet + "]";
     }
 
     private String pattern;
