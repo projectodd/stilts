@@ -11,7 +11,7 @@
 
   <groupId>org.projectodd.stilts</groupId>
   <artifactId>stilts</artifactId>
-  <version>0.1.8</version>
+  <version>0.1.9</version>
   <packaging>pom</packaging>
   <name>Stilts</name>
   <url>http://www.jboss.org/</url>
