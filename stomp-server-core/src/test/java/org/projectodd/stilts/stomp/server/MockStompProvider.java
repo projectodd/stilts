@@ -7,6 +7,7 @@ import org.projectodd.stilts.stomp.Headers;
 import org.projectodd.stilts.stomp.Heartbeat;
 import org.projectodd.stilts.stomp.StompException;
 import org.projectodd.stilts.stomp.protocol.StompFrame.Version;
+import org.projectodd.stilts.stomp.server.helpers.SimpleStompSession;
 import org.projectodd.stilts.stomp.spi.StompProvider;
 import org.projectodd.stilts.stomp.spi.TransactionalAcknowledgeableMessageSink;
 
@@ -18,7 +19,8 @@ public class MockStompProvider implements StompProvider {
     
     @Override
     public MockStompConnection createConnection(TransactionalAcknowledgeableMessageSink messageSink, Headers headers, Version version, Heartbeat hb) throws StompException {
-        MockStompConnection connection = new MockStompConnection( messageSink, "session-" + (++this.sessionCounter), version, hb );
+        SimpleStompSession session = new SimpleStompSession( "session-" + (++this.sessionCounter) );
+        MockStompConnection connection = new MockStompConnection( messageSink, session, version, hb );
         this.connections.add( connection );
         return connection;
     }

@@ -24,18 +24,21 @@ import java.util.Set;
 import javax.transaction.TransactionManager;
 
 import org.projectodd.stilts.conduit.spi.MessageConduit;
+import org.projectodd.stilts.conduit.spi.StompSessionManager;
 import org.projectodd.stilts.conduit.spi.TransactionalMessageConduitFactory;
+import org.projectodd.stilts.conduit.stomp.SimpleStompSessionManager;
 import org.projectodd.stilts.stomp.Headers;
 import org.projectodd.stilts.stomp.protocol.StompFrame.Header;
 import org.projectodd.stilts.stomp.spi.AcknowledgeableMessageSink;
+import org.projectodd.stilts.stomp.spi.StompSession;
 
 public class StompletMessageConduitFactory implements TransactionalMessageConduitFactory {
-    
+
     public void setTransactionManager(TransactionManager transactionManager) {
         System.err.println( "StompletMessageConduitFactory.setTM " + transactionManager );
         this.transactionManager = transactionManager;
     }
-    
+
     public TransactionManager getTransactionManager() {
         return this.transactionManager;
     }
@@ -44,9 +47,9 @@ public class StompletMessageConduitFactory implements TransactionalMessageCondui
     public MessageConduit createMessageConduit(AcknowledgeableMessageSink messageSink, Headers headers) throws Exception {
         String host = headers.get( Header.HOST );
         StompletContainer container = null;
-        
+
         if (host != null) {
-            container = lookupVirtualHost( host );
+            container = findStompletContainer( host );
         }
 
         if (container == null) {
@@ -58,23 +61,54 @@ public class StompletMessageConduitFactory implements TransactionalMessageCondui
             throw new NoSuchHostException( host );
         }
 
-        return new StompletMessageConduit( this.transactionManager, container, messageSink );
+        StompSessionManager sessionManager = findSessionManager( host );
+        
+        if ( sessionManager == null ) {
+            sessionManager = this.defaultSessionManager;
+        }
+
+        String sessionId = headers.get( Header.SESSION );
+
+        StompSession session = null;
+
+        if (sessionId != null) {
+            session = sessionManager.findSession( sessionId );
+        }
+        
+        if ( session == null ) {
+            session = sessionManager.createSession();
+        }
+
+        return new StompletMessageConduit( this.transactionManager, container, messageSink, session );
     }
 
-    public void registerVirtualHost(final String host, final StompletContainer container) {
+    public void registerVirtualHost(final String host, final StompletContainer container, StompSessionManager sessionManager) {
         this.virtualHosts.put( host.toLowerCase(), container );
+        if (sessionManager == null) {
+            sessionManager = new SimpleStompSessionManager();
+        }
+        this.sessionManagers.put( host.toLowerCase(), sessionManager );
     }
 
-    public StompletContainer unregisterVirtualHost(final String host) {
-        return this.virtualHosts.remove( host );
+    public void unregisterVirtualHost(final String host) {
+        this.virtualHosts.remove( host.toLowerCase() );
+        this.sessionManagers.remove( host.toLowerCase() );
     }
 
-    public StompletContainer lookupVirtualHost(final String host) {
+    public StompletContainer findStompletContainer(final String host) {
         return this.virtualHosts.get( host.toLowerCase() );
+    }
+
+    public StompSessionManager findSessionManager(final String host) {
+        return this.sessionManagers.get( host.toLowerCase() );
     }
 
     public void setDefaultContainer(StompletContainer container) {
         this.defaultContainer = container;
+    }
+    
+    public void setDefaultSessionManager(StompSessionManager sessionManager) {
+        this.defaultSessionManager = sessionManager;
     }
 
     public StompletContainer getDefaultContainer() {
@@ -107,6 +141,8 @@ public class StompletMessageConduitFactory implements TransactionalMessageCondui
 
     private TransactionManager transactionManager;
     private Map<String, StompletContainer> virtualHosts = new HashMap<String, StompletContainer>();
+    private Map<String, StompSessionManager> sessionManagers = new HashMap<String, StompSessionManager>();
     private StompletContainer defaultContainer = null;
+    private StompSessionManager defaultSessionManager = null;
 
 }

@@ -5,6 +5,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
+import org.projectodd.stilts.conduit.stomp.SimpleStompSessionManager;
 import org.projectodd.stilts.stomp.StompMessage;
 import org.projectodd.stilts.stomp.StompMessages;
 import org.projectodd.stilts.stomp.client.ClientTransaction;
@@ -20,6 +21,9 @@ public class BasicStompletServerTest extends AbstractStompletServerTestCase {
         
         this.queueOneStomplet = new MockAcknowledgeableStomplet();
         this.defaultContainer.addStomplet( "/queues/one", this.queueOneStomplet );
+        
+        this.defaultSessionManager = new SimpleStompSessionManager();
+        getServer().setDefaultSessionManager( this.defaultSessionManager );
     }
     
     public String getConnectionUrl() {
@@ -98,6 +102,7 @@ public class BasicStompletServerTest extends AbstractStompletServerTestCase {
     }
 
     private SimpleStompletContainer defaultContainer;
+    private SimpleStompSessionManager defaultSessionManager;
     private MockStomplet queueOneStomplet;
 
 

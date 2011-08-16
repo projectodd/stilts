@@ -19,8 +19,10 @@ package org.projectodd.stilts.conduit.spi;
 import org.projectodd.stilts.stomp.Headers;
 import org.projectodd.stilts.stomp.StompMessage;
 import org.projectodd.stilts.stomp.Subscription;
+import org.projectodd.stilts.stomp.spi.StompSession;
 
 public interface MessageConduit {
+    StompSession getSession();
     void send(StompMessage stompMessage) throws Exception;
     Subscription subscribe(String subscriptionId, String destination, Headers headers) throws Exception;
 }

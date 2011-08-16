@@ -23,12 +23,17 @@ import org.projectodd.stilts.conduit.spi.MessageConduit;
 import org.projectodd.stilts.stomp.Headers;
 import org.projectodd.stilts.stomp.StompMessage;
 import org.projectodd.stilts.stomp.Subscription;
+import org.projectodd.stilts.stomp.spi.StompSession;
 
 public class PseudoXAMessageConduit implements MessageConduit {
 
     public PseudoXAMessageConduit(TransactionManager transactionManager, PseudoXAResourceManager resourceManager) {
         this.transactionManager = transactionManager;
         this.resourceManager = resourceManager;
+    }
+    
+    public StompSession getSession() {
+        return this.resourceManager.getMessageConduit().getSession();
     }
 
     @Override

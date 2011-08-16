@@ -21,6 +21,7 @@ package org.projectodd.stilts.stomp.server.websockets.protocol;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import org.jboss.logging.Logger;
 import org.jboss.netty.buffer.ChannelBuffers;
@@ -35,10 +36,13 @@ import org.jboss.netty.channel.ExceptionEvent;
 import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.channel.SimpleChannelUpstreamHandler;
 import org.jboss.netty.channel.UpstreamChannelStateEvent;
+import org.jboss.netty.handler.codec.http.Cookie;
+import org.jboss.netty.handler.codec.http.CookieDecoder;
 import org.jboss.netty.handler.codec.http.DefaultHttpResponse;
 import org.jboss.netty.handler.codec.http.HttpHeaders;
 import org.jboss.netty.handler.codec.http.HttpHeaders.Names;
 import org.jboss.netty.handler.codec.http.HttpHeaders.Values;
+import org.jboss.netty.handler.codec.http.HttpMessage;
 import org.jboss.netty.handler.codec.http.HttpRequest;
 import org.jboss.netty.handler.codec.http.HttpResponse;
 import org.jboss.netty.handler.codec.http.HttpResponseStatus;
@@ -110,6 +114,7 @@ public class HandshakeHandler extends SimpleChannelUpstreamHandler {
                         pipeline.replace( HandshakeHandler.this, "websocket-disconnection-negotiator", new WebSocketDisconnectionNegotiator() );
                         forwardConnectEventUpstream( channelContext );
                         decodeHost( channelContext, request );
+                        decodeSession( channelContext, request );
                     }
                 } );
 
@@ -128,16 +133,29 @@ public class HandshakeHandler extends SimpleChannelUpstreamHandler {
 
     protected void decodeHost(ChannelHandlerContext channelContext, HttpRequest request) {
         String hostPort = request.getHeader( HttpHeaders.Names.HOST );
-        
+
         if (hostPort != null) {
             int colonLoc = hostPort.indexOf( ':' );
             String host = hostPort;
-            if ( colonLoc > 0 ) {
+            if (colonLoc > 0) {
                 host = hostPort.substring( 0, colonLoc );
             }
-            
+
             ChannelEvent hostDecodedEvent = new HostDecodedEvent( channelContext.getChannel(), host );
             channelContext.sendUpstream( hostDecodedEvent );
+        }
+    }
+
+    protected void decodeSession(ChannelHandlerContext channelContext, HttpRequest request) {
+        CookieDecoder decoder = new CookieDecoder();
+        Set<Cookie> cookies = decoder.decode( request.getHeader( HttpHeaders.Names.COOKIE ) );
+
+        for (Cookie each : cookies) {
+            if (each.getName().equalsIgnoreCase( "jsessionid" )) {
+                ChannelEvent sessionDecodedEvent = new SessionDecodedEvent( channelContext.getChannel(), each.getValue() );
+                channelContext.sendUpstream( sessionDecodedEvent );
+                break;
+            }
         }
     }
 

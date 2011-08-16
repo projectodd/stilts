@@ -9,13 +9,18 @@ import org.projectodd.stilts.stomp.MockSubscription;
 import org.projectodd.stilts.stomp.StompMessage;
 import org.projectodd.stilts.stomp.Subscription;
 import org.projectodd.stilts.stomp.spi.AcknowledgeableMessageSink;
+import org.projectodd.stilts.stomp.spi.StompSession;
 
 public class MockMessageConduit implements MessageConduit {
 
-	public MockMessageConduit(AcknowledgeableMessageSink messageSink) {
+	public MockMessageConduit(AcknowledgeableMessageSink messageSink, StompSession session) {
     	this.messageSink = messageSink;
+    	this.session = session;
     }
 	
+	public StompSession getSession() {
+	    return this.session;
+	}
 	public AcknowledgeableMessageSink getMessageSink() {
 		return this.messageSink;
 	}
@@ -41,6 +46,7 @@ public class MockMessageConduit implements MessageConduit {
     }
 
     private AcknowledgeableMessageSink messageSink;
+    private StompSession session;
     private List<StompMessage> messages = new ArrayList<StompMessage>();
     private List<Subscription> subscriptions = new ArrayList<Subscription>();
 

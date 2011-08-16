@@ -26,7 +26,7 @@ import org.projectodd.stilts.stomp.protocol.StompFrame.Version;
 
 public interface StompConnection {
     
-    String getSessionId();
+    StompSession getSession();
     Heartbeat getHeartbeat();
     Version getVersion();
 

@@ -30,15 +30,11 @@ import org.projectodd.stilts.stomp.protocol.StompFrame.Command;
 import org.projectodd.stilts.stomp.protocol.StompFrame.Header;
 import org.projectodd.stilts.stomp.protocol.StompFrame.Version;
 import org.projectodd.stilts.stomp.protocol.StompFrames;
+import org.projectodd.stilts.stomp.server.websockets.protocol.SessionDecodedEvent;
 import org.projectodd.stilts.stomp.spi.StompConnection;
 import org.projectodd.stilts.stomp.spi.StompProvider;
 
 public class ConnectHandler extends AbstractControlFrameHandler {
-
-    private static Logger log = Logger.getLogger( ConnectHandler.class );
-
-    private static final Pattern HEART_BEAT_PATTERN = Pattern.compile( "^\\d+,\\d+$" );
-    private static final Pattern VERSION_PATTERN = Pattern.compile( "^([^\\s]+,)*[^\\s]*$" );
 
     public ConnectHandler(StompProvider server, ConnectionContext context) {
         super( server, context, Command.CONNECT );
@@ -49,6 +45,8 @@ public class ConnectHandler extends AbstractControlFrameHandler {
     public void handleUpstream(ChannelHandlerContext ctx, ChannelEvent e) throws Exception {
         if (e instanceof HostDecodedEvent) {
             this.host = ((HostDecodedEvent) e).getHost();
+        } else if ( e instanceof SessionDecodedEvent ) {
+            this.sessionId = ((SessionDecodedEvent) e).getSessionId();
         } else {
             super.handleUpstream( ctx, e );
         }
@@ -73,13 +71,19 @@ public class ConnectHandler extends AbstractControlFrameHandler {
                     }
                 }
             }
+            
+            headers.remove(  Header.SESSION );
+            
+            if ( this.sessionId != null ) {
+                headers.put( Header.SESSION, this.sessionId );
+            }
 
             checkHost( headers, version );
-            StompConnection clientAgent = getStompProvider().createConnection( new ChannelMessageSink( channelContext.getChannel(), getContext().getAckManager() ),
+            StompConnection stompConnection = getStompProvider().createConnection( new ChannelMessageSink( channelContext.getChannel(), getContext().getAckManager() ),
                     headers, version, hb );
-            if (clientAgent != null) {
-                getContext().setStompConnection( clientAgent );
-                StompFrame connected = StompFrames.newConnectedFrame( clientAgent.getSessionId(), version );
+            if (stompConnection != null) {
+                getContext().setStompConnection( stompConnection );
+                StompFrame connected = StompFrames.newConnectedFrame( stompConnection.getSession().getId(), version );
                 if (hb != null) {
                     connected.setHeader( Header.HEARTBEAT, hb.getServerSend() + "," + hb.getServerReceive() );
                 }
@@ -138,6 +142,12 @@ public class ConnectHandler extends AbstractControlFrameHandler {
         return selectedVersion;
 
     }
+    
+    private static Logger log = Logger.getLogger( ConnectHandler.class );
+
+    private static final Pattern HEART_BEAT_PATTERN = Pattern.compile( "^\\d+,\\d+$" );
+    private static final Pattern VERSION_PATTERN = Pattern.compile( "^([^\\s]+,)*[^\\s]*$" );
 
     private String host;
+    private String sessionId;
 }

@@ -31,18 +31,24 @@ import org.projectodd.stilts.stomp.StompException;
 import org.projectodd.stilts.stomp.StompMessage;
 import org.projectodd.stilts.stomp.Subscription;
 import org.projectodd.stilts.stomp.spi.AcknowledgeableMessageSink;
+import org.projectodd.stilts.stomp.spi.StompSession;
 
 public class StompletMessageConduit implements MessageConduit {
 
-    public StompletMessageConduit(TransactionManager transactionManager, StompletContainer stompletContainer, AcknowledgeableMessageSink messageSink)
+    public StompletMessageConduit(TransactionManager transactionManager, StompletContainer stompletContainer, AcknowledgeableMessageSink messageSink, StompSession session)
             throws StompException {
         this.transactionManager = transactionManager;
         this.stompletContainer = stompletContainer;
         this.messageSink = messageSink;
+        this.session = session;
     }
 
     AcknowledgeableMessageSink getMessageSink() {
         return this.messageSink;
+    }
+    
+    public StompSession getSession() {
+        return this.session;
     }
 
     @Override
@@ -86,6 +92,7 @@ public class StompletMessageConduit implements MessageConduit {
     private TransactionManager transactionManager;
     private StompletContainer stompletContainer;
     private AcknowledgeableMessageSink messageSink;
+    private StompSession session;
     private Map<String, Subscription> subscriptions = new HashMap<String, Subscription>();
 
 }

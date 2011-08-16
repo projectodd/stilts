@@ -24,13 +24,15 @@ import org.projectodd.stilts.stomp.StompMessage;
 import org.projectodd.stilts.stomp.Subscription.AckMode;
 import org.projectodd.stilts.stomp.protocol.StompFrame.Header;
 import org.projectodd.stilts.stomp.spi.AcknowledgeableMessageSink;
+import org.projectodd.stilts.stomp.spi.StompSession;
 import org.projectodd.stilts.stomplet.AcknowledgeableStomplet;
 import org.projectodd.stilts.stomplet.Stomplet;
 import org.projectodd.stilts.stomplet.Subscriber;
 
 public class SubscriberImpl implements Subscriber {
 
-    public SubscriberImpl(Stomplet stomplet, String subscriptionId, String destination, AcknowledgeableMessageSink messageSink, AckMode ackMode) {
+    public SubscriberImpl(StompSession session, Stomplet stomplet, String subscriptionId, String destination, AcknowledgeableMessageSink messageSink, AckMode ackMode) {
+        this.session = session;
         this.stomplet = stomplet;
         this.subscriptionId = subscriptionId;
         this.destination = destination;
@@ -50,6 +52,10 @@ public class SubscriberImpl implements Subscriber {
     @Override
     public String getId() {
         return this.subscriptionId;
+    }
+    
+    public StompSession getSession() {
+        return this.session;
     }
 
     public AckMode getAckMode() {
@@ -114,6 +120,7 @@ public class SubscriberImpl implements Subscriber {
     }
 
     private AtomicLong messageCounter = new AtomicLong();
+    private StompSession session;
     private Stomplet stomplet;
     //private StompletMessageConduit messageConduit;
     private AcknowledgeableMessageSink messageSink;

@@ -31,6 +31,7 @@ import org.projectodd.stilts.stomp.server.helpers.OpenAuthenticator;
 import org.projectodd.stilts.stomp.spi.Authenticator;
 import org.projectodd.stilts.stomp.spi.StompConnection;
 import org.projectodd.stilts.stomp.spi.StompProvider;
+import org.projectodd.stilts.stomp.spi.StompSession;
 import org.projectodd.stilts.stomp.spi.TransactionalAcknowledgeableMessageSink;
 
 public class ConduitStompProvider implements StompProvider {
@@ -60,7 +61,7 @@ public class ConduitStompProvider implements StompProvider {
     public StompConnection createConnection(TransactionalAcknowledgeableMessageSink messageSink, Headers headers, Version version, Heartbeat hb) throws StompException {
         if (this.authenticator.authenticate( headers )) {
             try {
-                ConduitStompConnection connection = createStompConnection( messageSink, getNextSessionId(), headers, version, hb );
+                ConduitStompConnection connection = createStompConnection( messageSink, headers, version, hb );
                 synchronized (this.connections) {
                     this.connections.add( connection );
                 }
@@ -88,14 +89,10 @@ public class ConduitStompProvider implements StompProvider {
         }
     }
 
-    protected String getNextSessionId() {
-        return "session-" + sessionCounter.getAndIncrement();
-    }
-
-    protected ConduitStompConnection createStompConnection(TransactionalAcknowledgeableMessageSink messageSink, String sessionId, Headers headers, Version version, Heartbeat hb)
+    protected ConduitStompConnection createStompConnection(TransactionalAcknowledgeableMessageSink messageSink, Headers headers, Version version, Heartbeat hb)
             throws Exception {
         ConduitAcknowledgeableMessageSink conduitSink = new ConduitAcknowledgeableMessageSink( messageSink );
-        ConduitStompConnection connection = new ConduitStompConnection( this, this.messageConduitFactory.createMessageConduit( conduitSink, headers ), sessionId, version, hb );
+        ConduitStompConnection connection = new ConduitStompConnection( this, this.messageConduitFactory.createMessageConduit( conduitSink, headers ), version, hb );
         conduitSink.setConnection( connection );
         return connection;
     }
@@ -107,7 +104,6 @@ public class ConduitStompProvider implements StompProvider {
     private TransactionalMessageConduitFactory messageConduitFactory;
     private TransactionManager transactionManager;
     private Authenticator authenticator;
-    private AtomicInteger sessionCounter = new AtomicInteger();
     private Set<ConduitStompConnection> connections = new HashSet<ConduitStompConnection>();
 
 }

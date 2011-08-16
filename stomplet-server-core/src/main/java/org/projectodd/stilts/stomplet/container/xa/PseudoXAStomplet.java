@@ -52,7 +52,7 @@ public class PseudoXAStomplet implements XAStomplet {
     @Override
     public void onSubscribe(Subscriber subscriber) throws StompException {
         String subscriberId = subscriber.getId();
-        Subscriber xaSubscriber = new SubscriberImpl( stomplet, subscriberId, subscriber.getDestination(), new PseudoXAStompletAcknowledgeableMessageSink( this.resourceManager, subscriber ),
+        Subscriber xaSubscriber = new SubscriberImpl( subscriber.getSession(), stomplet, subscriberId, subscriber.getDestination(), new PseudoXAStompletAcknowledgeableMessageSink( this.resourceManager, subscriber ),
                 subscriber.getAckMode() );
         this.subscribers.put( subscriberId, xaSubscriber );
         this.stomplet.onSubscribe( xaSubscriber );

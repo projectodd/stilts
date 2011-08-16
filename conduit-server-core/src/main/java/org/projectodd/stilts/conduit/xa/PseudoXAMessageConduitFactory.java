@@ -20,9 +20,13 @@ import javax.transaction.TransactionManager;
 
 import org.projectodd.stilts.conduit.spi.MessageConduit;
 import org.projectodd.stilts.conduit.spi.MessageConduitFactory;
+import org.projectodd.stilts.conduit.spi.StompSessionManager;
 import org.projectodd.stilts.conduit.spi.TransactionalMessageConduitFactory;
 import org.projectodd.stilts.stomp.Headers;
+import org.projectodd.stilts.stomp.StompException;
+import org.projectodd.stilts.stomp.protocol.StompFrame.Header;
 import org.projectodd.stilts.stomp.spi.AcknowledgeableMessageSink;
+import org.projectodd.stilts.stomp.spi.StompSession;
 
 public class PseudoXAMessageConduitFactory implements TransactionalMessageConduitFactory {
 
@@ -35,6 +39,10 @@ public class PseudoXAMessageConduitFactory implements TransactionalMessageCondui
         this.transactionManager = transactionManager;
     }
     
+    public void setSessionManager(StompSessionManager sessionManager) {
+        this.sessionManager = sessionManager;
+    }
+    
     @Override
     public MessageConduit createMessageConduit(AcknowledgeableMessageSink messageSink, Headers headers) throws Exception {
         PseudoXAAcknowledgeableMessageSink xaMessageSink = new PseudoXAAcknowledgeableMessageSink( messageSink );
@@ -44,6 +52,7 @@ public class PseudoXAMessageConduitFactory implements TransactionalMessageCondui
         return new PseudoXAMessageConduit( this.transactionManager, resourceManager );
     }
     
+    private StompSessionManager sessionManager;
     private TransactionManager transactionManager;
     private MessageConduitFactory factory;
 }

@@ -19,6 +19,7 @@ package org.projectodd.stilts.stomplet;
 import javax.transaction.TransactionManager;
 
 import org.projectodd.stilts.conduit.ConduitServer;
+import org.projectodd.stilts.conduit.spi.StompSessionManager;
 import org.projectodd.stilts.stomp.Constants;
 import org.projectodd.stilts.stomplet.container.StompletContainer;
 import org.projectodd.stilts.stomplet.container.StompletMessageConduitFactory;
@@ -47,16 +48,20 @@ public class StompletServer {
         return this.server.getTransactionManager();
     }
 
-    public void registerVirtualHost(String host, StompletContainer container) {
-        this.server.getMessageConduitFactory().registerVirtualHost( host, container );
+    public void registerVirtualHost(String host, StompletContainer container, StompSessionManager sessionManager) {
+        this.server.getMessageConduitFactory().registerVirtualHost( host, container, sessionManager );
     }
 
-    public StompletContainer unregisterVirtualHost(String host) {
-        return this.server.getMessageConduitFactory().unregisterVirtualHost( host );
+    public void unregisterVirtualHost(String host) {
+        this.server.getMessageConduitFactory().unregisterVirtualHost( host );
     }
 
     public void setDefaultContainer(StompletContainer container) {
         this.server.getMessageConduitFactory().setDefaultContainer( container );
+    }
+    
+    public void setDefaultSessionManager(StompSessionManager sessionManager) {
+        this.server.getMessageConduitFactory().setDefaultSessionManager( sessionManager );
     }
 
     public void start() throws Exception {

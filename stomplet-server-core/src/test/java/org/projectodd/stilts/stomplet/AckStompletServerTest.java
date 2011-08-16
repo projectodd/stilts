@@ -7,6 +7,7 @@ import static org.junit.Assert.fail;
 import java.util.Collection;
 
 import org.junit.Test;
+import org.projectodd.stilts.conduit.stomp.SimpleStompSessionManager;
 import org.projectodd.stilts.stomp.StompMessage;
 import org.projectodd.stilts.stomp.StompMessages;
 import org.projectodd.stilts.stomp.Subscription.AckMode;
@@ -21,7 +22,9 @@ public class AckStompletServerTest extends AbstractStompletServerTestCase {
     @Override
     public void configureServer() throws Exception {
         this.defaultContainer = new SimpleStompletContainer();
+        this.defaultSessionManager = new SimpleStompSessionManager();
         getServer().setDefaultContainer( this.defaultContainer );
+        getServer().setDefaultSessionManager( this.defaultSessionManager );
 
         this.queueOneStomplet = new MockAcknowledgeableStomplet();
         this.defaultContainer.addStomplet( "/queues/one", this.queueOneStomplet );
@@ -150,6 +153,7 @@ public class AckStompletServerTest extends AbstractStompletServerTestCase {
     }
 
     private SimpleStompletContainer defaultContainer;
+    private SimpleStompSessionManager defaultSessionManager;
     private MockAcknowledgeableStomplet queueOneStomplet;
 
 }

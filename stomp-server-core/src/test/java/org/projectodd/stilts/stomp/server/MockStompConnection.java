@@ -19,13 +19,14 @@ import org.projectodd.stilts.stomp.Subscription;
 import org.projectodd.stilts.stomp.protocol.StompFrame.Version;
 import org.projectodd.stilts.stomp.server.protocol.HeartbeatRunnable;
 import org.projectodd.stilts.stomp.spi.StompConnection;
+import org.projectodd.stilts.stomp.spi.StompSession;
 import org.projectodd.stilts.stomp.spi.TransactionalAcknowledgeableMessageSink;
 
 public class MockStompConnection implements StompConnection {
 
-	public MockStompConnection(TransactionalAcknowledgeableMessageSink messageSink, String sessionId, Version version, Heartbeat hb) {
+	public MockStompConnection(TransactionalAcknowledgeableMessageSink messageSink, StompSession session, Version version, Heartbeat hb) {
     	this.messageSink = messageSink;
-        this.sessionId = sessionId;
+        this.session = session;
         this.version = version;
         this.heartbeat = hb;
 
@@ -46,8 +47,8 @@ public class MockStompConnection implements StompConnection {
     }
 
     @Override
-    public String getSessionId() {
-        return this.sessionId;
+    public StompSession getSession() {
+        return this.session;
     }
 
     public Map<String, Subscription> getSubscriptions() {
@@ -125,7 +126,7 @@ public class MockStompConnection implements StompConnection {
     private TransactionalAcknowledgeableMessageSink messageSink;
     private ScheduledExecutorService heartbeatMonitor;
     private Heartbeat heartbeat;
-    private String sessionId;
+    private StompSession session;
     private Version version;
     private boolean disconnected;
     private List<Send> sends = new ArrayList<Send>();

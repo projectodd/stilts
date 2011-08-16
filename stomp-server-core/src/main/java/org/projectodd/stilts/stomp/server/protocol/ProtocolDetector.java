@@ -86,7 +86,7 @@ public class ProtocolDetector extends ReplayingDecoder<VoidEnum> {
         ChannelPipeline pipeline = context.getPipeline();
         pipeline.remove( this );
 
-        //pipeline.addFirst( "server-debug-header", new DebugHandler( "SERVER-HEAD" ) );
+        pipeline.addFirst( "server-debug-header", new DebugHandler( "SERVER-HEAD" ) );
         pipeline.addLast( "http-encoder", new HttpResponseEncoder() );
         pipeline.addLast( "http-decoder", new HttpRequestDecoder() );
         pipeline.addLast( "websocket-handshake", new HandshakeHandler() );
