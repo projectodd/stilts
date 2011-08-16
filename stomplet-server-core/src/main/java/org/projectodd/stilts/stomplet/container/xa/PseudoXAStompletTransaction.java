@@ -20,6 +20,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.projectodd.stilts.stomp.Acknowledger;
 import org.projectodd.stilts.stomp.StompMessage;
+import org.projectodd.stilts.stomp.spi.StompSession;
 import org.projectodd.stilts.stomplet.Stomplet;
 
 public class PseudoXAStompletTransaction {
@@ -40,8 +41,8 @@ public class PseudoXAStompletTransaction {
         return (this.sentMessages.isEmpty() && this.acks.isEmpty() && this.nacks.isEmpty() );
     }
     
-    public void addSentMessage(StompMessage message) {
-        this.sentMessages.add( message );
+    public void addSentMessage(StompMessage message, StompSession session) {
+        this.sentMessages.add( new MessageSend( message, session)  );
     }
     
     boolean hasSentMessages() {
@@ -65,9 +66,9 @@ public class PseudoXAStompletTransaction {
     }
     
     public void commit() {
-        for (StompMessage each : sentMessages ) {
+        for (MessageSend each : sentMessages ) {
             try {
-                this.stomplet.onMessage( each );
+                this.stomplet.onMessage( each.message, each.session );
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -104,8 +105,17 @@ public class PseudoXAStompletTransaction {
     private Stomplet stomplet;
     private boolean rollbackOnly;
 
-    private ConcurrentLinkedQueue<StompMessage> sentMessages = new ConcurrentLinkedQueue<StompMessage>();
+    private ConcurrentLinkedQueue<MessageSend> sentMessages = new ConcurrentLinkedQueue<MessageSend>();
     private ConcurrentLinkedQueue<Acknowledger> acks = new ConcurrentLinkedQueue<Acknowledger>();
     private ConcurrentLinkedQueue<Acknowledger> nacks = new ConcurrentLinkedQueue<Acknowledger>();
-
+    
+    
+    private static class MessageSend {
+        MessageSend(StompMessage message, StompSession session) {
+            this.message = message;
+            this.session = session;
+        }
+        StompMessage message;
+        StompSession session;
+    }
 }

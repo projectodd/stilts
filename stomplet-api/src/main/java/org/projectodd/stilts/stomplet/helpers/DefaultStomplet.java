@@ -18,13 +18,14 @@ package org.projectodd.stilts.stomplet.helpers;
 
 import org.projectodd.stilts.stomp.StompException;
 import org.projectodd.stilts.stomp.StompMessage;
+import org.projectodd.stilts.stomp.spi.StompSession;
 import org.projectodd.stilts.stomplet.Stomplet;
 import org.projectodd.stilts.stomplet.Subscriber;
 
 public class DefaultStomplet extends AbstractStomplet implements Stomplet {
 
     @Override
-    public void onMessage(StompMessage message) throws StompException {
+    public void onMessage(StompMessage message, StompSession session) throws StompException {
     }
 
     @Override

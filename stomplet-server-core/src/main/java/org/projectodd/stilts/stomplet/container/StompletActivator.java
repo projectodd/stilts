@@ -28,6 +28,7 @@ import org.projectodd.stilts.stomp.StompMessage;
 import org.projectodd.stilts.stomp.Subscription;
 import org.projectodd.stilts.stomp.Subscription.AckMode;
 import org.projectodd.stilts.stomp.protocol.StompFrame.Header;
+import org.projectodd.stilts.stomp.spi.StompSession;
 import org.projectodd.stilts.stomplet.Stomplet;
 import org.projectodd.stilts.stomplet.XAStomplet;
 
@@ -68,8 +69,8 @@ public class StompletActivator {
         return Collections.emptySet();
     }
 
-    public void send(StompMessage message) throws StompException {
-        this.route.getStomplet().onMessage( message );
+    public void send(StompMessage message, StompSession session) throws StompException {
+        this.route.getStomplet().onMessage( message, session );
     }
 
     public Subscription subscribe(StompletMessageConduit messageConduit, String subscriptionId, String destination, Headers headers) throws StompException {

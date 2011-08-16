@@ -20,14 +20,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-
-import javax.transaction.TransactionManager;
-import javax.transaction.xa.XAResource;
 
 import org.projectodd.stilts.stomp.InvalidDestinationException;
 import org.projectodd.stilts.stomp.StompException;
 import org.projectodd.stilts.stomp.StompMessage;
+import org.projectodd.stilts.stomp.spi.StompSession;
 import org.projectodd.stilts.stomplet.MessageRouter;
 import org.projectodd.stilts.stomplet.Stomplet;
 import org.projectodd.stilts.stomplet.StompletConfig;
@@ -71,12 +68,12 @@ public class SimpleStompletContainer implements StompletContainer, MessageRouter
         this.routes.add( route );
     }
 
-    public void send(StompMessage message) throws StompException {
+    public void send(StompMessage message, StompSession session) throws StompException {
         StompletActivator activator = getActivator( message.getDestination() );
         if (activator == null) {
             throw new InvalidDestinationException( message.getDestination() );
         }
-        activator.send( message );
+        activator.send( message, session );
     }
 
     @Override

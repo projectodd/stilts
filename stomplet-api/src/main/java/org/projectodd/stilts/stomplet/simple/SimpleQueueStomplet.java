@@ -18,13 +18,14 @@ package org.projectodd.stilts.stomplet.simple;
 
 import org.projectodd.stilts.stomp.StompException;
 import org.projectodd.stilts.stomp.StompMessage;
+import org.projectodd.stilts.stomp.spi.StompSession;
 import org.projectodd.stilts.stomplet.AcknowledgeableStomplet;
 import org.projectodd.stilts.stomplet.Subscriber;
 
 public class SimpleQueueStomplet extends SimpleSubscribableStomplet implements AcknowledgeableStomplet  {
 
     @Override
-    public void onMessage(StompMessage message) throws StompException {
+    public void onMessage(StompMessage message, StompSession session) throws StompException {
         sendToOneSubscriber( message );
     }
 

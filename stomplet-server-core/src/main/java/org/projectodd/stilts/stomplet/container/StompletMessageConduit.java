@@ -71,7 +71,7 @@ public class StompletMessageConduit implements MessageConduit {
                     }
                 }
             }
-            activator.send( message );
+            activator.send( message, this.session );
         } catch (SystemException e) {
             throw new StompException( e );
         }

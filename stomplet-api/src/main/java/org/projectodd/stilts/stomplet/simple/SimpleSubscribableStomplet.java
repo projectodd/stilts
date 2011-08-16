@@ -29,7 +29,7 @@ public abstract class SimpleSubscribableStomplet extends AbstractStomplet implem
 
     @Override
     public void send(StompMessage message) throws StompException {
-        onMessage( message );
+        onMessage( message, null );
     }
 
     @Override

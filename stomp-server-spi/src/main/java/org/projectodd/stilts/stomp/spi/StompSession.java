@@ -1,12 +1,12 @@
 package org.projectodd.stilts.stomp.spi;
 
-import java.util.Set;
+import java.util.List;
 
 public interface StompSession {
     
     String getId();
     
-    Set<String> getAttributeNames();
+    List<String> getAttributeNames();
     Object getAttribute(String name);
     void setAttribute(String name, Object value);
     void removeAttribute(String name);

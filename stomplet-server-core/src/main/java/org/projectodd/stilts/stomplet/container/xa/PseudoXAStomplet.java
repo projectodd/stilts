@@ -9,6 +9,7 @@ import javax.transaction.xa.XAResource;
 
 import org.projectodd.stilts.stomp.StompException;
 import org.projectodd.stilts.stomp.StompMessage;
+import org.projectodd.stilts.stomp.spi.StompSession;
 import org.projectodd.stilts.stomplet.Stomplet;
 import org.projectodd.stilts.stomplet.StompletConfig;
 import org.projectodd.stilts.stomplet.Subscriber;
@@ -40,12 +41,12 @@ public class PseudoXAStomplet implements XAStomplet {
     }
 
     @Override
-    public void onMessage(StompMessage message) throws StompException {
+    public void onMessage(StompMessage message, StompSession session) throws StompException {
         PseudoXAStompletTransaction tx = this.resourceManager.currentTransaction();
         if (tx == null) {
-            this.stomplet.onMessage( message );
+            this.stomplet.onMessage( message, session );
         } else {
-            tx.addSentMessage( message );
+            tx.addSentMessage( message, session );
         }
     }
 

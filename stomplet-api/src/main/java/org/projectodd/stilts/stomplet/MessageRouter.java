@@ -18,9 +18,10 @@ package org.projectodd.stilts.stomplet;
 
 import org.projectodd.stilts.stomp.StompException;
 import org.projectodd.stilts.stomp.StompMessage;
+import org.projectodd.stilts.stomp.spi.StompSession;
 
 public interface MessageRouter {
     
-    void send(StompMessage message) throws StompException;
+    void send(StompMessage message, StompSession session) throws StompException;
 
 }

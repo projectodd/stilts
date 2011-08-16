@@ -1,9 +1,10 @@
 package org.projectodd.stilts.stomp.server.helpers;
 
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.projectodd.stilts.stomp.spi.StompSession;
 
@@ -19,8 +20,8 @@ public class SimpleStompSession implements StompSession {
     }
 
     @Override
-    public Set<String> getAttributeNames() {
-        return this.attributes.keySet();
+    public List<String> getAttributeNames() {
+        return new ArrayList<String>( this.attributes.keySet() );
     }
 
     @Override

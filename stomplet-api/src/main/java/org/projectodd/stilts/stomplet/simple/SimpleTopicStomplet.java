@@ -18,11 +18,12 @@ package org.projectodd.stilts.stomplet.simple;
 
 import org.projectodd.stilts.stomp.StompException;
 import org.projectodd.stilts.stomp.StompMessage;
+import org.projectodd.stilts.stomp.spi.StompSession;
 
 public class SimpleTopicStomplet extends SimpleSubscribableStomplet {
 
     @Override
-    public void onMessage(StompMessage message) throws StompException {
+    public void onMessage(StompMessage message, StompSession session) throws StompException {
         sendToAllSubscribers( message );
     }
 

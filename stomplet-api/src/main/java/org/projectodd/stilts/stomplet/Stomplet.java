@@ -18,6 +18,7 @@ package org.projectodd.stilts.stomplet;
 
 import org.projectodd.stilts.stomp.StompException;
 import org.projectodd.stilts.stomp.StompMessage;
+import org.projectodd.stilts.stomp.spi.StompSession;
 
 /**
  * Defines methods that all Stomplets must implement.
@@ -92,9 +93,10 @@ public interface Stomplet {
      * </p>
      * 
      * @param message The inbound message.
+     * @param session The user session.
      * @throws StompException If an error occurs while processing the message.
      */
-    void onMessage(StompMessage message) throws StompException;
+    void onMessage(StompMessage message, StompSession session) throws StompException;
 
     /**
      * Handle a subscription request.
