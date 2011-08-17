@@ -92,7 +92,7 @@
             <configuration>
               <artifacts>
                 <artifact>
-                  <file>src/main/java/stilts-stomp.js</file>
+                  <file>target/classes/stilts-stomp.js</file>
                   <type>js</type>
                   <classifier />
                 </artifact>
