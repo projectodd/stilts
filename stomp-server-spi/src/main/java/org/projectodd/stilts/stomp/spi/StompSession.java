@@ -10,4 +10,7 @@ public interface StompSession {
     Object getAttribute(String name);
     void setAttribute(String name, Object value);
     void removeAttribute(String name);
+    
+    void access();
+    void endAccess();
 }

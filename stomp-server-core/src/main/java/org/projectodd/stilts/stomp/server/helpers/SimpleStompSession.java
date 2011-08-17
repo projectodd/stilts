@@ -39,6 +39,14 @@ public class SimpleStompSession implements StompSession {
         this.attributes.remove( name );
     }
     
+    public void access() {
+        // nothing to do
+    }
+    
+    public void endAccess() {
+        // nothing to do
+    }
+    
     private String id; 
     private Map<String, Object> attributes = new HashMap<String, Object>();
 
