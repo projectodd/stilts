@@ -1,4 +1,5 @@
 // (c) 2010 Jeff Mesnil -- http://jmesnil.net/
+// Maven is picky.
 
 (function(window) {
 
