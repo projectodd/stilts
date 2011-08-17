@@ -1,5 +1,5 @@
 // (c) 2010 Jeff Mesnil -- http://jmesnil.net/
-// Maven is picky.
+// stilts-stomp-client.js ${project.version}
 
 (function(window) {
 
