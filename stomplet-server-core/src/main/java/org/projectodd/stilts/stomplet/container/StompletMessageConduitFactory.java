@@ -46,7 +46,10 @@ public class StompletMessageConduitFactory implements TransactionalMessageCondui
     @Override
     public MessageConduit createMessageConduit(AcknowledgeableMessageSink messageSink, Headers headers) throws Exception {
         String host = headers.get( Header.HOST );
+        
         StompletContainer container = null;
+        
+        System.err.println( "looking for container for host: " + host );
 
         if (host != null) {
             container = findStompletContainer( host );
@@ -54,7 +57,7 @@ public class StompletMessageConduitFactory implements TransactionalMessageCondui
 
         if (container == null) {
             container = this.defaultContainer;
-            host = "default";
+            host = "localhost";
         }
 
         if (container == null) {
