@@ -148,7 +148,14 @@ public class HandshakeHandler extends SimpleChannelUpstreamHandler {
 
     protected void decodeSession(ChannelHandlerContext channelContext, HttpRequest request) {
         CookieDecoder decoder = new CookieDecoder();
-        Set<Cookie> cookies = decoder.decode( request.getHeader( HttpHeaders.Names.COOKIE ) );
+        
+        String cookieHeader = request.getHeader( HttpHeaders.Names.COOKIE );
+        
+        if ( cookieHeader == null || cookieHeader.trim().equals( "" ) ) {
+            return;
+        }
+        
+        Set<Cookie> cookies = decoder.decode( cookieHeader );
 
         for (Cookie each : cookies) {
             if (each.getName().equalsIgnoreCase( "jsessionid" )) {
