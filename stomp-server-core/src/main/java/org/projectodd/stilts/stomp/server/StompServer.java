@@ -89,7 +89,7 @@ public class StompServer<T extends StompProvider> {
     public void start() throws Exception {
 
         if (this.channelExecutor == null) {
-            this.channelExecutor = Executors.newFixedThreadPool( 2 );
+            this.channelExecutor = Executors.newFixedThreadPool( 10 );
         }
         
         if ( this.channelPipelineFactory == null ) {

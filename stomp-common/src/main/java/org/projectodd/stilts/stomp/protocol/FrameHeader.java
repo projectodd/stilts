@@ -52,11 +52,11 @@ public class FrameHeader {
     }
 
     public void set(String name, String value) {
-        this.headers.put( name.toLowerCase(), value );
+        this.headers.put( name, value );
     }
 
     public String get(String name) {
-        return this.headers.get( name.toLowerCase() );
+        return this.headers.get( name );
     }
     
     public Set<String> getNames() {
