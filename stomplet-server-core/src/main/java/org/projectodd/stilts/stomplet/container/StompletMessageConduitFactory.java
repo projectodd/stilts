@@ -56,8 +56,11 @@ public class StompletMessageConduitFactory implements TransactionalMessageCondui
         }
 
         if (container == null) {
+            container = findStompletContainer( "localhost" );
+        }
+        
+        if ( container == null ) {
             container = this.defaultContainer;
-            host = "localhost";
         }
 
         if (container == null) {
@@ -65,6 +68,10 @@ public class StompletMessageConduitFactory implements TransactionalMessageCondui
         }
 
         StompSessionManager sessionManager = findSessionManager( host );
+        
+        if ( sessionManager == null ) {
+            sessionManager = findSessionManager( "localhost" );
+        }
         
         if ( sessionManager == null ) {
             sessionManager = this.defaultSessionManager;
