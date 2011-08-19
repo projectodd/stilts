@@ -88,9 +88,9 @@ public class ProtocolDetector extends ReplayingDecoder<VoidEnum> {
         pipeline.remove( this );
 
         //pipeline.addFirst( "server-debug-header", new DebugHandler( "SERVER-HEAD" ) );
+        pipeline.addFirst( "disorderly-close", new DisorderlyCloseHandler() );
         pipeline.addLast( "http-encoder", new HttpResponseEncoder() );
         pipeline.addLast( "http-decoder", new HttpRequestDecoder() );
-        pipeline.addLast( "websockets-disorderly-close", new DisorderlyCloseHandler() );
         pipeline.addLast( "websocket-handshake", new HandshakeHandler() );
         
         pipeline.addLast( "stomp-frame-encoder", new WebSocketStompFrameEncoder() );

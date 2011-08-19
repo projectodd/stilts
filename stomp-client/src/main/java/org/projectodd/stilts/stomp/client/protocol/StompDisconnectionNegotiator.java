@@ -3,6 +3,7 @@ package org.projectodd.stilts.stomp.client.protocol;
 import org.jboss.netty.channel.ChannelDownstreamHandler;
 import org.jboss.netty.channel.ChannelEvent;
 import org.jboss.netty.channel.ChannelHandlerContext;
+import org.jboss.netty.channel.ChannelState;
 import org.jboss.netty.channel.ChannelStateEvent;
 import org.jboss.netty.channel.ChannelUpstreamHandler;
 import org.jboss.netty.channel.Channels;
@@ -43,7 +44,8 @@ public class StompDisconnectionNegotiator implements ChannelDownstreamHandler, C
     @Override
     public void handleDownstream(ChannelHandlerContext ctx, ChannelEvent e) throws Exception {
         if (e instanceof ChannelStateEvent) {
-            if (!Boolean.TRUE.equals( ((ChannelStateEvent) e).getValue() )) {
+            ChannelState state = ((ChannelStateEvent)e).getState();
+            if ( state == ChannelState.OPEN && Boolean.FALSE.equals( ((ChannelStateEvent) e).getValue() )) {
                 closeRequested( ctx, (ChannelStateEvent) e );
                 return;
             }
