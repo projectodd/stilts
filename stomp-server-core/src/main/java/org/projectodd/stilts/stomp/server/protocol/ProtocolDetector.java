@@ -14,7 +14,6 @@ import org.jboss.netty.handler.codec.http.HttpResponseEncoder;
 import org.jboss.netty.handler.codec.replay.ReplayingDecoder;
 import org.jboss.netty.handler.codec.replay.VoidEnum;
 import org.jboss.netty.handler.execution.ExecutionHandler;
-import org.projectodd.stilts.stomp.protocol.DebugHandler;
 import org.projectodd.stilts.stomp.protocol.StompFrameDecoder;
 import org.projectodd.stilts.stomp.protocol.StompFrameEncoder;
 import org.projectodd.stilts.stomp.protocol.StompMessageDecoder;
@@ -22,6 +21,7 @@ import org.projectodd.stilts.stomp.protocol.StompMessageEncoder;
 import org.projectodd.stilts.stomp.protocol.websocket.WebSocketStompFrameDecoder;
 import org.projectodd.stilts.stomp.protocol.websocket.WebSocketStompFrameEncoder;
 import org.projectodd.stilts.stomp.server.ServerStompMessageFactory;
+import org.projectodd.stilts.stomp.server.websockets.protocol.DisorderlyCloseHandler;
 import org.projectodd.stilts.stomp.server.websockets.protocol.HandshakeHandler;
 import org.projectodd.stilts.stomp.spi.StompProvider;
 
@@ -70,7 +70,7 @@ public class ProtocolDetector extends ReplayingDecoder<VoidEnum> {
 
         pipeline.remove( this );
         
-        pipeline.addLast( "server-debug-header", new DebugHandler( "SERVER-HEAD" ) );
+        //pipeline.addLast( "server-debug-header", new DebugHandler( "SERVER-HEAD" ) );
         
         pipeline.addLast( "stomp-frame-encoder", new StompFrameEncoder() );
         pipeline.addLast( "stomp-frame-decoder", new StompFrameDecoder() );
@@ -86,9 +86,10 @@ public class ProtocolDetector extends ReplayingDecoder<VoidEnum> {
         ChannelPipeline pipeline = context.getPipeline();
         pipeline.remove( this );
 
-        pipeline.addFirst( "server-debug-header", new DebugHandler( "SERVER-HEAD" ) );
+        //pipeline.addFirst( "server-debug-header", new DebugHandler( "SERVER-HEAD" ) );
         pipeline.addLast( "http-encoder", new HttpResponseEncoder() );
         pipeline.addLast( "http-decoder", new HttpRequestDecoder() );
+        pipeline.addLast( "websockets-disorderly-close", new DisorderlyCloseHandler() );
         pipeline.addLast( "websocket-handshake", new HandshakeHandler() );
         
         pipeline.addLast( "stomp-frame-encoder", new WebSocketStompFrameEncoder() );
@@ -103,6 +104,7 @@ public class ProtocolDetector extends ReplayingDecoder<VoidEnum> {
 
         ConnectionContext context = new ConnectionContext();
 
+        pipeline.addLast( "stomp-disorderly-close-handler", new StompDisorderlyCloseHandler( provider, context ));
 
         pipeline.addLast( "stomp-server-connect", new ConnectHandler( provider, context ) );
         pipeline.addLast( "stomp-server-disconnect", new DisconnectHandler( provider, context ) );

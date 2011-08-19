@@ -156,7 +156,6 @@ public class StompFrameCodec {
         buffer.writeByte( NEWLINE );
         Set<String> headerNames = frame.getHeaderNames();
         for (String name : headerNames) {
-            System.err.println( "codec: " + name + "=" + frame.getHeader( name  ) );
             if (name.equalsIgnoreCase( "content-length" )) {
                 continue;
             }

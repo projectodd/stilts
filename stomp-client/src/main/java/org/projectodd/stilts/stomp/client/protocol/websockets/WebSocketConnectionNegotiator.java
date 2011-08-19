@@ -96,8 +96,6 @@ public class WebSocketConnectionNegotiator extends SimpleChannelUpstreamHandler 
                 } else {
                     pipeline.addAfter( "websockets-decoder", "websockets-encoder", new WebSocketFrameEncoder() );
                 }
-                pipeline.addBefore( "websockets-encoder", "pre-encoder", new DebugHandler( "PRE_ENCODE" ) );
-                pipeline.addAfter( "websockets-decoder", "post-encoder", new DebugHandler( "POST_ENCODE" ) );
                 context.sendUpstream( this.connectedEvent );
                 pipeline.replace( this, "websocket-disconnection-negotiator", new WebSocketDisconnectionNegotiator() );
             }
