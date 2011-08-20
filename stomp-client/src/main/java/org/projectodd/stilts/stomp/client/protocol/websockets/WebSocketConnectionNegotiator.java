@@ -22,7 +22,7 @@ import org.jboss.netty.handler.codec.http.HttpVersion;
 import org.jboss.netty.handler.codec.http.websocket.WebSocketFrameDecoder;
 import org.jboss.netty.handler.codec.http.websocket.WebSocketFrameEncoder;
 import org.projectodd.stilts.stomp.protocol.DebugHandler;
-import org.projectodd.stilts.stomp.protocol.websocket.WebSocketChallenge;
+import org.projectodd.stilts.stomp.protocol.websocket.WebSocketChallenge_Ietf00;
 import org.projectodd.stilts.stomp.protocol.websocket.WebSocketDisconnectionNegotiator;
 
 /** WebSockets protocol connection negotiator.
@@ -40,7 +40,7 @@ public class WebSocketConnectionNegotiator extends SimpleChannelUpstreamHandler 
     public WebSocketConnectionNegotiator(String host, int port) throws NoSuchAlgorithmException {
         this.host = host;
         this.port = port;
-        this.challenge = new WebSocketChallenge();
+        this.challenge = new WebSocketChallenge_Ietf00();
     }
 
     @Override
@@ -107,7 +107,7 @@ public class WebSocketConnectionNegotiator extends SimpleChannelUpstreamHandler 
     private static final Logger log = Logger.getLogger( "stomp.proto.client.websocket" );
     private String host;
     private int port;
-    private WebSocketChallenge challenge;
+    private WebSocketChallenge_Ietf00 challenge;
     private ChannelStateEvent connectedEvent;
 
 }

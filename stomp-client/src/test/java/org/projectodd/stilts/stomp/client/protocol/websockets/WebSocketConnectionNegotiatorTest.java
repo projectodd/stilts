@@ -16,7 +16,7 @@ import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.jboss.netty.handler.codec.http.HttpVersion;
 import org.junit.Test;
 import org.projectodd.stilts.stomp.protocol.HandlerEmbedder;
-import org.projectodd.stilts.stomp.protocol.websocket.WebSocketChallenge;
+import org.projectodd.stilts.stomp.protocol.websocket.WebSocketChallenge_Ietf00;
 
 public class WebSocketConnectionNegotiatorTest {
 
@@ -46,7 +46,7 @@ public class WebSocketConnectionNegotiatorTest {
         
         DefaultHttpResponse httpResponse = new DefaultHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK );
         
-        byte[] solution = WebSocketChallenge.solve( key1, key2, key3 );
+        byte[] solution = WebSocketChallenge_Ietf00.solve( key1, key2, key3 );
         ChannelBuffer buffer = ChannelBuffers.dynamicBuffer(16);
         buffer.writeBytes( solution );
         httpResponse.setContent( buffer );
@@ -83,7 +83,7 @@ public class WebSocketConnectionNegotiatorTest {
         
         DefaultHttpResponse httpResponse = new DefaultHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK );
         
-        byte[] solution = WebSocketChallenge.solve( key1, key2, key3 );
+        byte[] solution = WebSocketChallenge_Ietf00.solve( key1, key2, key3 );
         
         // break the solution
         solution[2] += 2;

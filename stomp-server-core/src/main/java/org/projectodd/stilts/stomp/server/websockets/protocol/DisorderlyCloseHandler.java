@@ -14,9 +14,9 @@ public class DisorderlyCloseHandler extends SimpleChannelUpstreamHandler {
 
         if (cause instanceof IOException ) {
             if (ctx.getAttachment() == null) {
-                ctx.sendUpstream( new DisorderlyCloseEvent( ctx.getChannel() ) );
                 ctx.setAttachment( Boolean.TRUE );
-                ctx.getChannel().close();
+                ctx.sendUpstream( new DisorderlyCloseEvent( ctx.getChannel() ) );
+                ctx.getChannel().disconnect();
             }
         } else {
             ctx.sendUpstream( e );

@@ -70,6 +70,7 @@ public class HandshakeHandler extends SimpleChannelUpstreamHandler {
      * @param contextRegistry The context registry.
      */
     public HandshakeHandler() {
+        this.handshakes.add( new Handshake_Ietf07() );
         this.handshakes.add( new Handshake_Ietf00() );
         this.handshakes.add( new Handshake_Hixie75() );
     }

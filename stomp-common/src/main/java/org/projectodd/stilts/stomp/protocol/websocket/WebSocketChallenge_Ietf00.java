@@ -8,7 +8,7 @@ import java.util.Random;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
 
-public class WebSocketChallenge {
+public class WebSocketChallenge_Ietf00 {
 
     private long key1;
     private int spaces1;
@@ -18,7 +18,7 @@ public class WebSocketChallenge {
 
     private byte[] key3;
 
-    public WebSocketChallenge() throws NoSuchAlgorithmException {
+    public WebSocketChallenge_Ietf00() throws NoSuchAlgorithmException {
         generateKeys();
     }
 

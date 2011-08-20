@@ -19,6 +19,8 @@
 
 package org.projectodd.stilts.stomp.server.websockets.protocol;
 
+import java.nio.charset.Charset;
+
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
 import org.jboss.netty.handler.codec.http.DefaultHttpResponse;
@@ -27,7 +29,7 @@ import org.jboss.netty.handler.codec.http.HttpRequest;
 import org.jboss.netty.handler.codec.http.HttpResponse;
 import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.jboss.netty.handler.codec.http.HttpVersion;
-import org.projectodd.stilts.stomp.protocol.websocket.WebSocketChallenge_Ietf00;
+import org.projectodd.stilts.stomp.protocol.websocket.WebSocketChallenge_Ietf07;
 
 /**
  * Handler for ietf-00.
@@ -36,24 +38,24 @@ import org.projectodd.stilts.stomp.protocol.websocket.WebSocketChallenge_Ietf00;
  * @author Bob McWhirter
  * 
  */
-public class Handshake_Ietf00 extends Handshake {
+public class Handshake_Ietf07 extends Handshake {
 
-    public Handshake_Ietf00() {
-        super( "0" );
+    public Handshake_Ietf07() {
+        super( "7" );
     }
 
     public boolean matches(HttpRequest request) {
-        return (request.containsHeader( Names.SEC_WEBSOCKET_KEY1 ) && request.containsHeader( Names.SEC_WEBSOCKET_KEY2 ));
+        return (request.containsHeader( "Sec-WebSocket-Key1" ) && getVersion().equals( "Sec-WebSocket-Version" ));
     }
 
     @Override
     public HttpResponse generateResponse(HttpRequest request) throws Exception {
-        HttpResponse response = new DefaultHttpResponse( HttpVersion.HTTP_1_1, new HttpResponseStatus( 101, "Web Socket Protocol Handshake - IETF-00" ) );
+        HttpResponse response = new DefaultHttpResponse( HttpVersion.HTTP_1_1, new HttpResponseStatus( 101, "Web Socket Protocol Handshake - IETF-07" ) );
 
         String origin = request.getHeader( Names.ORIGIN );
 
         if (origin != null) {
-            response.addHeader( Names.SEC_WEBSOCKET_ORIGIN, request.getHeader( Names.ORIGIN ) );
+            response.addHeader( Names.SEC_WEBSOCKET_ORIGIN, origin );
         }
         response.addHeader( Names.SEC_WEBSOCKET_LOCATION, getWebSocketLocation( request ) );
 
@@ -63,18 +65,10 @@ public class Handshake_Ietf00 extends Handshake {
             response.addHeader( Names.SEC_WEBSOCKET_PROTOCOL, protocol );
         }
 
-        // Calculate the answer of the challenge.
-        String key1 = request.getHeader( Names.SEC_WEBSOCKET_KEY1 );
-        String key2 = request.getHeader( Names.SEC_WEBSOCKET_KEY2 );
-        byte[] key3 = new byte[8];
-        request.getContent().readBytes( key3 );
+        String key = request.getHeader( "Sec-WebSocket-Key" );
+        String solution = WebSocketChallenge_Ietf07.solve( key );
         
-        byte[] solution = WebSocketChallenge_Ietf00.solve( key1, key2, key3 );
-        
-        ChannelBuffer buffer = ChannelBuffers.dynamicBuffer( solution.length + 2 );
-        buffer.writeBytes( solution );
-
-        response.setContent( buffer );
+        response.addHeader(  "Sec-WebSocket-Accept", solution); 
         response.setChunked( false );
 
         return response;
