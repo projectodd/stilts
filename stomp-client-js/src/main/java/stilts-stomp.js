@@ -141,7 +141,14 @@
 		that.connect = function(login_, passcode_, connectCallback,
 				errorCallback) {
 			debug("Opening Web Socket...");
-			ws = new WebSocket(url);
+                        var wsClass = null;
+                        if ( typeof WebSocket != 'undefined' ) {
+                          wsClass = WebSocket;
+                        } else if ( typeof MozWebSocket != 'undefined' ) {
+                          wsClass = MozWebSocket;
+                        }
+
+			ws = new wsClass(url);
 			ws.onmessage = onmessage;
 			ws.onclose = function() {
 				var msg = "Whoops! Lost connection to " + url;

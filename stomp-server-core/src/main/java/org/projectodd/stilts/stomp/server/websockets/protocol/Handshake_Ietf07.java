@@ -19,10 +19,6 @@
 
 package org.projectodd.stilts.stomp.server.websockets.protocol;
 
-import java.nio.charset.Charset;
-
-import org.jboss.netty.buffer.ChannelBuffer;
-import org.jboss.netty.buffer.ChannelBuffers;
 import org.jboss.netty.handler.codec.http.DefaultHttpResponse;
 import org.jboss.netty.handler.codec.http.HttpHeaders.Names;
 import org.jboss.netty.handler.codec.http.HttpRequest;
@@ -45,7 +41,7 @@ public class Handshake_Ietf07 extends Handshake {
     }
 
     public boolean matches(HttpRequest request) {
-        return (request.containsHeader( "Sec-WebSocket-Key1" ) && getVersion().equals( "Sec-WebSocket-Version" ));
+        return (request.containsHeader( "Sec-WebSocket-Key" ) && getVersion().equals( request.getHeader( "Sec-WebSocket-Version" ) ));
     }
 
     @Override
@@ -67,8 +63,8 @@ public class Handshake_Ietf07 extends Handshake {
 
         String key = request.getHeader( "Sec-WebSocket-Key" );
         String solution = WebSocketChallenge_Ietf07.solve( key );
-        
-        response.addHeader(  "Sec-WebSocket-Accept", solution); 
+
+        response.addHeader( "Sec-WebSocket-Accept", solution );
         response.setChunked( false );
 
         return response;

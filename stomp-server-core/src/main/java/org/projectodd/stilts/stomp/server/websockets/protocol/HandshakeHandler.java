@@ -149,13 +149,13 @@ public class HandshakeHandler extends SimpleChannelUpstreamHandler {
 
     protected void decodeSession(ChannelHandlerContext channelContext, HttpRequest request) {
         CookieDecoder decoder = new CookieDecoder();
-        
+
         String cookieHeader = request.getHeader( HttpHeaders.Names.COOKIE );
-        
-        if ( cookieHeader == null || cookieHeader.trim().equals( "" ) ) {
+
+        if (cookieHeader == null || cookieHeader.trim().equals( "" )) {
             return;
         }
-        
+
         Set<Cookie> cookies = decoder.decode( cookieHeader );
 
         for (Cookie each : cookies) {
@@ -210,7 +210,20 @@ public class HandshakeHandler extends SimpleChannelUpstreamHandler {
      *         request, otherwise <code>false</code>.
      */
     protected boolean isWebSocketsUpgradeRequest(HttpRequest request) {
-        return (Values.UPGRADE.equalsIgnoreCase( request.getHeader( Names.CONNECTION ) ) && Values.WEBSOCKET.equalsIgnoreCase( request.getHeader( Names.UPGRADE ) ));
+        String connectionHeader = request.getHeader( Names.CONNECTION );
+        String upgradeHeader = request.getHeader( Names.UPGRADE );
+
+        if (connectionHeader == null || upgradeHeader == null) {
+            return false;
+        }
+
+        if (connectionHeader.trim().toLowerCase().contains( Values.UPGRADE.toLowerCase() )) {
+            if (upgradeHeader.trim().equalsIgnoreCase( Values.WEBSOCKET )) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private void sendHttpResponse(ChannelHandlerContext ctx, HttpRequest req, HttpResponse res) {

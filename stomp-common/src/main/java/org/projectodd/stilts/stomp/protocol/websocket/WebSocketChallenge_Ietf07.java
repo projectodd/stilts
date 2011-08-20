@@ -5,7 +5,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Random;
 
-import javax.xml.bind.DatatypeConverter;
+import org.apache.commons.codec.binary.Base64;
 
 public class WebSocketChallenge_Ietf07 {
 
@@ -26,7 +26,7 @@ public class WebSocketChallenge_Ietf07 {
     }
     
     public String getNonceBase64() {
-        return DatatypeConverter.printBase64Binary( this.rawNonce );
+        return Base64.encodeBase64String( this.rawNonce );
     }
 
     public static String solve(String nonceBase64) throws NoSuchAlgorithmException {
@@ -38,12 +38,11 @@ public class WebSocketChallenge_Ietf07 {
         
         byte[] hashed = digest.digest();
         
-        return DatatypeConverter.printBase64Binary( hashed );
+        return Base64.encodeBase64String( hashed ).trim();
     }
 
     public boolean verify(String solution) throws NoSuchAlgorithmException {
         String localSolution = solve( getNonceBase64() );
-        
         return localSolution.equals( solution );
     }
 }
