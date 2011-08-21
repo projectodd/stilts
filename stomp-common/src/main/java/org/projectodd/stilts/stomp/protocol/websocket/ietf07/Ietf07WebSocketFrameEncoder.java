@@ -30,7 +30,7 @@ public class Ietf07WebSocketFrameEncoder extends OneToOneEncoder {
             ChannelBuffer encoded = ChannelBuffers.dynamicBuffer( ByteOrder.BIG_ENDIAN, data.readableBytes() + 32 );
 
             byte firstByte = (byte) (type >> 4);
-            firstByte = (byte) (firstByte & 0x1);
+            firstByte = (byte) (firstByte | 0x1);
             encoded.writeByte( firstByte );
 
             if (dataLen <= 125) {
