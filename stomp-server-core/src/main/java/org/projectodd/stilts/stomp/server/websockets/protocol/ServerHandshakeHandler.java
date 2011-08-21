@@ -19,6 +19,7 @@
 
 package org.projectodd.stilts.stomp.server.websockets.protocol;
 
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -42,7 +43,6 @@ import org.jboss.netty.handler.codec.http.DefaultHttpResponse;
 import org.jboss.netty.handler.codec.http.HttpHeaders;
 import org.jboss.netty.handler.codec.http.HttpHeaders.Names;
 import org.jboss.netty.handler.codec.http.HttpHeaders.Values;
-import org.jboss.netty.handler.codec.http.HttpMessage;
 import org.jboss.netty.handler.codec.http.HttpRequest;
 import org.jboss.netty.handler.codec.http.HttpResponse;
 import org.jboss.netty.handler.codec.http.HttpResponseStatus;
@@ -50,7 +50,10 @@ import org.jboss.netty.handler.codec.http.HttpVersion;
 import org.jboss.netty.handler.codec.http.websocket.WebSocketFrameDecoder;
 import org.jboss.netty.handler.codec.http.websocket.WebSocketFrameEncoder;
 import org.jboss.netty.util.CharsetUtil;
+import org.projectodd.stilts.stomp.protocol.websocket.Handshake;
 import org.projectodd.stilts.stomp.protocol.websocket.WebSocketDisconnectionNegotiator;
+import org.projectodd.stilts.stomp.protocol.websocket.ietf00.Ietf00Handshake;
+import org.projectodd.stilts.stomp.protocol.websocket.ietf07.Ietf07Handshake;
 import org.projectodd.stilts.stomp.server.protocol.HostDecodedEvent;
 
 /**
@@ -62,17 +65,17 @@ import org.projectodd.stilts.stomp.server.protocol.HostDecodedEvent;
  * @author Michael Dobozy
  * @author Bob McWhirter
  */
-public class HandshakeHandler extends SimpleChannelUpstreamHandler {
+public class ServerHandshakeHandler extends SimpleChannelUpstreamHandler {
 
     /**
      * Construct.
      * 
      * @param contextRegistry The context registry.
+     * @throws NoSuchAlgorithmException 
      */
-    public HandshakeHandler() {
-        this.handshakes.add( new Handshake_Ietf07() );
-        this.handshakes.add( new Handshake_Ietf00() );
-        this.handshakes.add( new Handshake_Hixie75() );
+    public ServerHandshakeHandler() throws NoSuchAlgorithmException {
+        this.handshakes.add( new Ietf07Handshake( false ) );
+        this.handshakes.add( new Ietf00Handshake() );
     }
 
     @Override
@@ -112,7 +115,7 @@ public class HandshakeHandler extends SimpleChannelUpstreamHandler {
                 future.addListener( new ChannelFutureListener() {
                     public void operationComplete(ChannelFuture future) throws Exception {
                         reconfigureDownstream( pipeline );
-                        pipeline.replace( HandshakeHandler.this, "websocket-disconnection-negotiator", new WebSocketDisconnectionNegotiator() );
+                        pipeline.replace( ServerHandshakeHandler.this, "websocket-disconnection-negotiator", new WebSocketDisconnectionNegotiator() );
                         forwardConnectEventUpstream( channelContext );
                         decodeHost( channelContext, request );
                         decodeSession( channelContext, request );

@@ -16,13 +16,14 @@ import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.jboss.netty.handler.codec.http.HttpVersion;
 import org.junit.Test;
 import org.projectodd.stilts.stomp.protocol.HandlerEmbedder;
+import org.projectodd.stilts.stomp.protocol.websocket.ietf00.Ietf00Handshake;
 import org.projectodd.stilts.stomp.protocol.websocket.ietf00.Ietf00WebSocketChallenge;
 
 public class WebSocketConnectionNegotiatorTest {
 
     @Test
     public void testConnect() throws Exception {
-        HandlerEmbedder handler = new HandlerEmbedder( false, new WebSocketHttpResponseDecoder(), new WebSocketConnectionNegotiator( "localhost", 8675 ) );
+        HandlerEmbedder handler = new HandlerEmbedder( false, new WebSocketHttpResponseDecoder(), new WebSocketConnectionNegotiator( "localhost", 8675, new Ietf00Handshake()  ) );
         
         ChannelPipeline pipeline = handler.getPipeline();
         
@@ -59,7 +60,7 @@ public class WebSocketConnectionNegotiatorTest {
     
     @Test
     public void testConnectFailure() throws Exception {
-        HandlerEmbedder handler = new HandlerEmbedder( false, new WebSocketHttpResponseDecoder(), new WebSocketConnectionNegotiator( "localhost", 8675 ) );
+        HandlerEmbedder handler = new HandlerEmbedder( false, new WebSocketHttpResponseDecoder(), new WebSocketConnectionNegotiator( "localhost", 8675, new Ietf00Handshake() ) );
         
         ChannelPipeline pipeline = handler.getPipeline();
         

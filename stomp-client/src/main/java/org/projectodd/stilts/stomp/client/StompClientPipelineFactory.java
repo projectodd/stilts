@@ -16,6 +16,8 @@
 
 package org.projectodd.stilts.stomp.client;
 
+import java.security.NoSuchAlgorithmException;
+
 import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.jboss.netty.channel.Channels;
@@ -30,25 +32,35 @@ import org.projectodd.stilts.stomp.protocol.StompFrameDecoder;
 import org.projectodd.stilts.stomp.protocol.StompFrameEncoder;
 import org.projectodd.stilts.stomp.protocol.StompMessageDecoder;
 import org.projectodd.stilts.stomp.protocol.StompMessageEncoder;
+import org.projectodd.stilts.stomp.protocol.websocket.Handshake;
 import org.projectodd.stilts.stomp.protocol.websocket.WebSocketStompFrameDecoder;
 import org.projectodd.stilts.stomp.protocol.websocket.WebSocketStompFrameEncoder;
+import org.projectodd.stilts.stomp.protocol.websocket.ietf00.Ietf00Handshake;
 
 public class StompClientPipelineFactory implements ChannelPipelineFactory {
 
-    public StompClientPipelineFactory(StompClient client, ClientContext clientContext, boolean useWebSockets) {
+    public StompClientPipelineFactory(StompClient client, ClientContext clientContext) {
+        this( client, clientContext, null );
+    }
+    
+    public StompClientPipelineFactory(StompClient client, ClientContext clientContext, boolean useWebSockets) throws NoSuchAlgorithmException {
+        this( client, clientContext, useWebSockets ? new Ietf00Handshake() : null );
+    }
+    
+    public StompClientPipelineFactory(StompClient client, ClientContext clientContext, Handshake handshake) {
         this.client = client;
         this.clientContext = clientContext;
-        this.useWebSockets = useWebSockets;
+        this.handshake = handshake;
     }
 
     @Override
     public ChannelPipeline getPipeline() throws Exception {
         ChannelPipeline pipeline = Channels.pipeline();
 
-        if (this.useWebSockets) {
+        if (this.handshake != null ) {
             pipeline.addLast( "http-encoder", new HttpRequestEncoder() );
             pipeline.addLast( "http-decoder", new WebSocketHttpResponseDecoder() );
-            pipeline.addLast( "websocket-connection-negotiator", new WebSocketConnectionNegotiator( "localhost", 8675 ) );
+            pipeline.addLast( "websocket-connection-negotiator", new WebSocketConnectionNegotiator( "localhost", 8675, this.handshake ) );
             pipeline.addLast( "stomp-frame-decoder", new WebSocketStompFrameDecoder() );
             pipeline.addLast( "stomp-frame-encoder", new WebSocketStompFrameEncoder() );
         } else {
@@ -69,6 +81,6 @@ public class StompClientPipelineFactory implements ChannelPipelineFactory {
 
     private StompClient client;
     private ClientContext clientContext;
-    private boolean useWebSockets;
+    private Handshake handshake;
 
 }

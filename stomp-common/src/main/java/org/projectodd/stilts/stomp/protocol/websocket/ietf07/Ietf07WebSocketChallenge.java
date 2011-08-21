@@ -42,6 +42,9 @@ public class Ietf07WebSocketChallenge {
     }
 
     public boolean verify(String solution) throws NoSuchAlgorithmException {
+        if ( solution == null ) {
+            return false;
+        }
         String localSolution = solve( getNonceBase64() );
         return localSolution.equals( solution );
     }

@@ -1,6 +1,7 @@
 package org.projectodd.stilts.stomp.server.protocol;
 
 import java.nio.charset.Charset;
+import java.security.NoSuchAlgorithmException;
 import java.util.concurrent.Executor;
 
 import org.jboss.logging.Logger;
@@ -23,7 +24,7 @@ import org.projectodd.stilts.stomp.protocol.websocket.WebSocketStompFrameDecoder
 import org.projectodd.stilts.stomp.protocol.websocket.WebSocketStompFrameEncoder;
 import org.projectodd.stilts.stomp.server.ServerStompMessageFactory;
 import org.projectodd.stilts.stomp.server.websockets.protocol.DisorderlyCloseHandler;
-import org.projectodd.stilts.stomp.server.websockets.protocol.HandshakeHandler;
+import org.projectodd.stilts.stomp.server.websockets.protocol.ServerHandshakeHandler;
 import org.projectodd.stilts.stomp.spi.StompProvider;
 
 public class ProtocolDetector extends ReplayingDecoder<VoidEnum> {
@@ -82,7 +83,7 @@ public class ProtocolDetector extends ReplayingDecoder<VoidEnum> {
 
     }
 
-    protected ChannelBuffer switchToStompOverWebSockets(ChannelHandlerContext context, ChannelBuffer buffer) {
+    protected ChannelBuffer switchToStompOverWebSockets(ChannelHandlerContext context, ChannelBuffer buffer) throws NoSuchAlgorithmException {
         ChannelBuffer fullBuffer = buffer.readBytes( super.actualReadableBytes() );
         ChannelPipeline pipeline = context.getPipeline();
         pipeline.remove( this );
@@ -91,7 +92,7 @@ public class ProtocolDetector extends ReplayingDecoder<VoidEnum> {
         pipeline.addFirst( "disorderly-close", new DisorderlyCloseHandler() );
         pipeline.addLast( "http-encoder", new HttpResponseEncoder() );
         pipeline.addLast( "http-decoder", new HttpRequestDecoder() );
-        pipeline.addLast( "websocket-handshake", new HandshakeHandler() );
+        pipeline.addLast( "websocket-handshake", new ServerHandshakeHandler() );
         
         pipeline.addLast( "stomp-frame-encoder", new WebSocketStompFrameEncoder() );
         pipeline.addLast( "stomp-frame-decoder", new WebSocketStompFrameDecoder() );

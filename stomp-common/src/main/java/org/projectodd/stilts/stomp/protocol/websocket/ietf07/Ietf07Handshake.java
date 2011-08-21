@@ -17,15 +17,23 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.projectodd.stilts.stomp.server.websockets.protocol;
+package org.projectodd.stilts.stomp.protocol.websocket.ietf07;
 
+import java.net.URI;
+import java.security.NoSuchAlgorithmException;
+
+import org.jboss.netty.buffer.ChannelBuffer;
+import org.jboss.netty.channel.ChannelHandler;
+import org.jboss.netty.handler.codec.http.DefaultHttpRequest;
 import org.jboss.netty.handler.codec.http.DefaultHttpResponse;
+import org.jboss.netty.handler.codec.http.HttpHeaders;
 import org.jboss.netty.handler.codec.http.HttpHeaders.Names;
+import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.jboss.netty.handler.codec.http.HttpRequest;
 import org.jboss.netty.handler.codec.http.HttpResponse;
 import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.jboss.netty.handler.codec.http.HttpVersion;
-import org.projectodd.stilts.stomp.protocol.websocket.ietf07.Ietf07WebSocketChallenge;
+import org.projectodd.stilts.stomp.protocol.websocket.Handshake;
 
 /**
  * Handler for ietf-00.
@@ -34,14 +42,30 @@ import org.projectodd.stilts.stomp.protocol.websocket.ietf07.Ietf07WebSocketChal
  * @author Bob McWhirter
  * 
  */
-public class Handshake_Ietf07 extends Handshake {
+public class Ietf07Handshake extends Handshake {
 
-    public Handshake_Ietf07() {
+    public Ietf07Handshake(boolean isClient) throws NoSuchAlgorithmException {
         super( "7" );
+        this.challenge = new Ietf07WebSocketChallenge();
+        this.isClient = isClient;
     }
 
     public boolean matches(HttpRequest request) {
         return (request.containsHeader( "Sec-WebSocket-Key" ) && getVersion().equals( request.getHeader( "Sec-WebSocket-Version" ) ));
+    }
+    
+    public HttpRequest generateRequest(URI uri) throws Exception {
+        HttpRequest request = new DefaultHttpRequest( HttpVersion.HTTP_1_1, HttpMethod.GET, uri.toString() );
+
+        request.addHeader( "Sec-WebSocket-Version", "7" );
+        request.addHeader( HttpHeaders.Names.CONNECTION, "Upgrade" );
+        request.addHeader( HttpHeaders.Names.UPGRADE, "WebSocket" );
+        request.addHeader( HttpHeaders.Names.HOST, uri.getHost()+ ":" + uri.getPort() );
+        request.addHeader( HttpHeaders.Names.SEC_WEBSOCKET_PROTOCOL, "stomp" );
+        
+        request.addHeader( "Sec-WebSocket-Key", this.challenge.getNonceBase64() );
+
+        return request;
     }
 
     @Override
@@ -69,4 +93,25 @@ public class Handshake_Ietf07 extends Handshake {
 
         return response;
     }
+    
+    @Override
+    public boolean isComplete(HttpResponse response) throws Exception {
+        String challengeResponse = response.getHeader( "Sec-WebSocket-Accept" );
+        return this.challenge.verify( challengeResponse );
+    }
+
+    @Override
+    public ChannelHandler newEncoder() {
+        return new Ietf07WebSocketFrameEncoder( this.isClient );
+    }
+
+    @Override
+    public ChannelHandler newDecoder() {
+        return new Ietf07WebSocketFrameDecoder();
+    }
+    
+    private boolean isClient;
+    private Ietf07WebSocketChallenge challenge;
+
+
 }

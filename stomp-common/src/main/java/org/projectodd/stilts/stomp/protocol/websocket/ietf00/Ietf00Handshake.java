@@ -17,17 +17,26 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.projectodd.stilts.stomp.server.websockets.protocol;
+package org.projectodd.stilts.stomp.protocol.websocket.ietf00;
+
+import java.net.URI;
+import java.security.NoSuchAlgorithmException;
 
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
+import org.jboss.netty.channel.ChannelHandler;
+import org.jboss.netty.handler.codec.http.DefaultHttpRequest;
 import org.jboss.netty.handler.codec.http.DefaultHttpResponse;
+import org.jboss.netty.handler.codec.http.HttpHeaders;
 import org.jboss.netty.handler.codec.http.HttpHeaders.Names;
+import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.jboss.netty.handler.codec.http.HttpRequest;
 import org.jboss.netty.handler.codec.http.HttpResponse;
 import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.jboss.netty.handler.codec.http.HttpVersion;
-import org.projectodd.stilts.stomp.protocol.websocket.ietf00.Ietf00WebSocketChallenge;
+import org.jboss.netty.handler.codec.http.websocket.WebSocketFrameDecoder;
+import org.jboss.netty.handler.codec.http.websocket.WebSocketFrameEncoder;
+import org.projectodd.stilts.stomp.protocol.websocket.Handshake;
 
 /**
  * Handler for ietf-00.
@@ -36,14 +45,37 @@ import org.projectodd.stilts.stomp.protocol.websocket.ietf00.Ietf00WebSocketChal
  * @author Bob McWhirter
  * 
  */
-public class Handshake_Ietf00 extends Handshake {
+public class Ietf00Handshake extends Handshake {
 
-    public Handshake_Ietf00() {
+
+    public Ietf00Handshake() throws NoSuchAlgorithmException {
         super( "0" );
+        this.challenge = new Ietf00WebSocketChallenge();
     }
 
     public boolean matches(HttpRequest request) {
         return (request.containsHeader( Names.SEC_WEBSOCKET_KEY1 ) && request.containsHeader( Names.SEC_WEBSOCKET_KEY2 ));
+    }
+    
+    public HttpRequest generateRequest(URI uri) throws Exception {
+        HttpRequest request = new DefaultHttpRequest( HttpVersion.HTTP_1_1, HttpMethod.GET, uri.toString() );
+
+        request.addHeader( HttpHeaders.Names.CONNECTION, "Upgrade" );
+        request.addHeader( HttpHeaders.Names.UPGRADE, "WebSocket" );
+        request.addHeader( HttpHeaders.Names.HOST, uri.getHost()+ ":" + uri.getPort() );
+        request.addHeader( HttpHeaders.Names.SEC_WEBSOCKET_PROTOCOL, "stomp" );
+
+        request.addHeader( HttpHeaders.Names.SEC_WEBSOCKET_KEY1, this.challenge.getKey1String() );
+        request.addHeader( HttpHeaders.Names.SEC_WEBSOCKET_KEY2, this.challenge.getKey2String() );
+
+        ChannelBuffer buffer = ChannelBuffers.dynamicBuffer( 6 );
+        buffer.writeBytes( challenge.getKey3() );
+        buffer.writeByte( '\r' );
+        buffer.writeByte( '\n' );
+
+        request.setContent( buffer );
+        
+        return request;
     }
 
     @Override
@@ -79,4 +111,23 @@ public class Handshake_Ietf00 extends Handshake {
 
         return response;
     }
+    
+    public boolean isComplete(HttpResponse response) throws Exception {
+        ChannelBuffer content = response.getContent();
+        
+        byte[] challengeResponse = new byte[16];
+        content.readBytes( challengeResponse );
+
+        return this.challenge.verify( challengeResponse );
+    }
+    
+    public ChannelHandler newEncoder() {
+        return new WebSocketFrameEncoder();
+    }
+    
+    public ChannelHandler newDecoder() {
+        return new WebSocketFrameDecoder();
+    }
+        
+    private Ietf00WebSocketChallenge challenge;
 }

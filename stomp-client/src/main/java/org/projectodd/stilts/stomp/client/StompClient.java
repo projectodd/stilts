@@ -19,6 +19,7 @@ package org.projectodd.stilts.stomp.client;
 import java.net.InetSocketAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Callable;
@@ -185,10 +186,14 @@ public class StompClient {
         }
 
         this.bootstrap = new ClientBootstrap();
-        ChannelPipelineFactory factory = createPipelineFactory();
-        bootstrap.setPipelineFactory( factory );
+        try {
+            ChannelPipelineFactory factory = createPipelineFactory();
+            bootstrap.setPipelineFactory( factory );
+        } catch (NoSuchAlgorithmException e) {
+            throw new StompException( e );
+        }
         bootstrap.setFactory( createChannelFactory() );
-        
+
         setConnectionState( State.CONNECTING );
         this.channel = bootstrap.connect( serverAddress ).await().getChannel();
         waitForConnected( waitTime );
@@ -217,10 +222,10 @@ public class StompClient {
         setConnectionState( State.DISCONNECTING );
         this.channel.close();
         waitForDisconnected( waitTime );
-        
-        if ( this.destroyExecutor ) {
-            if ( this.executor instanceof ExecutorService ) {
-                ((ExecutorService)this.executor).shutdown();
+
+        if (this.destroyExecutor) {
+            if (this.executor instanceof ExecutorService) {
+                ((ExecutorService) this.executor).shutdown();
             }
             this.destroyExecutor = false;
         }
@@ -343,7 +348,7 @@ public class StompClient {
         }
     }
 
-    protected ChannelPipelineFactory createPipelineFactory() {
+    protected ChannelPipelineFactory createPipelineFactory() throws NoSuchAlgorithmException {
         return new StompClientPipelineFactory( this, new ClientContextImpl( this ), this.useWebSockets );
     }
 
@@ -370,7 +375,7 @@ public class StompClient {
 
     private final Object stateLock = new Object();
     private State connectionState;
-    
+
     private ClientBootstrap bootstrap;
 
     private ClientListener clientListener;

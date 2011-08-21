@@ -19,7 +19,7 @@ import org.projectodd.stilts.stomp.protocol.StompFrameEncoder;
 import org.projectodd.stilts.stomp.protocol.websocket.WebSocketStompFrameDecoder;
 import org.projectodd.stilts.stomp.protocol.websocket.WebSocketStompFrameEncoder;
 import org.projectodd.stilts.stomp.server.protocol.ProtocolDetector;
-import org.projectodd.stilts.stomp.server.websockets.protocol.HandshakeHandler;
+import org.projectodd.stilts.stomp.server.websockets.protocol.ServerHandshakeHandler;
 
 public class ProtocolDetectorTest {
 
@@ -47,7 +47,7 @@ public class ProtocolDetectorTest {
         
         assertNull( pipeline.get( HttpRequestDecoder.class ) );
         assertNull( pipeline.get( HttpResponseEncoder.class ) );
-        assertNull( pipeline.get( HandshakeHandler.class ) );
+        assertNull( pipeline.get( ServerHandshakeHandler.class ) );
         assertNotNull( pipeline.get( StompFrameDecoder.class ) );
         assertNotNull( pipeline.get( StompFrameEncoder.class ) );
     }
@@ -67,7 +67,7 @@ public class ProtocolDetectorTest {
         
         assertNotNull( pipeline.get( HttpRequestDecoder.class ) );
         assertNotNull( pipeline.get( HttpResponseEncoder.class ) );
-        assertNotNull( pipeline.get( HandshakeHandler.class ) );
+        assertNotNull( pipeline.get( ServerHandshakeHandler.class ) );
         assertNotNull( pipeline.get( WebSocketStompFrameDecoder.class ) );
         assertNotNull( pipeline.get( WebSocketStompFrameEncoder.class ) );
     }

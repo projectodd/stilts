@@ -7,6 +7,7 @@ import org.jboss.netty.handler.codec.http.HttpRequestEncoder;
 import org.projectodd.stilts.stomp.client.protocol.websockets.WebSocketConnectionNegotiator;
 import org.projectodd.stilts.stomp.client.protocol.websockets.WebSocketHttpResponseDecoder;
 import org.projectodd.stilts.stomp.protocol.DebugHandler;
+import org.projectodd.stilts.stomp.protocol.websocket.ietf00.Ietf00Handshake;
 
 public class WebSocketClientPipeline extends DefaultChannelPipeline {
     
@@ -15,7 +16,7 @@ public class WebSocketClientPipeline extends DefaultChannelPipeline {
         addLast( "debug-HEAD", new DebugHandler( "CLIENT_HEAD"  ) );
         addLast( "http-encoder", new HttpRequestEncoder() );
         addLast( "http-decoder", new WebSocketHttpResponseDecoder() );
-        addLast( "websocket-connection-negotiator", new WebSocketConnectionNegotiator( host, port ));
+        addLast( "websocket-connection-negotiator", new WebSocketConnectionNegotiator( host, port, new Ietf00Handshake() ));
         this.waiter = new WebSocketClientConnectionWaiter( socket );
         addLast( "websocket-connection-waiter", this.waiter );
         addLast( "websocket-client-message-handler", new WebSocketClientMessageHandler( socket ) );

@@ -17,8 +17,11 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.projectodd.stilts.stomp.server.websockets.protocol;
+package org.projectodd.stilts.stomp.protocol.websocket;
 
+import java.net.URI;
+
+import org.jboss.netty.channel.ChannelHandler;
 import org.jboss.netty.handler.codec.http.HttpHeaders;
 import org.jboss.netty.handler.codec.http.HttpRequest;
 import org.jboss.netty.handler.codec.http.HttpResponse;
@@ -51,7 +54,12 @@ public abstract class Handshake {
 
     public abstract boolean matches(HttpRequest request);
 
+    public abstract HttpRequest generateRequest(URI uri) throws Exception;
     public abstract HttpResponse generateResponse(HttpRequest request) throws Exception;
+    public abstract boolean isComplete(HttpResponse response) throws Exception;
+    
+    public abstract ChannelHandler newEncoder();
+    public abstract ChannelHandler newDecoder();
 
     private String version;
 
