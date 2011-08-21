@@ -47,8 +47,6 @@ import org.jboss.netty.handler.codec.http.HttpRequest;
 import org.jboss.netty.handler.codec.http.HttpResponse;
 import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.jboss.netty.handler.codec.http.HttpVersion;
-import org.jboss.netty.handler.codec.http.websocket.WebSocketFrameDecoder;
-import org.jboss.netty.handler.codec.http.websocket.WebSocketFrameEncoder;
 import org.jboss.netty.util.CharsetUtil;
 import org.projectodd.stilts.stomp.protocol.websocket.Handshake;
 import org.projectodd.stilts.stomp.protocol.websocket.WebSocketDisconnectionNegotiator;
@@ -98,7 +96,7 @@ public class ServerHandshakeHandler extends SimpleChannelUpstreamHandler {
     protected void handleHttpRequest(final ChannelHandlerContext channelContext, final HttpRequest request) throws Exception {
         if (isWebSocketsUpgradeRequest( request )) {
 
-            Handshake handshake = findHandshake( request );
+            final Handshake handshake = findHandshake( request );
 
             if (handshake != null) {
 
@@ -108,13 +106,13 @@ public class ServerHandshakeHandler extends SimpleChannelUpstreamHandler {
                 response.addHeader( Names.CONNECTION, Values.UPGRADE );
 
                 final ChannelPipeline pipeline = channelContext.getChannel().getPipeline();
-                reconfigureUpstream( pipeline );
+                reconfigureUpstream( pipeline, handshake );
 
                 Channel channel = channelContext.getChannel();
                 ChannelFuture future = channel.write( response );
                 future.addListener( new ChannelFutureListener() {
                     public void operationComplete(ChannelFuture future) throws Exception {
-                        reconfigureDownstream( pipeline );
+                        reconfigureDownstream( pipeline, handshake );
                         pipeline.replace( ServerHandshakeHandler.this, "websocket-disconnection-negotiator", new WebSocketDisconnectionNegotiator() );
                         forwardConnectEventUpstream( channelContext );
                         decodeHost( channelContext, request );
@@ -192,8 +190,8 @@ public class ServerHandshakeHandler extends SimpleChannelUpstreamHandler {
      * 
      * @param pipeline The pipeline to reconfigure.
      */
-    protected void reconfigureUpstream(ChannelPipeline pipeline) {
-        pipeline.replace( "http-decoder", "websockets-decoder", new WebSocketFrameDecoder() );
+    protected void reconfigureUpstream(ChannelPipeline pipeline, Handshake handshake) {
+        pipeline.replace( "http-decoder", "websockets-decoder", handshake.newDecoder() );
     }
 
     /**
@@ -201,8 +199,8 @@ public class ServerHandshakeHandler extends SimpleChannelUpstreamHandler {
      * 
      * @param pipeline The pipeline to reconfigure.
      */
-    protected void reconfigureDownstream(ChannelPipeline pipeline) {
-        pipeline.replace( "http-encoder", "websockets-encoder", new WebSocketFrameEncoder() );
+    protected void reconfigureDownstream(ChannelPipeline pipeline, Handshake handshake) {
+        pipeline.replace( "http-encoder", "websockets-encoder", handshake.newEncoder() );
     }
 
     /**

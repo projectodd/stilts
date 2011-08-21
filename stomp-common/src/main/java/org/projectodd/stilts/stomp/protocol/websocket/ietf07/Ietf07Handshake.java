@@ -22,7 +22,7 @@ package org.projectodd.stilts.stomp.protocol.websocket.ietf07;
 import java.net.URI;
 import java.security.NoSuchAlgorithmException;
 
-import org.jboss.netty.buffer.ChannelBuffer;
+import org.jboss.netty.buffer.ChannelBuffers;
 import org.jboss.netty.channel.ChannelHandler;
 import org.jboss.netty.handler.codec.http.DefaultHttpRequest;
 import org.jboss.netty.handler.codec.http.DefaultHttpResponse;
@@ -44,6 +44,10 @@ import org.projectodd.stilts.stomp.protocol.websocket.Handshake;
  */
 public class Ietf07Handshake extends Handshake {
 
+    public Ietf07Handshake() throws NoSuchAlgorithmException {
+        this( true );
+    }
+    
     public Ietf07Handshake(boolean isClient) throws NoSuchAlgorithmException {
         super( "7" );
         this.challenge = new Ietf07WebSocketChallenge();
@@ -55,7 +59,7 @@ public class Ietf07Handshake extends Handshake {
     }
     
     public HttpRequest generateRequest(URI uri) throws Exception {
-        HttpRequest request = new DefaultHttpRequest( HttpVersion.HTTP_1_1, HttpMethod.GET, uri.toString() );
+        HttpRequest request = new DefaultHttpRequest( HttpVersion.HTTP_1_1, HttpMethod.GET, uri.getPath() );
 
         request.addHeader( "Sec-WebSocket-Version", "7" );
         request.addHeader( HttpHeaders.Names.CONNECTION, "Upgrade" );
@@ -64,6 +68,7 @@ public class Ietf07Handshake extends Handshake {
         request.addHeader( HttpHeaders.Names.SEC_WEBSOCKET_PROTOCOL, "stomp" );
         
         request.addHeader( "Sec-WebSocket-Key", this.challenge.getNonceBase64() );
+        request.setContent( ChannelBuffers.EMPTY_BUFFER );
 
         return request;
     }
@@ -96,6 +101,7 @@ public class Ietf07Handshake extends Handshake {
     
     @Override
     public boolean isComplete(HttpResponse response) throws Exception {
+        System.err.println( "COMPLETE? " + response );
         String challengeResponse = response.getHeader( "Sec-WebSocket-Accept" );
         return this.challenge.verify( challengeResponse );
     }
@@ -108,6 +114,10 @@ public class Ietf07Handshake extends Handshake {
     @Override
     public ChannelHandler newDecoder() {
         return new Ietf07WebSocketFrameDecoder();
+    }
+    
+    public int readResponseBody() {
+        return 0;
     }
     
     private boolean isClient;

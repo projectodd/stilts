@@ -36,6 +36,7 @@ public class StompServerPipelineFactory implements ChannelPipelineFactory {
         DefaultChannelPipeline pipeline = new DefaultChannelPipeline();
         pipeline.addFirst( "server-debug-header", new DebugHandler( "SERVER-HEAD" ) );
         pipeline.addLast( "protocol-detector", new ProtocolDetector( this.provider, this.executor ) );
+        pipeline.addLast( "server-post-proto", new DebugHandler( "SERVER-POST-PROTO" ) );
         return pipeline;
     }
     

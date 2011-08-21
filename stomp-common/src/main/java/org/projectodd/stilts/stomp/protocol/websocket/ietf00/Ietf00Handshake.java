@@ -128,6 +128,10 @@ public class Ietf00Handshake extends Handshake {
     public ChannelHandler newDecoder() {
         return new WebSocketFrameDecoder();
     }
+    
+    public int readResponseBody() {
+        return 16;
+    }
         
     private Ietf00WebSocketChallenge challenge;
 }

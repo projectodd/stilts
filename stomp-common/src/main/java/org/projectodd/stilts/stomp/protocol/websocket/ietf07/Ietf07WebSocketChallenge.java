@@ -26,7 +26,7 @@ public class Ietf07WebSocketChallenge {
     }
     
     public String getNonceBase64() {
-        return Base64.encodeBase64String( this.rawNonce );
+        return Base64.encodeBase64String( this.rawNonce ).trim();
     }
 
     public static String solve(String nonceBase64) throws NoSuchAlgorithmException {
@@ -42,10 +42,12 @@ public class Ietf07WebSocketChallenge {
     }
 
     public boolean verify(String solution) throws NoSuchAlgorithmException {
+        System.err.println( "VERIFY VERIFY " + solution );
         if ( solution == null ) {
             return false;
         }
         String localSolution = solve( getNonceBase64() );
+        System.err.println( "verify [" + solution + "] vs [" + localSolution + "]" );
         return localSolution.equals( solution );
     }
 }

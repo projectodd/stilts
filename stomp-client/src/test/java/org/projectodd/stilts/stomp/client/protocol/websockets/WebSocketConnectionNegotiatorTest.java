@@ -23,7 +23,10 @@ public class WebSocketConnectionNegotiatorTest {
 
     @Test
     public void testConnect() throws Exception {
-        HandlerEmbedder handler = new HandlerEmbedder( false, new WebSocketHttpResponseDecoder(), new WebSocketConnectionNegotiator( "localhost", 8675, new Ietf00Handshake()  ) );
+        Ietf00Handshake handshake = new Ietf00Handshake();
+        HandlerEmbedder handler = new HandlerEmbedder( false, 
+                                                       new WebSocketHttpResponseDecoder( handshake ), 
+                                                       new WebSocketConnectionNegotiator( "localhost", 8675, handshake  ) );
         
         ChannelPipeline pipeline = handler.getPipeline();
         
@@ -60,7 +63,10 @@ public class WebSocketConnectionNegotiatorTest {
     
     @Test
     public void testConnectFailure() throws Exception {
-        HandlerEmbedder handler = new HandlerEmbedder( false, new WebSocketHttpResponseDecoder(), new WebSocketConnectionNegotiator( "localhost", 8675, new Ietf00Handshake() ) );
+        Ietf00Handshake handshake = new Ietf00Handshake();
+        HandlerEmbedder handler = new HandlerEmbedder( false, 
+                                                       new WebSocketHttpResponseDecoder( handshake ), 
+                                                       new WebSocketConnectionNegotiator( "localhost", 8675, handshake ) );
         
         ChannelPipeline pipeline = handler.getPipeline();
         

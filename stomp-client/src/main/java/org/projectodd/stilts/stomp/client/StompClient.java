@@ -46,6 +46,8 @@ import org.projectodd.stilts.stomp.protocol.StompFrame.Command;
 import org.projectodd.stilts.stomp.protocol.StompFrame.Header;
 import org.projectodd.stilts.stomp.protocol.StompFrame.Version;
 import org.projectodd.stilts.stomp.protocol.StompFrames;
+import org.projectodd.stilts.stomp.protocol.websocket.Handshake;
+import org.projectodd.stilts.stomp.protocol.websocket.ietf00.Ietf00Handshake;
 
 public class StompClient {
 
@@ -92,6 +94,14 @@ public class StompClient {
 
     public Executor getExecutor() {
         return this.executor;
+    }
+    
+    public void setWebSocketHandshakeClass(Class<? extends Handshake> handshakeClass) {
+        this.webSocketHandshakeClass = handshakeClass;
+    }
+    
+    public Class<? extends Handshake> getWebSocketHandshakeClass() {
+        return this.webSocketHandshakeClass;
     }
 
     public Version getVersion() {
@@ -189,7 +199,9 @@ public class StompClient {
         try {
             ChannelPipelineFactory factory = createPipelineFactory();
             bootstrap.setPipelineFactory( factory );
-        } catch (NoSuchAlgorithmException e) {
+        } catch (InstantiationException e) {
+            throw new StompException( e );
+        } catch (IllegalAccessException e) {
             throw new StompException( e );
         }
         bootstrap.setFactory( createChannelFactory() );
@@ -348,8 +360,12 @@ public class StompClient {
         }
     }
 
-    protected ChannelPipelineFactory createPipelineFactory() throws NoSuchAlgorithmException {
-        return new StompClientPipelineFactory( this, new ClientContextImpl( this ), this.useWebSockets );
+    protected ChannelPipelineFactory createPipelineFactory() throws InstantiationException, IllegalAccessException {
+        if (this.useWebSockets) {
+            return new StompClientPipelineFactory( this, new ClientContextImpl( this ), this.webSocketHandshakeClass.newInstance() );
+        } else {
+            return new StompClientPipelineFactory( this, new ClientContextImpl( this ) );
+        }
     }
 
     protected ClientSocketChannelFactory createChannelFactory() {
@@ -385,5 +401,6 @@ public class StompClient {
     private InetSocketAddress serverAddress;
     private Version version = Version.VERSION_1_0;
     private boolean useWebSockets = false;
+    private Class<? extends Handshake> webSocketHandshakeClass = Ietf00Handshake.class;
 
 }

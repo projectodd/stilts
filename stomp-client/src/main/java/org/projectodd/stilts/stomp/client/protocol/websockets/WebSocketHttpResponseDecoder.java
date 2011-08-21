@@ -14,10 +14,15 @@ import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.jboss.netty.handler.codec.http.HttpVersion;
 import org.jboss.netty.handler.codec.replay.ReplayingDecoder;
 import org.jboss.netty.handler.codec.replay.VoidEnum;
+import org.projectodd.stilts.stomp.protocol.websocket.Handshake;
 
 public class WebSocketHttpResponseDecoder extends ReplayingDecoder<VoidEnum> {
 
     private final Pattern statusLineRegexp = Pattern.compile( "^HTTP/([0-9]+\\.[0-9]+) +([0-9][0-9][0-9]) +(.*)$" );
+    
+    public WebSocketHttpResponseDecoder(Handshake handshake) {
+        this.handshake = handshake;
+    }
 
     @Override
     protected Object decode(ChannelHandlerContext ctx, Channel channel, ChannelBuffer buffer, VoidEnum state) throws Exception {
@@ -40,7 +45,7 @@ public class WebSocketHttpResponseDecoder extends ReplayingDecoder<VoidEnum> {
                     return null;
                 }
 
-                readChallengeSolution( response, buffer );
+                readResponseBody( response, buffer );
                 return response;
             } else if (status == 407) {
 
@@ -75,12 +80,17 @@ public class WebSocketHttpResponseDecoder extends ReplayingDecoder<VoidEnum> {
         return null;
     }
 
-    protected void readChallengeSolution(HttpResponse response, ChannelBuffer buffer) {
-        byte[] solution = new byte[16];
+    protected void readResponseBody(HttpResponse response, ChannelBuffer buffer) {
+        if ( this.handshake.readResponseBody() == 0 ) {
+            return;
+        }
+        
+        byte[] body = new byte[ this.handshake.readResponseBody() ];
 
-        buffer.readBytes( solution );
+        buffer.readBytes( body );
 
-        response.setContent( ChannelBuffers.copiedBuffer( solution ) );
+        response.setContent( ChannelBuffers.wrappedBuffer( body ) );
     }
 
+    private Handshake handshake;
 }

@@ -12,11 +12,12 @@ import org.projectodd.stilts.stomp.protocol.websocket.ietf00.Ietf00Handshake;
 public class WebSocketClientPipeline extends DefaultChannelPipeline {
     
     public WebSocketClientPipeline(InstrumentedWebSocket socket, String host, int port) throws NoSuchAlgorithmException {
+        Ietf00Handshake handshake = new Ietf00Handshake();
         addLast( "error-handler", new WebSocketClientErrorHandler( socket ) );
         addLast( "debug-HEAD", new DebugHandler( "CLIENT_HEAD"  ) );
         addLast( "http-encoder", new HttpRequestEncoder() );
-        addLast( "http-decoder", new WebSocketHttpResponseDecoder() );
-        addLast( "websocket-connection-negotiator", new WebSocketConnectionNegotiator( host, port, new Ietf00Handshake() ));
+        addLast( "http-decoder", new WebSocketHttpResponseDecoder( handshake ) );
+        addLast( "websocket-connection-negotiator", new WebSocketConnectionNegotiator( host, port, handshake ));
         this.waiter = new WebSocketClientConnectionWaiter( socket );
         addLast( "websocket-connection-waiter", this.waiter );
         addLast( "websocket-client-message-handler", new WebSocketClientMessageHandler( socket ) );

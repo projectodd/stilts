@@ -3,6 +3,7 @@ package org.projectodd.stilts.stomp.protocol.websocket.ietf07;
 import java.nio.ByteOrder;
 import java.security.SecureRandom;
 
+import org.jboss.logging.Logger;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
 import org.jboss.netty.channel.Channel;
@@ -21,6 +22,7 @@ public class Ietf07WebSocketFrameEncoder extends OneToOneEncoder {
     @Override
     protected Object encode(ChannelHandlerContext ctx, Channel channel, Object msg) throws Exception {
         if (msg instanceof WebSocketFrame) {
+            log.info( "ENCODE " + msg );
             WebSocketFrame frame = (WebSocketFrame) msg;
             int type = frame.getType();
 
@@ -29,10 +31,12 @@ public class Ietf07WebSocketFrameEncoder extends OneToOneEncoder {
 
             ChannelBuffer encoded = ChannelBuffers.dynamicBuffer( ByteOrder.BIG_ENDIAN, data.readableBytes() + 32 );
 
-            byte firstByte = (byte) (type >> 4);
-            firstByte = (byte) (firstByte | 0x1);
+            //byte firstByte = (byte) type;
+            byte firstByte = 1;
+            firstByte = (byte) (firstByte | 0x80);
             encoded.writeByte( firstByte );
 
+            log.info( "Encode length=" + dataLen );
             if (dataLen <= 125) {
                 encoded.writeByte( applyMaskBit( dataLen ) );
             } else if (dataLen < 0xFFFF) {
@@ -43,7 +47,11 @@ public class Ietf07WebSocketFrameEncoder extends OneToOneEncoder {
                 encoded.writeInt( dataLen );
             }
 
-            applyDataMask( data );
+            if (shouldMask()) {
+                byte[] mask = getMask();
+                encoded.writeBytes( mask );
+                applyDataMask( mask, data );
+            }
             encoded.writeBytes( data );
 
             return encoded;
@@ -52,21 +60,18 @@ public class Ietf07WebSocketFrameEncoder extends OneToOneEncoder {
     }
 
     protected byte applyMaskBit(int value) {
-        byte withMask = (byte) (value >>> 1);
         if (shouldMask()) {
-            withMask = (byte) (withMask | 0x01);
+            return (byte) (value | 0x80);
         }
-
-        return withMask;
+        return (byte) value;
     }
 
-    protected void applyDataMask(ChannelBuffer data) {
+    protected void applyDataMask(byte[] mask, ChannelBuffer data) {
         if (!shouldMask()) {
             return;
         }
-        
+
         int dataLen = data.readableBytes();
-        byte[] mask = getMask();
         data.markReaderIndex();
         for (int i = 0; i < dataLen; ++i) {
             byte cur = data.getByte( i );
@@ -86,6 +91,7 @@ public class Ietf07WebSocketFrameEncoder extends OneToOneEncoder {
         return (this.random != null);
     }
 
+    private static Logger log = Logger.getLogger( Ietf07WebSocketFrameEncoder.class );
     private SecureRandom random;
 
 }

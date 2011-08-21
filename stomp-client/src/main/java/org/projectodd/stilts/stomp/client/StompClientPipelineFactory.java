@@ -28,6 +28,7 @@ import org.projectodd.stilts.stomp.client.protocol.ClientReceiptHandler;
 import org.projectodd.stilts.stomp.client.protocol.StompConnectionNegotiator;
 import org.projectodd.stilts.stomp.client.protocol.websockets.WebSocketConnectionNegotiator;
 import org.projectodd.stilts.stomp.client.protocol.websockets.WebSocketHttpResponseDecoder;
+import org.projectodd.stilts.stomp.protocol.DebugHandler;
 import org.projectodd.stilts.stomp.protocol.StompFrameDecoder;
 import org.projectodd.stilts.stomp.protocol.StompFrameEncoder;
 import org.projectodd.stilts.stomp.protocol.StompMessageDecoder;
@@ -42,11 +43,11 @@ public class StompClientPipelineFactory implements ChannelPipelineFactory {
     public StompClientPipelineFactory(StompClient client, ClientContext clientContext) {
         this( client, clientContext, null );
     }
-    
+
     public StompClientPipelineFactory(StompClient client, ClientContext clientContext, boolean useWebSockets) throws NoSuchAlgorithmException {
         this( client, clientContext, useWebSockets ? new Ietf00Handshake() : null );
     }
-    
+
     public StompClientPipelineFactory(StompClient client, ClientContext clientContext, Handshake handshake) {
         this.client = client;
         this.clientContext = clientContext;
@@ -57,9 +58,10 @@ public class StompClientPipelineFactory implements ChannelPipelineFactory {
     public ChannelPipeline getPipeline() throws Exception {
         ChannelPipeline pipeline = Channels.pipeline();
 
-        if (this.handshake != null ) {
+        pipeline.addLast( "debug-client-head", new DebugHandler( "CLIENT_HEAD" ) );
+        if (this.handshake != null) {
             pipeline.addLast( "http-encoder", new HttpRequestEncoder() );
-            pipeline.addLast( "http-decoder", new WebSocketHttpResponseDecoder() );
+            pipeline.addLast( "http-decoder", new WebSocketHttpResponseDecoder( this.handshake ) );
             pipeline.addLast( "websocket-connection-negotiator", new WebSocketConnectionNegotiator( "localhost", 8675, this.handshake ) );
             pipeline.addLast( "stomp-frame-decoder", new WebSocketStompFrameDecoder() );
             pipeline.addLast( "stomp-frame-encoder", new WebSocketStompFrameEncoder() );
@@ -67,6 +69,8 @@ public class StompClientPipelineFactory implements ChannelPipelineFactory {
             pipeline.addLast( "stomp-frame-decoder", new StompFrameDecoder() );
             pipeline.addLast( "stomp-frame-encoder", new StompFrameEncoder() );
         }
+        
+        pipeline.addLast( "debug-client-mid", new DebugHandler( "CLIENT_MID" ) );
 
         pipeline.addLast( "stomp-connection-negotiator", new StompConnectionNegotiator( clientContext, "localhost" ) );
         pipeline.addLast( "stomp-client-receipt", new ClientReceiptHandler( clientContext ) );
@@ -75,6 +79,7 @@ public class StompClientPipelineFactory implements ChannelPipelineFactory {
         pipeline.addLast( "stomp-message-decoder", new StompMessageDecoder( new ClientStompMessageFactory( this.client ) ) );
 
         pipeline.addLast( "stomp-client-message-handler", new ClientMessageHandler( clientContext ) );
+        pipeline.addLast( "debug-client-tail", new DebugHandler( "CLIENT_TAIL" ) );
 
         return pipeline;
     }

@@ -43,7 +43,7 @@ public class WebSocketConnectionNegotiator extends SimpleChannelUpstreamHandler 
     @Override
     public void channelConnected(ChannelHandlerContext context, ChannelStateEvent e) throws Exception {
         log.info( "Starting websockets connection " + e.getClass() );
-        URI uri = new URI( "stomp+ws://" + this.host + ":" + this.port + "/" );
+        URI uri = new URI( "ws://" + this.host + ":" + this.port + "/" );
         HttpRequest request = this.handshake.generateRequest( uri );
         this.connectedEvent = e;
         Channel channel = context.getChannel();
@@ -52,6 +52,7 @@ public class WebSocketConnectionNegotiator extends SimpleChannelUpstreamHandler 
 
     @Override
     public void messageReceived(ChannelHandlerContext context, MessageEvent e) throws Exception {
+        System.err.println( "=============> received "+ e );
         if (e.getMessage() instanceof HttpResponse) {
             HttpResponse response = (HttpResponse) e.getMessage();
             
