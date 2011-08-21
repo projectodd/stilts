@@ -27,7 +27,7 @@ import org.jboss.netty.handler.codec.http.HttpRequest;
 import org.jboss.netty.handler.codec.http.HttpResponse;
 import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.jboss.netty.handler.codec.http.HttpVersion;
-import org.projectodd.stilts.stomp.protocol.websocket.WebSocketChallenge_Ietf00;
+import org.projectodd.stilts.stomp.protocol.websocket.ietf00.Ietf00WebSocketChallenge;
 
 /**
  * Handler for ietf-00.
@@ -69,7 +69,7 @@ public class Handshake_Ietf00 extends Handshake {
         byte[] key3 = new byte[8];
         request.getContent().readBytes( key3 );
         
-        byte[] solution = WebSocketChallenge_Ietf00.solve( key1, key2, key3 );
+        byte[] solution = Ietf00WebSocketChallenge.solve( key1, key2, key3 );
         
         ChannelBuffer buffer = ChannelBuffers.dynamicBuffer( solution.length + 2 );
         buffer.writeBytes( solution );

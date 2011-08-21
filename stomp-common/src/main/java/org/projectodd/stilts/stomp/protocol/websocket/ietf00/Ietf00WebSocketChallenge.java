@@ -1,4 +1,4 @@
-package org.projectodd.stilts.stomp.protocol.websocket;
+package org.projectodd.stilts.stomp.protocol.websocket.ietf00;
 
 import java.nio.ByteOrder;
 import java.security.MessageDigest;
@@ -8,7 +8,7 @@ import java.util.Random;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
 
-public class WebSocketChallenge_Ietf00 {
+public class Ietf00WebSocketChallenge {
 
     private long key1;
     private int spaces1;
@@ -18,7 +18,7 @@ public class WebSocketChallenge_Ietf00 {
 
     private byte[] key3;
 
-    public WebSocketChallenge_Ietf00() throws NoSuchAlgorithmException {
+    public Ietf00WebSocketChallenge() throws NoSuchAlgorithmException {
         generateKeys();
     }
 

@@ -25,7 +25,7 @@ import org.jboss.netty.handler.codec.http.HttpRequest;
 import org.jboss.netty.handler.codec.http.HttpResponse;
 import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.jboss.netty.handler.codec.http.HttpVersion;
-import org.projectodd.stilts.stomp.protocol.websocket.WebSocketChallenge_Ietf07;
+import org.projectodd.stilts.stomp.protocol.websocket.ietf07.Ietf07WebSocketChallenge;
 
 /**
  * Handler for ietf-00.
@@ -62,7 +62,7 @@ public class Handshake_Ietf07 extends Handshake {
         }
 
         String key = request.getHeader( "Sec-WebSocket-Key" );
-        String solution = WebSocketChallenge_Ietf07.solve( key );
+        String solution = Ietf07WebSocketChallenge.solve( key );
 
         response.addHeader( "Sec-WebSocket-Accept", solution );
         response.setChunked( false );

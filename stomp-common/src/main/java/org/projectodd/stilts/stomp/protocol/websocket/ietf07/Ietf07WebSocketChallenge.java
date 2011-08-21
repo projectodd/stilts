@@ -1,4 +1,4 @@
-package org.projectodd.stilts.stomp.protocol.websocket;
+package org.projectodd.stilts.stomp.protocol.websocket.ietf07;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -7,14 +7,14 @@ import java.util.Random;
 
 import org.apache.commons.codec.binary.Base64;
 
-public class WebSocketChallenge_Ietf07 {
+public class Ietf07WebSocketChallenge {
 
     public static final String GUID = "258EAFA5-E914-47DA-95CA-C5AB0DC85B11";
     public static final String SHA1 = "SHA1";
     
     private byte[] rawNonce;
 
-    public WebSocketChallenge_Ietf07() throws NoSuchAlgorithmException {
+    public Ietf07WebSocketChallenge() throws NoSuchAlgorithmException {
         generateNonce();
     }
 
