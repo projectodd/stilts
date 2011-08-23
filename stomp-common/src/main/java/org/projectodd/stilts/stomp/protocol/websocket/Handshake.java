@@ -60,6 +60,7 @@ public abstract class Handshake {
     
     public abstract ChannelHandler newEncoder();
     public abstract ChannelHandler newDecoder();
+    public abstract ChannelHandler[] newAdditionalHandlers();
     
     public abstract int readResponseBody();
 

@@ -129,9 +129,14 @@ public class Ietf00Handshake extends Handshake {
         return new Ietf00WebSocketFrameDecoder();
     }
     
+    public ChannelHandler[] newAdditionalHandlers() {
+        return EMPTY_HANDLER_ARRAY;
+    }
+    
     public int readResponseBody() {
         return 16;
     }
         
+    private static final ChannelHandler[] EMPTY_HANDLER_ARRAY = new ChannelHandler[0];
     private Ietf00WebSocketChallenge challenge;
 }

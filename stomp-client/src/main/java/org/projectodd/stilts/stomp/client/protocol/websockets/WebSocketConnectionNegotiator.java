@@ -4,21 +4,17 @@ import java.net.URI;
 import java.security.NoSuchAlgorithmException;
 
 import org.jboss.logging.Logger;
-import org.jboss.netty.buffer.ChannelBuffer;
-import org.jboss.netty.buffer.ChannelBuffers;
 import org.jboss.netty.channel.Channel;
+import org.jboss.netty.channel.ChannelHandler;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.ChannelStateEvent;
 import org.jboss.netty.channel.Channels;
 import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.channel.SimpleChannelUpstreamHandler;
-import org.jboss.netty.handler.codec.http.HttpHeaders;
 import org.jboss.netty.handler.codec.http.HttpRequest;
 import org.jboss.netty.handler.codec.http.HttpRequestEncoder;
 import org.jboss.netty.handler.codec.http.HttpResponse;
-import org.jboss.netty.handler.codec.http.websocket.WebSocketFrameDecoder;
-import org.jboss.netty.handler.codec.http.websocket.WebSocketFrameEncoder;
 import org.projectodd.stilts.stomp.protocol.websocket.Handshake;
 import org.projectodd.stilts.stomp.protocol.websocket.WebSocketDisconnectionNegotiator;
 
@@ -52,7 +48,6 @@ public class WebSocketConnectionNegotiator extends SimpleChannelUpstreamHandler 
 
     @Override
     public void messageReceived(ChannelHandlerContext context, MessageEvent e) throws Exception {
-        System.err.println( "=============> received "+ e );
         if (e.getMessage() instanceof HttpResponse) {
             HttpResponse response = (HttpResponse) e.getMessage();
             
@@ -67,6 +62,14 @@ public class WebSocketConnectionNegotiator extends SimpleChannelUpstreamHandler 
                     pipeline.replace( HttpRequestEncoder.class, "websockets-encoder", this.handshake.newEncoder() );
                 } else {
                     pipeline.addAfter( "websockets-decoder", "websockets-encoder", this.handshake.newEncoder() );
+                }
+                
+                ChannelHandler[] additionalHandlers = this.handshake.newAdditionalHandlers();
+                String currentTail = "websockets-decoder";
+                for ( ChannelHandler each : additionalHandlers ) {
+                    String handlerName = "additional-" + each.getClass().getSimpleName();
+                    pipeline.addAfter( currentTail, handlerName, each); 
+                    currentTail = handlerName;
                 }
                 
                 context.sendUpstream( this.connectedEvent );

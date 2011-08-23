@@ -30,6 +30,7 @@ import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelEvent;
 import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.ChannelFutureListener;
+import org.jboss.netty.channel.ChannelHandler;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.ChannelState;
@@ -192,6 +193,13 @@ public class ServerHandshakeHandler extends SimpleChannelUpstreamHandler {
      */
     protected void reconfigureUpstream(ChannelPipeline pipeline, Handshake handshake) {
         pipeline.replace( "http-decoder", "websockets-decoder", handshake.newDecoder() );
+        ChannelHandler[] additionalHandlers = handshake.newAdditionalHandlers();
+        String currentTail = "websockets-decoder";
+        for ( ChannelHandler each : additionalHandlers ) {
+            String handlerName = "additional-" + each.getClass().getSimpleName();
+            pipeline.addAfter( currentTail, handlerName, each); 
+            currentTail = handlerName;
+        }
     }
 
     /**

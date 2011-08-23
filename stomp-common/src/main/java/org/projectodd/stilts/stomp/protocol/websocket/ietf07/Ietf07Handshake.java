@@ -116,6 +116,12 @@ public class Ietf07Handshake extends Handshake {
         return new Ietf07WebSocketFrameDecoder();
     }
     
+    public ChannelHandler[] newAdditionalHandlers() {
+        return new ChannelHandler[] {
+                new PingHandler(),
+        };
+    }
+    
     public int readResponseBody() {
         return 0;
     }
