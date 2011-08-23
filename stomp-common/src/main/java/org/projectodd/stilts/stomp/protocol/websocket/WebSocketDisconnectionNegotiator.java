@@ -9,8 +9,7 @@ import org.jboss.netty.channel.ChannelStateEvent;
 import org.jboss.netty.channel.ChannelUpstreamHandler;
 import org.jboss.netty.channel.Channels;
 import org.jboss.netty.channel.MessageEvent;
-import org.jboss.netty.handler.codec.http.websocket.DefaultWebSocketFrame;
-import org.jboss.netty.handler.codec.http.websocket.WebSocketFrame;
+import org.projectodd.stilts.stomp.protocol.websocket.WebSocketFrame.FrameType;
 
 public class WebSocketDisconnectionNegotiator implements ChannelDownstreamHandler, ChannelUpstreamHandler {
 
@@ -22,7 +21,7 @@ public class WebSocketDisconnectionNegotiator implements ChannelDownstreamHandle
                 if (message instanceof WebSocketFrame) {
                     WebSocketFrame frame = (WebSocketFrame) message;
 
-                    if (frame.getType() == 0xFF && frame.getBinaryData().readableBytes() == 0) {
+                    if (frame.getType() == FrameType.CLOSE ) {
                         ctx.sendDownstream( this.closeRequest );
                         return;
                     }
@@ -48,7 +47,7 @@ public class WebSocketDisconnectionNegotiator implements ChannelDownstreamHandle
 
     public void closeRequested(ChannelHandlerContext ctx, ChannelStateEvent e) throws Exception {
         this.closeRequest = e;
-        DefaultWebSocketFrame closeFrame = new DefaultWebSocketFrame( 0xFF, ChannelBuffers.EMPTY_BUFFER );
+        DefaultWebSocketFrame closeFrame = new DefaultWebSocketFrame( FrameType.CLOSE );
         Channels.write( ctx.getChannel(), closeFrame );
     }
 

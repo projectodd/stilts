@@ -122,11 +122,11 @@ public class Ietf00Handshake extends Handshake {
     }
     
     public ChannelHandler newEncoder() {
-        return new WebSocketFrameEncoder();
+        return new Ietf00WebSocketFrameEncoder();
     }
     
     public ChannelHandler newDecoder() {
-        return new WebSocketFrameDecoder();
+        return new Ietf00WebSocketFrameDecoder();
     }
     
     public int readResponseBody() {

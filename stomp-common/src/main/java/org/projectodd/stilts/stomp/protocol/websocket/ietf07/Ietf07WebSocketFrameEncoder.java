@@ -8,8 +8,9 @@ import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelHandlerContext;
-import org.jboss.netty.handler.codec.http.websocket.WebSocketFrame;
 import org.jboss.netty.handler.codec.oneone.OneToOneEncoder;
+import org.projectodd.stilts.stomp.protocol.websocket.WebSocketFrame;
+import org.projectodd.stilts.stomp.protocol.websocket.WebSocketFrame.FrameType;
 
 public class Ietf07WebSocketFrameEncoder extends OneToOneEncoder {
 
@@ -24,15 +25,16 @@ public class Ietf07WebSocketFrameEncoder extends OneToOneEncoder {
         if (msg instanceof WebSocketFrame) {
             log.info( "ENCODE " + msg );
             WebSocketFrame frame = (WebSocketFrame) msg;
-            int type = frame.getType();
+            FrameType frameType = frame.getType();
+            
+            int opcode = encodeOpcode( frameType );
 
             ChannelBuffer data = frame.getBinaryData();
             int dataLen = data.readableBytes();
 
             ChannelBuffer encoded = ChannelBuffers.dynamicBuffer( ByteOrder.BIG_ENDIAN, data.readableBytes() + 32 );
 
-            //byte firstByte = (byte) type;
-            byte firstByte = 1;
+            byte firstByte = (byte) opcode;
             firstByte = (byte) (firstByte | 0x80);
             encoded.writeByte( firstByte );
 
@@ -57,6 +59,25 @@ public class Ietf07WebSocketFrameEncoder extends OneToOneEncoder {
             return encoded;
         }
         return msg;
+    }
+    
+    protected int encodeOpcode(FrameType frameType) {
+        switch (frameType) {
+        case CONTINUATION:
+            return 0x0;
+        case TEXT:
+            return 0x1;
+        case BINARY:
+            return 0x2;
+        case CLOSE:
+            return 0x8;
+        case PING:
+            return 0x9;
+        case PONG:
+            return 0xA;
+        }
+        
+        return -1;
     }
 
     protected byte applyMaskBit(int value) {

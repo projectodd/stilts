@@ -12,7 +12,6 @@ import org.jboss.netty.bootstrap.ClientBootstrap;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.jboss.netty.channel.socket.nio.NioClientSocketChannelFactory;
-import org.jboss.netty.handler.codec.http.websocket.DefaultWebSocketFrame;
 import org.jboss.netty.util.VirtualExecutorService;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Function;
@@ -20,6 +19,7 @@ import org.mozilla.javascript.Scriptable;
 import org.projectodd.stilts.stomp.Constants;
 import org.projectodd.stilts.stomp.client.StompClient;
 import org.projectodd.stilts.stomp.client.js.JSpec;
+import org.projectodd.stilts.stomp.protocol.websocket.DefaultWebSocketFrame;
 
 public class InstrumentedWebSocket {
 

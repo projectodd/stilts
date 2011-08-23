@@ -3,7 +3,7 @@ package org.projectodd.stilts.stomp.client.js.websockets;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.channel.SimpleChannelUpstreamHandler;
-import org.jboss.netty.handler.codec.http.websocket.WebSocketFrame;
+import org.projectodd.stilts.stomp.protocol.websocket.WebSocketFrame;
 
 public class WebSocketClientMessageHandler extends SimpleChannelUpstreamHandler {
 

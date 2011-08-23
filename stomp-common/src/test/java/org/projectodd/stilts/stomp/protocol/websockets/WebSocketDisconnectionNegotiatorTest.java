@@ -8,10 +8,10 @@ import static org.junit.Assert.assertNull;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelState;
 import org.jboss.netty.channel.DownstreamChannelStateEvent;
-import org.jboss.netty.handler.codec.http.websocket.WebSocketFrame;
 import org.junit.Test;
 import org.projectodd.stilts.stomp.protocol.HandlerEmbedder;
 import org.projectodd.stilts.stomp.protocol.websocket.WebSocketDisconnectionNegotiator;
+import org.projectodd.stilts.stomp.protocol.websocket.WebSocketFrame;
 
 public class WebSocketDisconnectionNegotiatorTest {
 
