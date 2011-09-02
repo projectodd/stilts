@@ -2,6 +2,7 @@ package org.projectodd.stilts.stomp.client.protocol;
 
 import java.security.NoSuchAlgorithmException;
 
+import org.jboss.logging.Logger;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.ChannelState;
@@ -24,6 +25,8 @@ import org.projectodd.stilts.stomp.protocol.StompFrame.Version;
  */
 public class StompConnectionNegotiator extends AbstractClientControlFrameHandler {
 
+    private static Logger log = Logger.getLogger(StompConnectionNegotiator.class);
+    
     public StompConnectionNegotiator(ClientContext clientContext, String host) throws NoSuchAlgorithmException {
         super( clientContext, Command.CONNECTED );
         this.host = host;
@@ -34,7 +37,7 @@ public class StompConnectionNegotiator extends AbstractClientControlFrameHandler
         StompControlFrame frame = new StompControlFrame( Command.CONNECT );
         frame.setHeader( Header.HOST, this.host );
         frame.setHeader( Header.ACCEPT_VERSION, Version.supportedVersions() );
-
+        log.tracef("send: %s", frame);
         Channels.write( context.getChannel(), frame );
     }
 

@@ -134,7 +134,7 @@ public class StompClient {
             }
         }
         if (this.connectionState != State.DISCONNECTED) {
-            throw new StompException( "Connection timed out." );
+            log.warnf( "No clean disconnect. Connection state is: %s", connectionState );
         }
     }
 

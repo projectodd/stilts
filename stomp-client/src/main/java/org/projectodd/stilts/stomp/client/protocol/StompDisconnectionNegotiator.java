@@ -1,5 +1,6 @@
 package org.projectodd.stilts.stomp.client.protocol;
 
+import org.jboss.logging.Logger;
 import org.jboss.netty.channel.ChannelDownstreamHandler;
 import org.jboss.netty.channel.ChannelEvent;
 import org.jboss.netty.channel.ChannelHandlerContext;
@@ -15,6 +16,8 @@ import org.projectodd.stilts.stomp.protocol.StompFrame.Header;
 import org.projectodd.stilts.stomp.protocol.StompFrames;
 
 public class StompDisconnectionNegotiator implements ChannelDownstreamHandler, ChannelUpstreamHandler {
+    
+    private static Logger log = Logger.getLogger(StompDisconnectionNegotiator.class);
     
     public StompDisconnectionNegotiator(ClientContext clientContext) {
         this.clientContext = clientContext;
@@ -55,9 +58,10 @@ public class StompDisconnectionNegotiator implements ChannelDownstreamHandler, C
     public void closeRequested(ChannelHandlerContext ctx, ChannelStateEvent e) throws Exception {
         this.closeRequest = e;
         
-        StompFrame closeFrame = StompFrames.newDisconnectFrame();
-        this.receiptId = closeFrame.getHeader( Header.RECEIPT );
-        Channels.write( ctx.getChannel(), closeFrame );
+        StompFrame frame = StompFrames.newDisconnectFrame();
+        this.receiptId = frame.getHeader( Header.RECEIPT );
+        log.tracef("send: %s", frame);
+        Channels.write( ctx.getChannel(), frame );
     }
 
     private ClientContext clientContext;
