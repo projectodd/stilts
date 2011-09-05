@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.projectodd.stilts</groupId>
     <artifactId>stilts</artifactId>
-    <version>0.1.18</version>
+    <version>0.1.16-SNAPSHOT</version>
   </parent>
 
   <groupId>org.projectodd.stilts</groupId>
@@ -81,6 +81,20 @@
             </goals>
           </execution>
         </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <failIfNoTests>false</failIfNoTests>
+          <redirectTestOutputToFile>true</redirectTestOutputToFile>
+          <systemProperties>
+            <property>
+              <name>java.util.logging.manager</name>
+              <value>org.jboss.logmanager.LogManager</value>
+            </property>
+          </systemProperties>
+        </configuration>
       </plugin>
     </plugins>
  </build>
