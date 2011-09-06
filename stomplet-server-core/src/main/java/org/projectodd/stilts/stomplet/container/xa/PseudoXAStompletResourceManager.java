@@ -23,7 +23,7 @@ import javax.transaction.xa.XAException;
 import javax.transaction.xa.XAResource;
 import javax.transaction.xa.Xid;
 
-import org.projectodd.stilts.stomp.spi.StompSession;
+import org.jboss.logging.Logger;
 import org.projectodd.stilts.stomplet.Stomplet;
 
 public class PseudoXAStompletResourceManager implements XAResource {
@@ -49,6 +49,7 @@ public class PseudoXAStompletResourceManager implements XAResource {
 
     @Override
     public void start(Xid xid, int flags) throws XAException {
+        log.info( "start(" + xid + ", " + flags + ")" );
         PseudoXAStompletTransaction tx = null;
         if (flags == XAResource.TMNOFLAGS || flags == XAResource.TMJOIN) {
             tx = new PseudoXAStompletTransaction( this.stomplet );
@@ -66,6 +67,7 @@ public class PseudoXAStompletResourceManager implements XAResource {
 
     @Override
     public void end(Xid xid, int flags) throws XAException {
+        log.info( "end(" + xid + ", " + flags + ")" );
         PseudoXAStompletTransaction tx = this.transactions.get( xid );
         if (tx == null) {
             throw new XAException( "No such transaction: " + xid );
@@ -80,6 +82,7 @@ public class PseudoXAStompletResourceManager implements XAResource {
 
     @Override
     public int prepare(Xid xid) throws XAException {
+        log.info( "prepare(" + xid + ")" );
         PseudoXAStompletTransaction tx = this.transactions.get( xid );
         
         if (tx == null) {
@@ -95,6 +98,7 @@ public class PseudoXAStompletResourceManager implements XAResource {
 
     @Override
     public void commit(Xid xid, boolean onePhase) throws XAException {
+        log.info( "commit(" + xid + "," + onePhase + ")" );
         PseudoXAStompletTransaction tx = this.transactions.get( xid );
         
         if (tx == null) {
@@ -106,6 +110,7 @@ public class PseudoXAStompletResourceManager implements XAResource {
 
     @Override
     public void rollback(Xid xid) throws XAException {
+        log.info( "rollback(" + xid + ")" );
         PseudoXAStompletTransaction tx = this.transactions.get( xid );
         
         if (tx == null) {
@@ -117,6 +122,7 @@ public class PseudoXAStompletResourceManager implements XAResource {
 
     @Override
     public void forget(Xid xid) throws XAException {
+        log.info( "forget(" + xid + ")" );
     }
 
     @Override
@@ -133,6 +139,8 @@ public class PseudoXAStompletResourceManager implements XAResource {
     public PseudoXAStompletTransaction currentTransaction() {
         return currentTransaction.get();
     }
+    
+    private static final Logger log = Logger.getLogger( "stilts.stomplet.xa.pseudo.rm" );
 
     private final ThreadLocal<PseudoXAStompletTransaction> currentTransaction = new ThreadLocal<PseudoXAStompletTransaction>();
     private final Map<Xid, PseudoXAStompletTransaction> transactions = new ConcurrentHashMap<Xid, PseudoXAStompletTransaction>();

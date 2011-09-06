@@ -23,8 +23,8 @@ import javax.transaction.RollbackException;
 import javax.transaction.SystemException;
 import javax.transaction.Transaction;
 import javax.transaction.TransactionManager;
-import javax.transaction.xa.XAResource;
 
+import org.jboss.logging.Logger;
 import org.projectodd.stilts.stomp.Acknowledger;
 import org.projectodd.stilts.stomp.StompException;
 import org.projectodd.stilts.stomp.StompMessage;
@@ -54,6 +54,7 @@ public class ConduitStompTransaction implements StompTransaction {
     @Override
     public void commit() throws StompException {
         try {
+            log.info( "Committing transaction" );
             TransactionManager tm = this.stompConnection.getStompProvider().getTransactionManager();
             tm.resume( this.transaction );
             tm.commit();
@@ -132,6 +133,8 @@ public class ConduitStompTransaction implements StompTransaction {
 
     // ------------------------------------------------------------------------
     // ------------------------------------------------------------------------
+    
+    private static final Logger log = Logger.getLogger( "stilts.stomp.conduit.tx" );
 
     private Transaction transaction;
     private ConduitStompConnection stompConnection;
