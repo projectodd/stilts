@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.projectodd.stilts.stomplet;
+package org.projectodd.stilts.stomplet.server;
 
 import javax.transaction.TransactionManager;
 

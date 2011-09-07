@@ -4,6 +4,7 @@ import javax.transaction.TransactionManager;
 
 import org.junit.After;
 import org.junit.Before;
+import org.projectodd.stilts.stomplet.server.StompletServer;
 
 import com.arjuna.ats.jta.common.jtaPropertyManager;
 

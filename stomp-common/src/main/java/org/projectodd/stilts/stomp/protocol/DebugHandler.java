@@ -36,14 +36,14 @@ public class DebugHandler implements ChannelUpstreamHandler, ChannelDownstreamHa
 
     @Override
     public void handleDownstream(ChannelHandlerContext ctx, ChannelEvent e) throws Exception {
-        log.info( scope + " >>outbound>> " + e + " :: " + e.getClass() );
+        log.debug( scope + " >>outbound>> " + e + " :: " + e.getClass() );
         dump( ">>outbound>>", e );
         ctx.sendDownstream( e );
     }
 
     @Override
     public void handleUpstream(ChannelHandlerContext ctx, ChannelEvent e) throws Exception {
-        log.info( scope + " <<inbound<< " + e + " :: " + e.getClass() );
+        log.debug( scope + " <<inbound<< " + e + " :: " + e.getClass() );
         dump( "<<inbound<<", e );
         ctx.sendUpstream( e );
     }
@@ -65,13 +65,13 @@ public class DebugHandler implements ChannelUpstreamHandler, ChannelDownstreamHa
 
         if (message instanceof ChannelBuffer) {
             ChannelBuffer buffer = (ChannelBuffer) message;
-            log.info( scope + " " + direction + " MESSAGE+BUFFER " + buffer.toString( Charset.forName( "UTF-8" ) ) );
+            log.debug( scope + " " + direction + " MESSAGE+BUFFER " + buffer.toString( Charset.forName( "UTF-8" ) ) );
         } else if (message instanceof HttpResponse) {
             HttpResponse response = (HttpResponse) message;
-            log.info( scope + " " + direction + " MESSAGE+HTTP_RESPONSE " + response );
-            log.info( scope + " " + direction + " MESSAGE+HTTP_RESPONSE+BUFFER " + response.getContent() );
+            log.debug( scope + " " + direction + " MESSAGE+HTTP_RESPONSE " + response );
+            log.debug( scope + " " + direction + " MESSAGE+HTTP_RESPONSE+BUFFER " + response.getContent() );
         } else {
-            log.info( scope + " " + direction + " MESSAGE " + message );
+            log.debug( scope + " " + direction + " MESSAGE " + message );
         }
     }
 
