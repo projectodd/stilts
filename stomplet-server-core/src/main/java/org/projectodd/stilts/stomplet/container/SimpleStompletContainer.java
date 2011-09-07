@@ -18,6 +18,7 @@ package org.projectodd.stilts.stomplet.container;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -66,6 +67,18 @@ public class SimpleStompletContainer implements StompletContainer, MessageRouter
         xaStomplet.initialize( config );
         Route route = new Route( destinationPattern, xaStomplet );
         this.routes.add( route );
+    }
+
+    public void removeStomplet(String destinationPattern) throws StompException {
+        Iterator<Route> iterator = routes.iterator();
+        while(iterator.hasNext()) {
+            Route route = iterator.next();
+            if (route.getPatternString().equals(destinationPattern)) {
+                route.getStomplet().destroy();
+                iterator.remove();
+                break;
+            }
+        } 
     }
 
     public void send(StompMessage message, StompSession session) throws StompException {

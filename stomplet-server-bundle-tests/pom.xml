@@ -1,0 +1,123 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.projectodd.stilts</groupId>
+    <artifactId>stilts</artifactId>
+    <version>0.1.16-SNAPSHOT</version>
+  </parent>
+
+  <groupId>org.projectodd.stilts</groupId>
+  <artifactId>stilts-stomplet-server-bundle-tests</artifactId>
+  <packaging>jar</packaging>
+  <name>Stilts Stomplet Server Bundle Tests</name>
+
+  <description>
+    Stilts Stomplet Server Bundle Tests
+  </description>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.projectodd.stilts</groupId>
+      <artifactId>stilts-stomplet-api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.projectodd.stilts</groupId>
+      <artifactId>stilts-stomp-client</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.jboss.as</groupId>
+      <artifactId>jboss-as-arquillian-container-managed</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.jboss.arquillian.container</groupId>
+      <artifactId>arquillian-container-test-api</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+       <groupId>org.jboss.arquillian.junit</groupId>
+       <artifactId>arquillian-junit-container</artifactId>
+       <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.osgi</groupId>
+      <artifactId>org.osgi.core</artifactId>
+       <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.osgi</groupId>
+      <artifactId>org.osgi.compendium</artifactId>
+       <scope>test</scope>
+    </dependency>
+    <dependency>
+       <groupId>junit</groupId>
+       <artifactId>junit</artifactId>
+       <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <!-- Build -->
+  <build>
+    <plugins>
+      <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-surefire-plugin</artifactId>
+          <configuration>
+              <failIfNoTests>false</failIfNoTests>
+              <redirectTestOutputToFile>true</redirectTestOutputToFile>
+              <systemProperties>
+                  <property>
+                    <name>java.util.logging.manager</name>
+                    <value>org.jboss.logmanager.LogManager</value>
+                  </property>
+                  <property>
+                    <name>jboss.home</name>
+                    <value>${JBOSS_HOME}</value>
+                  </property>
+              </systemProperties>
+          </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+  <profiles>
+    <profile>
+      <id>default</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <configuration>
+              <skipTests>true</skipTests>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>jbossas</id>
+      <activation>
+        <property>
+          <name>jbossas</name>
+        </property>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <configuration>
+              <skipTests>false</skipTests>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
+</project>

@@ -1,0 +1,79 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.projectodd.stilts</groupId>
+    <artifactId>stilts</artifactId>
+    <version>0.1.16-SNAPSHOT</version>
+  </parent>
+
+  <groupId>org.projectodd.stilts</groupId>
+  <artifactId>stilts-stomplet-server-bundle</artifactId>
+  <packaging>bundle</packaging>
+  <name>Stilts Stomplet Server Bundle</name>
+
+  <description>
+    Stilts Stomplet Server Bundle
+  </description>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.projectodd.stilts</groupId>
+      <artifactId>stilts-stomplet-server-core</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.osgi</groupId>
+      <artifactId>org.osgi.core</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.osgi</groupId>
+      <artifactId>org.osgi.compendium</artifactId>
+      <scope>provided</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <extensions>true</extensions>
+        <configuration>
+          <instructions>
+            <Bundle-SymbolicName>${artifactId}</Bundle-SymbolicName>
+            <Bundle-Version>${project.version}</Bundle-Version>
+            <Bundle-Activator>org.projectodd.stilts.stomplet.bundle.StompletServerActivator</Bundle-Activator>
+            <Import-Package>
+              javax.transaction*,
+              org.jboss.netty*;version="[3.2,4.0)",
+              org.osgi.framework;version="[1.5,2.0)",
+              org.osgi.util.tracker;version="[1.4,2.0)",
+              org.jboss.logging;version="[3.0,4.0)"
+            </Import-Package>
+            <Embed-Transitive>true</Embed-Transitive>
+            <Embed-Dependency>
+              commons-codec;inline=false,
+              commons-lang;inline=false,
+              stilts-conduit-server-core;inline=false,
+              stilts-conduit-server-spi;inline=false,
+              stilts-stomp-api;inline=false,
+              stilts-stomp-common;inline=false,
+              stilts-stomp-server-core;inline=false,
+              stilts-stomp-server-spi;inline=false,
+              stilts-stomplet-api;inline=false,
+              stilts-stomplet-server-core;inline=false,
+            </Embed-Dependency>
+            <_exportcontents>
+              org.projectodd.stilts.stomp;version=${project.version},
+              org.projectodd.stilts.stomp.spi;version=${project.version},
+              org.projectodd.stilts.stomplet*;version=${project.version},
+            </_exportcontents>
+          </instructions>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>
