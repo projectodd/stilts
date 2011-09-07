@@ -6,7 +6,7 @@
   <parent>
     <groupId>org.jboss</groupId>
     <artifactId>jboss-parent</artifactId>
-    <version>6-beta-1</version>
+    <version>6</version>
   </parent>
 
   <groupId>org.projectodd.stilts</groupId>
@@ -35,33 +35,35 @@
   </developers>
 
   <properties>
-    <version.jta>1.1</version.jta>
-    <version.netty>3.2.1.Final</version.netty>
-
-    <version.jbossts>4.15.1.Final</version.jbossts>
+    <version.cobertura>2.5</version.cobertura>
+    <version.el-api>2.2</version.el-api>
+    <version.hamcrest>1.1</version.hamcrest>
+    <version.hibernate-validator>4.2.0.CR1</version.hibernate-validator>
+    <version.hornetq>2.2.2.Final</version.hornetq>
     <version.ironjacamar>1.0.0.CR3</version.ironjacamar>
-    <version.shrinkwrap>1.0.0-beta-1</version.shrinkwrap>
+    <version.jboss.arquillian>1.0.0.CR4</version.jboss.arquillian>
+    <version.jboss.as7>7.0.1.Final</version.jboss.as7>
+    <version.jboss-logging>3.0.0.CR1</version.jboss-logging>
     <version.jboss-naming>5.0.6.CR1</version.jboss-naming>
     <version.jboss-stdio>1.0.0.CR3</version.jboss-stdio>
-    <version.hibernate-validator>4.2.0.CR1</version.hibernate-validator>
-
-    <version.jboss-logging>3.0.0.CR1</version.jboss-logging>
-    <version.log4j>1.2.16</version.log4j>
-
-    <version.weld-core>1.1.1.Final</version.weld-core>
-    <version.weld-spi>1.1.Final</version.weld-spi>
-    <version.el-api>2.2</version.el-api>
-
-    <version.hornetq>2.2.2.Final</version.hornetq>
-    <version.jms-api>1.1-rev-1</version.jms-api>
-    <version.junit>4.7</version.junit>
+    <version.jbossts>4.15.1.Final</version.jbossts>
     <version.jmock>2.5.1</version.jmock>
+    <version.jms-api>1.1-rev-1</version.jms-api>
+    <version.jruby-maven-plugins>0.28.3</version.jruby-maven-plugins>
+    <version.jta>1.1</version.jta>
+    <version.junit>4.7</version.junit>
+    <version.log4j>1.2.16</version.log4j>
     <version.mockito>1.8.4</version.mockito>
-    <version.hamcrest>1.1</version.hamcrest>
+    <version.netty>3.2.1.Final</version.netty>
+    <version.org.osgi>4.2.0</version.org.osgi>
     <version.org.slf4j>1.5.10</version.org.slf4j>
     <version.org.slf4j-log4j>1.6.1</version.org.slf4j-log4j>
-    <version.cobertura>2.5</version.cobertura>
-    <version.jruby-maven-plugins>0.28.3</version.jruby-maven-plugins>
+    <version.shrinkwrap>1.0.0-beta-1</version.shrinkwrap>
+    <version.weld-core>1.1.1.Final</version.weld-core>
+    <version.weld-spi>1.1.Final</version.weld-spi>
+    
+    <version.bundle.plugin>2.3.5</version.bundle.plugin>
+	<version.maven.jdocbook.plugin>2.3.3</version.maven.jdocbook.plugin>
   </properties>
 
   <repositories>
@@ -107,71 +109,42 @@
 
   <dependencyManagement>
     <dependencies>
+      <!-- sorted alphabetically after ${groupId} ${artifactId} -->
       <dependency>
-        <groupId>org.jboss.netty</groupId>
-        <artifactId>netty</artifactId>
-        <version>${version.netty}</version>
+        <groupId>javax.el</groupId>
+        <artifactId>el-api</artifactId>
+        <version>${version.el-api}</version>
       </dependency>
-
+      <dependency>
+        <groupId>javax.jms</groupId>
+        <artifactId>jms-api</artifactId>
+        <version>${version.jms-api}</version>
+      </dependency>
       <dependency>
         <groupId>javax.transaction</groupId>
         <artifactId>jta</artifactId>
         <version>${version.jta}</version>
       </dependency>
-
       <dependency>
-        <groupId>org.jboss.jbossts</groupId>
-        <artifactId>jbossjta</artifactId>
-        <version>${version.jbossts}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>org.jboss.logging</groupId>
-            <artifactId>jboss-logging-spi</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>emma</groupId>
-            <artifactId>emma</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>emma</groupId>
-            <artifactId>emma_ant</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-
-      <dependency>
-        <groupId>org.jboss.logging</groupId>
-        <artifactId>jboss-logging</artifactId>
-        <version>${version.jboss-logging}</version>
+        <groupId>junit</groupId>
+        <artifactId>junit</artifactId>
+        <version>${version.junit}</version>
       </dependency>
       <dependency>
         <groupId>log4j</groupId>
         <artifactId>log4j</artifactId>
         <version>${version.log4j}</version>
       </dependency>
-
       <dependency>
-        <groupId>org.jboss.jbossts</groupId>
-        <artifactId>jbossjta-integration</artifactId>
-        <version>${version.jbossts}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>org.jboss.logging</groupId>
-            <artifactId>jboss-logging-spi</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>emma</groupId>
-            <artifactId>emma</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>emma</groupId>
-            <artifactId>emma_ant</artifactId>
-          </exclusion>
-
-        </exclusions>
+        <groupId>org.hamcrest</groupId>
+        <artifactId>hamcrest-all</artifactId>
+        <version>${version.hamcrest}</version>
       </dependency>
-
-
+      <dependency>
+        <groupId>org.hibernate</groupId>
+        <artifactId>hibernate-validator</artifactId>
+        <version>${version.hibernate-validator}</version>
+      </dependency>
       <dependency>
         <groupId>org.hornetq</groupId>
         <artifactId>hornetq-core</artifactId>
@@ -193,21 +166,30 @@
         <version>${version.hornetq}</version>
       </dependency>
       <dependency>
-        <groupId>javax.jms</groupId>
-        <artifactId>jms-api</artifactId>
-        <version>${version.jms-api}</version>
+        <groupId>org.jboss.arquillian.container</groupId>
+        <artifactId>arquillian-container-test-api</artifactId>
+        <version>${version.jboss.arquillian}</version>
       </dependency>
       <dependency>
-        <groupId>org.slf4j</groupId>
-        <artifactId>slf4j-simple</artifactId>
-        <version>${version.org.slf4j}</version>
+        <groupId>org.jboss.arquillian.junit</groupId>
+        <artifactId>arquillian-junit-container</artifactId>
+        <version>${version.jboss.arquillian}</version>
       </dependency>
       <dependency>
-        <groupId>org.slf4j</groupId>
-        <artifactId>slf4j-log4j12</artifactId>
-        <version>${version.org.slf4j-log4j}</version>
+        <groupId>org.jboss.as</groupId>
+        <artifactId>jboss-as-arquillian-container-managed</artifactId>
+        <version>${version.jboss.as7}</version>
       </dependency>
-
+      <dependency>
+        <groupId>org.jboss.logging</groupId>
+        <artifactId>jboss-logging</artifactId>
+        <version>${version.jboss-logging}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.ironjacamar</groupId>
+        <artifactId>ironjacamar-common-impl-papaki</artifactId>
+        <version>${version.ironjacamar}</version>
+      </dependency>
       <dependency>
         <groupId>org.jboss.ironjacamar</groupId>
         <artifactId>ironjacamar-core-impl</artifactId>
@@ -220,26 +202,6 @@
       </dependency>
       <dependency>
         <groupId>org.jboss.ironjacamar</groupId>
-        <artifactId>ironjacamar-common-impl-papaki</artifactId>
-        <version>${version.ironjacamar}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jboss.shrinkwrap</groupId>
-        <artifactId>shrinkwrap-api</artifactId>
-        <version>${version.shrinkwrap}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jboss.shrinkwrap</groupId>
-        <artifactId>shrinkwrap-impl-base</artifactId>
-        <version>${version.shrinkwrap}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jboss.shrinkwrap.descriptors</groupId>
-        <artifactId>shrinkwrap-descriptors-api</artifactId>
-        <version>${version.shrinkwrap}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jboss.ironjacamar</groupId>
         <artifactId>ironjacamar-deployers-fungal</artifactId>
         <version>${version.ironjacamar}</version>
       </dependency>
@@ -249,16 +211,73 @@
         <version>${version.ironjacamar}</version>
       </dependency>
       <dependency>
+        <groupId>org.jboss.netty</groupId>
+        <artifactId>netty</artifactId>
+        <version>${version.netty}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.jbossts</groupId>
+        <artifactId>jbossjta</artifactId>
+        <version>${version.jbossts}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.jboss.logging</groupId>
+            <artifactId>jboss-logging-spi</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>emma</groupId>
+            <artifactId>emma</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>emma</groupId>
+            <artifactId>emma_ant</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.jbossts</groupId>
+        <artifactId>jbossjta-integration</artifactId>
+        <version>${version.jbossts}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.jboss.logging</groupId>
+            <artifactId>jboss-logging-spi</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>emma</groupId>
+            <artifactId>emma</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>emma</groupId>
+            <artifactId>emma_ant</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.naming</groupId>
+        <artifactId>jnpserver</artifactId>
+        <version>${version.jboss-naming}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.shrinkwrap</groupId>
+        <artifactId>shrinkwrap-api</artifactId>
+        <version>${version.shrinkwrap}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.shrinkwrap.descriptors</groupId>
+        <artifactId>shrinkwrap-descriptors-api</artifactId>
+        <version>${version.shrinkwrap}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.shrinkwrap</groupId>
+        <artifactId>shrinkwrap-impl-base</artifactId>
+        <version>${version.shrinkwrap}</version>
+      </dependency>
+      <dependency>
         <groupId>org.jboss.stdio</groupId>
         <artifactId>jboss-stdio</artifactId>
         <version>${version.jboss-stdio}</version>
       </dependency>
-      <dependency>
-        <groupId>org.hibernate</groupId>
-        <artifactId>hibernate-validator</artifactId>
-        <version>${version.hibernate-validator}</version>
-      </dependency>
-
       <dependency>
         <groupId>org.jboss.weld</groupId>
         <artifactId>weld-spi</artifactId>
@@ -270,33 +289,30 @@
         <version>${version.weld-core}</version>
       </dependency>
       <dependency>
-        <groupId>javax.el</groupId>
-        <artifactId>el-api</artifactId>
-        <version>${version.el-api}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.jboss.naming</groupId>
-        <artifactId>jnpserver</artifactId>
-        <version>${version.jboss-naming}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>junit</groupId>
-        <artifactId>junit</artifactId>
-        <version>${version.junit}</version>
-      </dependency>
-      <dependency>
         <groupId>org.mockito</groupId>
         <artifactId>mockito-all</artifactId>
         <version>${version.mockito}</version>
       </dependency>
       <dependency>
-        <groupId>org.hamcrest</groupId>
-        <artifactId>hamcrest-all</artifactId>
-        <version>${version.hamcrest}</version>
+        <groupId>org.osgi</groupId>
+        <artifactId>org.osgi.core</artifactId>
+        <version>${version.org.osgi}</version>
       </dependency>
-
+      <dependency>
+        <groupId>org.osgi</groupId>
+        <artifactId>org.osgi.compendium</artifactId>
+        <version>${version.org.osgi}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-simple</artifactId>
+        <version>${version.org.slf4j}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-log4j12</artifactId>
+        <version>${version.org.slf4j-log4j}</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
@@ -321,29 +337,7 @@
     </extensions>
 
     <finalName>${project.artifactId}</finalName>
-    <resources>
-      <resource>
-        <directory>src/main/resources</directory>
-      </resource>
-      <resource>
-        <directory>src/main/java</directory>
-        <includes>
-          <include>**/*.conf</include>
-          <include>**/*.xml</include>
-          <include>**/*.rb</include>
-          <include>**/*.properties</include>
-        </includes>
-      </resource>
-    </resources>
-    <testResources>
-      <testResource>
-        <directory>src/test/java</directory>
-        <includes>
-          <include>**/*.msg</include>
-          <include>**/*.conf</include>
-        </includes>
-      </testResource>
-    </testResources>
+    
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -365,33 +359,27 @@
           <encoding>UTF-8</encoding>
         </configuration>
       </plugin>
-      <!-- <plugin> <groupId>org.apache.maven.plugins</groupId> <artifactId>maven-compiler-plugin</artifactId> 
-        <version>2.0.2</version> <configuration> <source>1.6</source> <target>1.6</target> 
-        <showDeprecation>true</showDeprecation> <showWarnings>true</showWarnings> 
-        <optimize>true</optimize> </configuration> </plugin> <plugin> <groupId>org.apache.maven.plugins</groupId> 
-        <artifactId>maven-source-plugin</artifactId> <executions> <execution> <phase>package</phase> 
-        <goals> <goal>jar</goal> </goals> </execution> </executions> </plugin> -->
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>cobertura-maven-plugin</artifactId>
         <version>2.5</version>
-              <executions>
-                  <execution>
-                      <id>site</id>
-                      <phase>pre-site</phase>
-                      <goals>
-                          <goal>clean</goal>
-                      </goals>
-                  </execution>
-                  <execution>
-                      <id>instrument</id>
-                      <phase>site</phase>
-                      <goals>
-                          <goal>instrument</goal>
-                          <goal>cobertura</goal>
-                      </goals>
-                  </execution>
-              </executions>
+        <executions>
+            <execution>
+                <id>site</id>
+                <phase>pre-site</phase>
+                <goals>
+                    <goal>clean</goal>
+                </goals>
+            </execution>
+            <execution>
+                <id>instrument</id>
+                <phase>site</phase>
+                <goals>
+                    <goal>instrument</goal>
+                    <goal>cobertura</goal>
+                </goals>
+            </execution>
+        </executions>
         <configuration>
           <aggregate>true</aggregate>
           <instrumentation>
@@ -406,10 +394,14 @@
     <pluginManagement>
       <plugins>
         <plugin>
+          <groupId>org.apache.felix</groupId>
+          <artifactId>maven-bundle-plugin</artifactId>
+          <version>${version.bundle.plugin}</version>
+        </plugin>
+        <plugin>
           <groupId>org.jboss.maven.plugins</groupId>
           <artifactId>maven-jdocbook-plugin</artifactId>
-          <!--<version>2.1.2</version> -->
-          <version>2.3.3</version>
+          <version>${version.maven.jdocbook.plugin}</version>
           <extensions>true</extensions>
         </plugin>
       </plugins>
@@ -435,19 +427,17 @@
   <modules>
     <module>stomp-api</module>
     <module>stomp-common</module>
-
     <module>stomp-client</module>
     <module>stomp-client-js</module>
     <module>stomp-client-rb</module>
-
     <module>stomp-server-spi</module>
     <module>stomp-server-core</module>
-
     <module>conduit-server-spi</module>
     <module>conduit-server-core</module>
-
     <module>stomplet-api</module>
     <module>stomplet-server-core</module>
+    <module>stomplet-server-bundle</module>
+    <module>stomplet-server-bundle-tests</module>
     <module>stomplet-server-cdi</module>
   </modules>
 </project>
