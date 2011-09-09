@@ -1,12 +1,12 @@
 /*
  * Copyright 2011 Red Hat, Inc, and individual contributors.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -36,14 +36,14 @@ public class DebugHandler implements ChannelUpstreamHandler, ChannelDownstreamHa
 
     @Override
     public void handleDownstream(ChannelHandlerContext ctx, ChannelEvent e) throws Exception {
-        log.debug( scope + " >>outbound>> " + e + " :: " + e.getClass() );
+        log.tracef( "%s >>outbound>> %s :: %s", scope, e, e.getClass() );
         dump( ">>outbound>>", e );
         ctx.sendDownstream( e );
     }
 
     @Override
     public void handleUpstream(ChannelHandlerContext ctx, ChannelEvent e) throws Exception {
-        log.debug( scope + " <<inbound<< " + e + " :: " + e.getClass() );
+        log.tracef( "%s <<inbound<< %s :: %s", scope, e, e.getClass() );
         dump( "<<inbound<<", e );
         ctx.sendUpstream( e );
     }
@@ -57,7 +57,7 @@ public class DebugHandler implements ChannelUpstreamHandler, ChannelDownstreamHa
     }
 
     protected void dump(String direction, ExceptionEvent e) {
-        log.error( scope + " " + direction + " EXCEPTION " + e.getCause() );
+        log.errorf(e.getCause(), "%s %s EXCEPTION", scope, direction);
     }
 
     protected void dump(String direction, MessageEvent e) {
@@ -65,13 +65,13 @@ public class DebugHandler implements ChannelUpstreamHandler, ChannelDownstreamHa
 
         if (message instanceof ChannelBuffer) {
             ChannelBuffer buffer = (ChannelBuffer) message;
-            log.debug( scope + " " + direction + " MESSAGE+BUFFER " + buffer.toString( Charset.forName( "UTF-8" ) ) );
+            log.tracef( "%s %s MESSAGE+BUFFER %s", scope, direction, buffer.toString(Charset.forName("UTF-8")) );
         } else if (message instanceof HttpResponse) {
             HttpResponse response = (HttpResponse) message;
-            log.debug( scope + " " + direction + " MESSAGE+HTTP_RESPONSE " + response );
-            log.debug( scope + " " + direction + " MESSAGE+HTTP_RESPONSE+BUFFER " + response.getContent() );
+            log.tracef( "%s %s MESSAGE+HTTP_RESPONSE %s", scope, direction, response );
+            log.tracef( "%s %s MESSAGE+HTTP_RESPONSE+BUFFER %s", scope, direction, response.getContent() );
         } else {
-            log.debug( scope + " " + direction + " MESSAGE " + message );
+            log.tracef( "%s %s MESSAGE %s", scope, direction, message );
         }
     }
 

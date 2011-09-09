@@ -34,12 +34,12 @@ public class BasicHornetQClientServerTest extends AbstractHornetQClientServerTes
     @Test
     public void testClient() throws Exception {
         client.connect();
-        System.err.println( "A" );
+        log.errorf( "A" );
         assertTrue( client.isConnected() );
 
         ClientSubscription subscription1 = client.subscribe( "/topics/foo" ).withMessageHandler( accumulator("one") ).start();
         ClientSubscription subscription2 = client.subscribe( "/topics/foo" ).withMessageHandler( accumulator("two") ).start();
-        System.err.println( "B" );
+        log.errorf( "B" );
 
         assertNotNull( subscription1 );
         assertTrue( subscription1.isActive() );

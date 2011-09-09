@@ -68,7 +68,7 @@ class PseudoXATransaction {
             try {
                 conduit.send( each );
             } catch (Exception e) {
-                e.printStackTrace();
+                log.errorf(e);
             }
         }
         
@@ -78,7 +78,7 @@ class PseudoXATransaction {
             try {
                 each.ack();
             } catch (Exception e) {
-                e.printStackTrace();
+                log.errorf(e);
             }
         }
         
@@ -88,7 +88,7 @@ class PseudoXATransaction {
             try {
                 each.nack();
             } catch (Exception e) {
-                e.printStackTrace();
+                log.errorf(e);
             }
         }
         

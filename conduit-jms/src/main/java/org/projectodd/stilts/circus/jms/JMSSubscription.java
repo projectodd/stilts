@@ -50,9 +50,9 @@ public class JMSSubscription extends ConduitSubscription implements MessageListe
             stompMessage.getHeaders().put( Header.SUBSCRIPTION, getId() );
             this.messageSink.send( stompMessage, new JMSMessageAcknowledger( jmsMessage ) );
         } catch (StompException e) {
-            e.printStackTrace();
+            log.errorf(e);
         } catch (JMSException e) {
-            e.printStackTrace();
+            log.errorf(e);
         }
     }
 

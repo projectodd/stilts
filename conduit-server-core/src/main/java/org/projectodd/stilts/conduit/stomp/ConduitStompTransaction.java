@@ -1,12 +1,12 @@
 /*
  * Copyright 2011 Red Hat, Inc, and individual contributors.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -54,7 +54,7 @@ public class ConduitStompTransaction implements StompTransaction {
     @Override
     public void commit() throws StompException {
         try {
-            log.info( "Committing transaction" );
+            log.debugf( "Committing transaction" );
             TransactionManager tm = this.stompConnection.getStompProvider().getTransactionManager();
             tm.resume( this.transaction );
             tm.commit();
@@ -78,6 +78,7 @@ public class ConduitStompTransaction implements StompTransaction {
     @Override
     public void abort() throws StompException {
         try {
+            log.debugf( "Aborting transaction" );
             TransactionManager tm = this.stompConnection.getStompProvider().getTransactionManager();
             tm.resume( this.transaction );
             tm.rollback();
@@ -133,8 +134,8 @@ public class ConduitStompTransaction implements StompTransaction {
 
     // ------------------------------------------------------------------------
     // ------------------------------------------------------------------------
-    
-    private static final Logger log = Logger.getLogger( "stilts.stomp.conduit.tx" );
+
+    private static final Logger log = Logger.getLogger( ConduitStompTransaction.class );
 
     private Transaction transaction;
     private ConduitStompConnection stompConnection;

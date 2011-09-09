@@ -3,12 +3,16 @@ package org.projectodd.stilts.stomp.client.helpers;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.jboss.logging.Logger;
 import org.projectodd.stilts.stomp.StompException;
 import org.projectodd.stilts.stomp.StompMessage;
 import org.projectodd.stilts.stomp.client.MessageHandler;
 import org.projectodd.stilts.stomp.protocol.StompFrame.Header;
 
 public class MessageAccumulator implements MessageHandler {
+
+    private static Logger log = Logger.getLogger(MessageAccumulator.class);
+
     private ArrayList<StompMessage> messages;
     private boolean shouldAck;
     private boolean shouldNack;
@@ -37,13 +41,13 @@ public class MessageAccumulator implements MessageHandler {
             try {
                 message.ack();
             } catch (StompException e) {
-                e.printStackTrace();
+                log.errorf(e, "Cannot ack message: %s", message);
             }
         } else if (shouldNack) {
             try {
                 message.nack();
             } catch (StompException e) {
-                e.printStackTrace();
+                log.errorf(e, "Cannot nack message: %s", message);
             }
         }
     }

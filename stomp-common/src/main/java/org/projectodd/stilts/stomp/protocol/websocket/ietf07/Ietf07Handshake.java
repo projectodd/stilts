@@ -1,16 +1,16 @@
 /*
  * Copyright 2008-2011 Red Hat, Inc, and individual contributors.
- * 
+ *
  * This is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as
  * published by the Free Software Foundation; either version 2.1 of
  * the License, or (at your option) any later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this software; if not, write to the Free
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
@@ -22,6 +22,7 @@ package org.projectodd.stilts.stomp.protocol.websocket.ietf07;
 import java.net.URI;
 import java.security.NoSuchAlgorithmException;
 
+import org.jboss.logging.Logger;
 import org.jboss.netty.buffer.ChannelBuffers;
 import org.jboss.netty.channel.ChannelHandler;
 import org.jboss.netty.handler.codec.http.DefaultHttpRequest;
@@ -37,17 +38,19 @@ import org.projectodd.stilts.stomp.protocol.websocket.Handshake;
 
 /**
  * Handler for ietf-00.
- * 
+ *
  * @author Michael Dobozy
  * @author Bob McWhirter
- * 
+ *
  */
 public class Ietf07Handshake extends Handshake {
+
+    private static Logger log = Logger.getLogger(Ietf07Handshake.class);
 
     public Ietf07Handshake() throws NoSuchAlgorithmException {
         this( true );
     }
-    
+
     public Ietf07Handshake(boolean isClient) throws NoSuchAlgorithmException {
         super( "7" );
         this.challenge = new Ietf07WebSocketChallenge();
@@ -57,7 +60,7 @@ public class Ietf07Handshake extends Handshake {
     public boolean matches(HttpRequest request) {
         return (request.containsHeader( "Sec-WebSocket-Key" ) && getVersion().equals( request.getHeader( "Sec-WebSocket-Version" ) ));
     }
-    
+
     public HttpRequest generateRequest(URI uri) throws Exception {
         HttpRequest request = new DefaultHttpRequest( HttpVersion.HTTP_1_1, HttpMethod.GET, uri.getPath() );
 
@@ -66,7 +69,7 @@ public class Ietf07Handshake extends Handshake {
         request.addHeader( HttpHeaders.Names.UPGRADE, "WebSocket" );
         request.addHeader( HttpHeaders.Names.HOST, uri.getHost()+ ":" + uri.getPort() );
         request.addHeader( HttpHeaders.Names.SEC_WEBSOCKET_PROTOCOL, "stomp" );
-        
+
         request.addHeader( "Sec-WebSocket-Key", this.challenge.getNonceBase64() );
         request.setContent( ChannelBuffers.EMPTY_BUFFER );
 
@@ -98,10 +101,10 @@ public class Ietf07Handshake extends Handshake {
 
         return response;
     }
-    
+
     @Override
     public boolean isComplete(HttpResponse response) throws Exception {
-        System.err.println( "COMPLETE? " + response );
+        log.errorf( "COMPLETE? " + response );
         String challengeResponse = response.getHeader( "Sec-WebSocket-Accept" );
         return this.challenge.verify( challengeResponse );
     }
@@ -115,17 +118,17 @@ public class Ietf07Handshake extends Handshake {
     public ChannelHandler newDecoder() {
         return new Ietf07WebSocketFrameDecoder();
     }
-    
+
     public ChannelHandler[] newAdditionalHandlers() {
         return new ChannelHandler[] {
                 new PingHandler(),
         };
     }
-    
+
     public int readResponseBody() {
         return 0;
     }
-    
+
     private boolean isClient;
     private Ietf07WebSocketChallenge challenge;
 

@@ -90,7 +90,6 @@ public class StompletServerActivator implements BundleActivator {
         @Override
         public Object addingService(ServiceReference reference) {
             Stomplet stomplet = (Stomplet) super.addingService(reference);
-            log.infof("adding: %s", stomplet);
             try {
                 // Copy string properties
                 Map<String, String> props = new HashMap<String, String>();

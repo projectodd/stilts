@@ -188,7 +188,7 @@ public class ConduitStompConnection implements StompConnection {
             try {
                 each.abort();
             } catch (StompException e) {
-                e.printStackTrace();
+                log.errorf(e);
             }
         }
         this.stompProvider.unregister( this );

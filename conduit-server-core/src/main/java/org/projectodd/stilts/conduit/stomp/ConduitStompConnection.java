@@ -1,12 +1,12 @@
 /*
  * Copyright 2011 Red Hat, Inc, and individual contributors.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -24,6 +24,7 @@ import javax.transaction.SystemException;
 import javax.transaction.Transaction;
 import javax.transaction.TransactionManager;
 
+import org.jboss.logging.Logger;
 import org.projectodd.stilts.conduit.spi.MessageConduit;
 import org.projectodd.stilts.stomp.Acknowledger;
 import org.projectodd.stilts.stomp.Headers;
@@ -41,9 +42,10 @@ import org.projectodd.stilts.stomp.spi.StompTransaction;
 
 public class ConduitStompConnection implements StompConnection {
 
-    public ConduitStompConnection(ConduitStompProvider stompProvider, MessageConduit messageConduit, Version version, Heartbeat hb)
-            throws StompException {
-        System.err.println( "NEW CONNECTION: " + messageConduit );
+    private static Logger log = Logger.getLogger(ConduitStompConnection.class);
+
+    public ConduitStompConnection(ConduitStompProvider stompProvider, MessageConduit messageConduit, Version version, Heartbeat hb) throws StompException {
+        log.debugf( "New connection: %s", messageConduit );
         this.stompProvider = stompProvider;
         this.messageConduit = messageConduit;
         this.version = version;
@@ -53,12 +55,12 @@ public class ConduitStompConnection implements StompConnection {
     public Heartbeat getHeartbeat() {
         return this.heartbeat;
     }
-    
+
     @Override
     public StompSession getSession() {
         return this.messageConduit.getSession();
     }
-    
+
     public Version getVersion() {
         return this.version;
     }
@@ -83,7 +85,7 @@ public class ConduitStompConnection implements StompConnection {
         try {
             this.messageConduit.send( message );
         } catch (Exception e) {
-            e.printStackTrace();
+            log.errorf(e, "Cannot send message: %s", message);
             throw new StompException( e );
         }
     }
@@ -201,22 +203,22 @@ public class ConduitStompConnection implements StompConnection {
             try {
                 each.abort();
             } catch (StompException e) {
-                e.printStackTrace();
+                log.errorf(e, "Cannot disconnect");
             }
         }
-        
+
         this.namedTransactions.clear();
 
         for (Subscription each : this.subscriptions.values()) {
             try {
                 each.cancel();
             } catch (StompException e) {
-                e.printStackTrace();
+                log.errorf(e, "Cannot cancel subsrciption: %s", each);
             }
         }
-        
+
         this.subscriptions.clear();
-        
+
         this.stompProvider.unregister( this );
     }
 

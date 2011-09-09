@@ -1,12 +1,12 @@
 /*
  * Copyright 2011 Red Hat, Inc, and individual contributors.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -53,7 +53,7 @@ public class SubscriberImpl implements Subscriber {
     public String getId() {
         return this.subscriptionId;
     }
-    
+
     public StompSession getSession() {
         return this.session;
     }
@@ -114,7 +114,7 @@ public class SubscriberImpl implements Subscriber {
     public String getDestination() {
         return this.destination;
     }
-    
+
     protected String getNextMessageId() {
         return this.subscriptionId + "-message-" + messageCounter.getAndIncrement();
     }
@@ -128,5 +128,10 @@ public class SubscriberImpl implements Subscriber {
     private String destination;
     private AckMode ackMode;
     private AckSet ackSet;
+
+    @Override
+    public String toString() {
+        return "Subscriber [id=" + subscriptionId + ", destination=" + destination + ", ackMode=" + ackMode + "]";
+    }
 
 }
