@@ -16,10 +16,10 @@
 
 package org.projectodd.stilts.stomp.client;
 
+import java.net.ConnectException;
 import java.net.InetSocketAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Callable;
@@ -33,6 +33,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.jboss.logging.Logger;
 import org.jboss.netty.bootstrap.ClientBootstrap;
 import org.jboss.netty.channel.Channel;
+import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.jboss.netty.channel.socket.ClientSocketChannelFactory;
 import org.jboss.netty.channel.socket.nio.NioClientSocketChannelFactory;
@@ -53,6 +54,7 @@ public class StompClient {
 
     public static final long DEFAULT_CONNECT_WAIT_TIME = 5000L;
     public static final long DEFAULT_DISCONNECT_WAIT_TIME = 5000L;
+    public static final long DEFAULT_CONNECT_RETRY = 5;
 
     private static Logger log = Logger.getLogger( StompClient.class );
 
@@ -207,7 +209,21 @@ public class StompClient {
         bootstrap.setFactory( createChannelFactory() );
 
         setConnectionState( State.CONNECTING );
-        this.channel = bootstrap.connect( serverAddress ).await().getChannel();
+        
+        long connectRetryInterval = waitTime / DEFAULT_CONNECT_RETRY;
+        for (int i = 0; i < DEFAULT_CONNECT_RETRY; i++) {
+            ChannelFuture channelFuture = bootstrap.connect(serverAddress);
+            if (channelFuture.await().isSuccess()) {
+                this.channel = channelFuture.getChannel();
+                break;
+            } else {
+                Throwable cause = channelFuture.getCause();
+                if (cause instanceof ConnectException) {
+                    Thread.sleep(connectRetryInterval);
+                }
+            }
+        }
+        
         waitForConnected( waitTime );
 
         if (this.connectionState == State.CONNECTED) {
