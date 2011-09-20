@@ -21,9 +21,9 @@
   </description>
 
   <scm>
-    <connection>scm:git:git://github.com/bobmcwhirter/stilts.git</connection>
-    <developerConnection>scm:git:ssh://git@github.com/bobmcwhirter/stilts.git</developerConnection>
-    <url>http://github.com/bobmcwhirter/stilts</url>
+    <connection>scm:git:git://github.com/projectodd/stilts.git</connection>
+    <developerConnection>scm:git:ssh://git@github.com/projectodd/stilts.git</developerConnection>
+    <url>http://github.com/projectodd/stilts</url>
   </scm>
 
   <developers>
