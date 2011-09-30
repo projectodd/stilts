@@ -16,6 +16,9 @@
 
 package org.projectodd.stilts.conduit;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+
 import javax.transaction.TransactionManager;
 
 import org.jboss.logging.Logger;
@@ -36,7 +39,7 @@ public class ConduitServer<T extends MessageConduitFactory> {
 
     private static Logger log = Logger.getLogger(ConduitServer.class);
 
-	public ConduitServer() {
+	public ConduitServer() throws UnknownHostException {
 		this( Constants.DEFAULT_PORT );
     }
 
@@ -44,9 +47,26 @@ public class ConduitServer<T extends MessageConduitFactory> {
      * Construct with a port.
      *
      * @param port The listen port to bind to.
+     * @throws UnknownHostException 
      */
     public ConduitServer(int port) {
     	this.server = new StompServer<ConduitStompProvider>( port );
+    }
+    
+    public void setPort(int port) {
+    	this.server.setPort( port );
+    }
+    
+    public int getPort() {
+    	return this.server.getPort();
+    }
+    
+    public void setBindAddress(InetAddress bindAddress) {
+    	this.server.setBindAddress(bindAddress);
+    }
+    
+    public InetAddress getBindAddress() {
+    	return this.server.getBindAddress();
     }
 
     public void setTransactionManager(TransactionManager transactionManager) {

@@ -48,7 +48,7 @@
     <version.jbossts>4.15.1.Final</version.jbossts>
     <version.jmock>2.5.1</version.jmock>
     <version.jms-api>1.1-rev-1</version.jms-api>
-    <version.jruby-maven-plugins>0.28.3</version.jruby-maven-plugins>
+    <version.jruby-maven-plugins>0.28.4</version.jruby-maven-plugins>
     <version.jta>1.1</version.jta>
     <version.junit>4.7</version.junit>
     <version.log4j>1.2.16</version.log4j>

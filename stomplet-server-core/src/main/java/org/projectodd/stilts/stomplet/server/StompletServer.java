@@ -16,6 +16,8 @@
 
 package org.projectodd.stilts.stomplet.server;
 
+import java.net.InetAddress;
+
 import javax.transaction.TransactionManager;
 
 import org.jboss.logging.Logger;
@@ -41,6 +43,22 @@ public class StompletServer {
     public StompletServer(int port) {
         this.server = new ConduitServer<StompletMessageConduitFactory>( port );
         this.server.setMessageConduitFactory( new StompletMessageConduitFactory() );
+    }
+    
+    public void setPort(int port) {
+    	this.server.setPort( port );
+    }
+    
+    public int getPort() {
+    	return this.server.getPort();
+    }
+    
+    public void setBindAddress(InetAddress bindAddress) {
+    	this.server.setBindAddress( bindAddress );
+    }
+    
+    public InetAddress getBindAddress() {
+    	return this.server.getBindAddress();
     }
 
     public void setTransactionManager(TransactionManager transactionManager) {
