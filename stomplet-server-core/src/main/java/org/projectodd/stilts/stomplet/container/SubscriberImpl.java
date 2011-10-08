@@ -72,6 +72,7 @@ public class SubscriberImpl implements Subscriber {
         StompMessage dupe = message.duplicate();
         dupe.getHeaders().put( Header.SUBSCRIPTION, this.subscriptionId );
         dupe.getHeaders().put( Header.MESSAGE_ID, getNextMessageId() );
+        dupe.getHeaders().put( Header.DESTINATION, this.destination );
 
         if ((acknowledger == null) && (this.stomplet instanceof AcknowledgeableStomplet)) {
             acknowledger = new StompletAcknowledger( (AcknowledgeableStomplet) this.stomplet, this, dupe );
