@@ -40,8 +40,10 @@ public class Ietf07WebSocketFrameDecoder extends ReplayingDecoder<VoidEnum> {
 
         byte finOpcode = buffer.readByte();
 
+        log.infof( "decode byte1: %x", finOpcode );
+
         boolean fin = ((finOpcode & 0x1) != 0);
-        int opcode = (finOpcode >> 4);
+        int opcode = ( (finOpcode >> 4) & 0x0F );
 
         byte lengthMask = buffer.readByte();
 
@@ -91,7 +93,9 @@ public class Ietf07WebSocketFrameDecoder extends ReplayingDecoder<VoidEnum> {
 
         ChannelBuffer data = ChannelBuffers.wrappedBuffer( payload );
 
+        log.infof( "opcode: %x %d", opcode, opcode );
         FrameType frameType = decodeFrameType( opcode );
+        log.infof( "type: %s", frameType );
         return new DefaultWebSocketFrame( frameType, data );
 
     }
@@ -111,7 +115,7 @@ public class Ietf07WebSocketFrameDecoder extends ReplayingDecoder<VoidEnum> {
         case 0xA:
             return FrameType.PONG;
         }
-        
+
         return null;
     }
 

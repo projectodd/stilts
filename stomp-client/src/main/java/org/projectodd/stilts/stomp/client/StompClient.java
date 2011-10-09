@@ -49,7 +49,7 @@ import org.projectodd.stilts.stomp.protocol.StompFrame.Header;
 import org.projectodd.stilts.stomp.protocol.StompFrame.Version;
 import org.projectodd.stilts.stomp.protocol.StompFrames;
 import org.projectodd.stilts.stomp.protocol.websocket.Handshake;
-import org.projectodd.stilts.stomp.protocol.websocket.ietf00.Ietf00Handshake;
+import org.projectodd.stilts.stomp.protocol.websocket.ietf17.Ietf17Handshake;
 
 public class StompClient {
 
@@ -395,11 +395,9 @@ public class StompClient {
     protected ChannelPipelineFactory createPipelineFactory()
             throws InstantiationException, IllegalAccessException {
         if (this.useWebSockets) {
-            return new StompClientPipelineFactory( this, new ClientContextImpl(
-                    this ), this.webSocketHandshakeClass.newInstance() );
+            return new StompClientPipelineFactory( this, new ClientContextImpl( this ), this.webSocketHandshakeClass.newInstance() );
         } else {
-            return new StompClientPipelineFactory( this, new ClientContextImpl(
-                    this ) );
+            return new StompClientPipelineFactory( this, new ClientContextImpl( this ) );
         }
     }
 
@@ -439,6 +437,6 @@ public class StompClient {
     private InetSocketAddress serverAddress;
     private Version version = Version.VERSION_1_0;
     private boolean useWebSockets = false;
-    private Class<? extends Handshake> webSocketHandshakeClass = Ietf00Handshake.class;
+    private Class<? extends Handshake> webSocketHandshakeClass = Ietf17Handshake.class;
 
 }

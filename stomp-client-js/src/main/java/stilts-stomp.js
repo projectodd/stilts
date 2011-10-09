@@ -53,6 +53,7 @@
 	};
 
 	Stomp.unmarshal = function(data) {
+	    debug( "unmarshal: " + data );
 		var divider     = data.search(/\n\n/);
 		var headerLines = data.substring(0, divider).split('\n');
 		var command     = headerLines.shift(), headers = {}, body = '';
@@ -138,8 +139,7 @@
 
 		that = {};
 
-		that.connect = function(login_, passcode_, connectCallback,
-				errorCallback) {
+		that.connect = function(login_, passcode_, connectCallback, errorCallback) {
 			debug("Opening Web Socket...");
                         var wsClass = null;
                         if ( typeof WebSocket != 'undefined' ) {

@@ -1,10 +1,12 @@
 
 jspec.load( "/stilts-stomp.js" );
 
+
 it( "should be able to send a message", function() {
   log( Assert );
   
   client = Stomp.client( "ws://localhost:8675/" );
+  client.debug = log;
 
   client.connect( null, null, function(frame) {
     Assert.assertEquals( "1.1", client.version );
@@ -29,6 +31,7 @@ it( "should be able to send a message", function() {
 
 it( "should be able to manage subscriptions", function() {
   client = Stomp.client( "ws://localhost:8675/" );
+  client.debug = log;
 
   client.connect( null, null, function(frame) {
     Assert.assertEquals( "1.1", client.version );
@@ -56,6 +59,7 @@ it( "should be able to manage subscriptions", function() {
 
 it( "should be able to commit a transaction", function() {
   client = Stomp.client( "ws://localhost:8675/" );
+  client.debug = log;
 
   client.connect( null, null, function(frame) {
     Assert.assertEquals( "1.1", client.version );
@@ -97,6 +101,7 @@ it( "should be able to commit a transaction", function() {
 
 it( "should be able to abort a transactions", function() {
   client = Stomp.client( "ws://localhost:8675/" );
+  client.debug = log;
 
   client.connect( null, null, function(frame) {
     Assert.assertEquals( "1.1", client.version );

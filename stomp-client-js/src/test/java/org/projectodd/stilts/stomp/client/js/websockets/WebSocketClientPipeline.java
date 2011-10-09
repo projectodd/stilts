@@ -7,12 +7,15 @@ import org.jboss.netty.handler.codec.http.HttpRequestEncoder;
 import org.projectodd.stilts.stomp.client.protocol.websockets.WebSocketConnectionNegotiator;
 import org.projectodd.stilts.stomp.client.protocol.websockets.WebSocketHttpResponseDecoder;
 import org.projectodd.stilts.stomp.protocol.DebugHandler;
-import org.projectodd.stilts.stomp.protocol.websocket.ietf00.Ietf00Handshake;
+import org.projectodd.stilts.stomp.protocol.websocket.ietf07.Ietf07WebSocketFrameDecoder;
+import org.projectodd.stilts.stomp.protocol.websocket.ietf17.Ietf17Handshake;
 
 public class WebSocketClientPipeline extends DefaultChannelPipeline {
     
     public WebSocketClientPipeline(InstrumentedWebSocket socket, String host, int port) throws NoSuchAlgorithmException {
-        Ietf00Handshake handshake = new Ietf00Handshake();
+        //Ietf00Handshake handshake = new Ietf00Handshake();
+        //Ietf07Handshake handshake = new Ietf07Handshake();
+        Ietf17Handshake handshake = new Ietf17Handshake();
         addLast( "error-handler", new WebSocketClientErrorHandler( socket ) );
         addLast( "debug-HEAD", new DebugHandler( "CLIENT_HEAD"  ) );
         addLast( "http-encoder", new HttpRequestEncoder() );
