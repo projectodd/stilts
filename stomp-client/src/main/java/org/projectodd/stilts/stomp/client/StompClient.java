@@ -28,6 +28,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.jboss.logging.Logger;
@@ -59,10 +60,7 @@ public class StompClient {
     private static Logger log = Logger.getLogger( StompClient.class );
 
     public static enum State {
-        DISCONNECTED,
-        CONNECTING,
-        CONNECTED,
-        DISCONNECTING,
+        DISCONNECTED, CONNECTING, CONNECTED, DISCONNECTING,
     }
 
     public StompClient(String uri) throws URISyntaxException {
@@ -97,11 +95,12 @@ public class StompClient {
     public Executor getExecutor() {
         return this.executor;
     }
-    
-    public void setWebSocketHandshakeClass(Class<? extends Handshake> handshakeClass) {
+
+    public void setWebSocketHandshakeClass(
+            Class<? extends Handshake> handshakeClass) {
         this.webSocketHandshakeClass = handshakeClass;
     }
-    
+
     public Class<? extends Handshake> getWebSocketHandshakeClass() {
         return this.webSocketHandshakeClass;
     }
@@ -129,25 +128,27 @@ public class StompClient {
         }
     }
 
-    void waitForConnected(long waitTime) throws InterruptedException, StompException {
+    void waitForConnected(long waitTime) throws InterruptedException,
+            TimeoutException, StompException {
         if (this.connectionState == State.CONNECTING) {
             synchronized (this.stateLock) {
                 this.stateLock.wait( waitTime );
             }
         }
         if (this.connectionState != State.CONNECTED) {
-            throw new StompException( "Connection timed out." );
+            throw new TimeoutException( "Connection timed out." );
         }
     }
 
-    void waitForDisconnected(long waitTime) throws InterruptedException, StompException {
+    void waitForDisconnected(long waitTime) throws InterruptedException,
+            TimeoutException, StompException {
         if (this.connectionState == State.DISCONNECTING) {
             synchronized (this.stateLock) {
                 this.stateLock.wait( waitTime );
             }
         }
         if (this.connectionState != State.DISCONNECTED) {
-            throw new StompException( "Connection timed out." );
+            throw new TimeoutException( "Disconnection timed out." );
         }
     }
 
@@ -161,7 +162,8 @@ public class StompClient {
         boolean handled = false;
         String subscriptionId = message.getHeaders().get( Header.SUBSCRIPTION );
         if (subscriptionId != null) {
-            ClientSubscription subscription = this.subscriptions.get( subscriptionId );
+            ClientSubscription subscription = this.subscriptions
+                    .get( subscriptionId );
             if (subscription != null) {
                 handled = subscription.messageReceived( message );
             }
@@ -186,11 +188,12 @@ public class StompClient {
         }
     }
 
-    public void connect() throws InterruptedException, StompException {
+    public void connect() throws InterruptedException, TimeoutException, StompException {
         connect( DEFAULT_CONNECT_WAIT_TIME );
     }
 
-    public void connect(long waitTime) throws InterruptedException, StompException {
+    public void connect(long waitTime) throws InterruptedException,
+            TimeoutException, StompException {
 
         if (this.executor == null) {
             this.executor = Executors.newFixedThreadPool( 4 );
@@ -209,21 +212,21 @@ public class StompClient {
         bootstrap.setFactory( createChannelFactory() );
 
         setConnectionState( State.CONNECTING );
-        
+
         long connectRetryInterval = waitTime / DEFAULT_CONNECT_RETRY;
         for (int i = 0; i < DEFAULT_CONNECT_RETRY; i++) {
-            ChannelFuture channelFuture = bootstrap.connect(serverAddress);
+            ChannelFuture channelFuture = bootstrap.connect( serverAddress );
             if (channelFuture.await().isSuccess()) {
                 this.channel = channelFuture.getChannel();
                 break;
             } else {
                 Throwable cause = channelFuture.getCause();
                 if (cause instanceof ConnectException) {
-                    Thread.sleep(connectRetryInterval);
+                    Thread.sleep( connectRetryInterval );
                 }
             }
         }
-        
+
         waitForConnected( waitTime );
 
         if (this.connectionState == State.CONNECTED) {
@@ -242,20 +245,28 @@ public class StompClient {
         return "transaction-" + this.transactionCounter.getAndIncrement();
     }
 
-    public void disconnect() throws InterruptedException, StompException {
+    public void disconnect() throws InterruptedException, TimeoutException, StompException {
         disconnect( DEFAULT_DISCONNECT_WAIT_TIME );
     }
 
-    public void disconnect(long waitTime) throws InterruptedException, StompException {
+    public void disconnect(long waitTime) throws InterruptedException, TimeoutException, StompException {
         setConnectionState( State.DISCONNECTING );
-        this.channel.close();
-        waitForDisconnected( waitTime );
-
-        if (this.destroyExecutor) {
-            if (this.executor instanceof ExecutorService) {
-                ((ExecutorService) this.executor).shutdown();
+        try {
+            this.channel.close();
+            waitForDisconnected( waitTime );
+        } finally {
+            try {
+                if (this.channel.isConnected()) {
+                    this.channel.disconnect().await( waitTime );
+                }
+            } finally {
+                if (this.destroyExecutor) {
+                    if (this.executor instanceof ExecutorService) {
+                        ((ExecutorService) this.executor).shutdown();
+                    }
+                    this.destroyExecutor = false;
+                }
             }
-            this.destroyExecutor = false;
         }
     }
 
@@ -268,8 +279,10 @@ public class StompClient {
         sendFrame( frame );
     }
 
-    ClientSubscription subscribe(SubscriptionBuilderImpl builder) throws InterruptedException, ExecutionException {
-        StompControlFrame frame = new StompControlFrame( Command.SUBSCRIBE, builder.getHeaders() );
+    ClientSubscription subscribe(SubscriptionBuilderImpl builder)
+            throws InterruptedException, ExecutionException {
+        StompControlFrame frame = new StompControlFrame( Command.SUBSCRIBE,
+                builder.getHeaders() );
         String subscriptionId = getNextSubscriptionId();
         frame.setHeader( Header.ID, subscriptionId );
         ReceiptFuture future = sendFrame( frame );
@@ -281,13 +294,15 @@ public class StompClient {
             if (executor == null) {
                 executor = getExecutor();
             }
-            ClientSubscription subscription = new ClientSubscription( this, subscriptionId, builder.getMessageHandler(), executor );
+            ClientSubscription subscription = new ClientSubscription( this,
+                    subscriptionId, builder.getMessageHandler(), executor );
             this.subscriptions.put( subscription.getId(), subscription );
             return subscription;
         }
     }
 
-    void unsubscribe(ClientSubscription subscription) throws InterruptedException, ExecutionException {
+    void unsubscribe(ClientSubscription subscription)
+            throws InterruptedException, ExecutionException {
         StompControlFrame frame = new StompControlFrame( Command.UNSUBSCRIBE );
         frame.setHeader( Header.ID, subscription.getId() );
         sendFrame( frame ).await();
@@ -341,7 +356,8 @@ public class StompClient {
             if (future.isError()) {
                 return null;
             } else {
-                ClientTransaction transaction = new ClientTransaction( this, transactionId );
+                ClientTransaction transaction = new ClientTransaction( this,
+                        transactionId );
                 this.transactions.put( transaction.getId(), transaction );
                 return transaction;
             }
@@ -376,17 +392,22 @@ public class StompClient {
         }
     }
 
-    protected ChannelPipelineFactory createPipelineFactory() throws InstantiationException, IllegalAccessException {
+    protected ChannelPipelineFactory createPipelineFactory()
+            throws InstantiationException, IllegalAccessException {
         if (this.useWebSockets) {
-            return new StompClientPipelineFactory( this, new ClientContextImpl( this ), this.webSocketHandshakeClass.newInstance() );
+            return new StompClientPipelineFactory( this, new ClientContextImpl(
+                    this ), this.webSocketHandshakeClass.newInstance() );
         } else {
-            return new StompClientPipelineFactory( this, new ClientContextImpl( this ) );
+            return new StompClientPipelineFactory( this, new ClientContextImpl(
+                    this ) );
         }
     }
 
     protected ClientSocketChannelFactory createChannelFactory() {
-        VirtualExecutorService bossExecutor = new VirtualExecutorService( this.executor );
-        VirtualExecutorService workerExecutor = new VirtualExecutorService( this.executor );
+        VirtualExecutorService bossExecutor = new VirtualExecutorService(
+                this.executor );
+        VirtualExecutorService workerExecutor = new VirtualExecutorService(
+                this.executor );
         return new NioClientSocketChannelFactory( bossExecutor, workerExecutor );
     }
 
@@ -397,7 +418,8 @@ public class StompClient {
     };
 
     private AtomicInteger receiptCounter = new AtomicInteger();
-    private ConcurrentHashMap<String, ReceiptFuture> receiptHandlers = new ConcurrentHashMap<String, ReceiptFuture>( 20 );
+    private ConcurrentHashMap<String, ReceiptFuture> receiptHandlers = new ConcurrentHashMap<String, ReceiptFuture>(
+            20 );
 
     private AtomicInteger transactionCounter = new AtomicInteger();
     private Map<String, ClientTransaction> transactions = new HashMap<String, ClientTransaction>();
