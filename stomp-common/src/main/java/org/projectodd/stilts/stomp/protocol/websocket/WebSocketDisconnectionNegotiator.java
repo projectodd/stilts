@@ -1,6 +1,5 @@
 package org.projectodd.stilts.stomp.protocol.websocket;
 
-import org.jboss.netty.buffer.ChannelBuffers;
 import org.jboss.netty.channel.ChannelDownstreamHandler;
 import org.jboss.netty.channel.ChannelEvent;
 import org.jboss.netty.channel.ChannelHandlerContext;

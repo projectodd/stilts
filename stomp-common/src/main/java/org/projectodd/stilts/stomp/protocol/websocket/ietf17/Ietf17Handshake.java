@@ -87,7 +87,7 @@ public class Ietf17Handshake extends Handshake {
         String origin = request.getHeader( Names.ORIGIN );
 
         if (origin != null) {
-            response.addHeader( Names.SEC_WEBSOCKET_ORIGIN, origin );
+            response.addHeader( Names.ORIGIN, origin );
         }
         response.addHeader( Names.SEC_WEBSOCKET_LOCATION, getWebSocketLocation( request ) );
 
