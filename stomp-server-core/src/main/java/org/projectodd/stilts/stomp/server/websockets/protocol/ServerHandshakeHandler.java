@@ -53,6 +53,7 @@ import org.projectodd.stilts.stomp.protocol.websocket.Handshake;
 import org.projectodd.stilts.stomp.protocol.websocket.WebSocketDisconnectionNegotiator;
 import org.projectodd.stilts.stomp.protocol.websocket.ietf00.Ietf00Handshake;
 import org.projectodd.stilts.stomp.protocol.websocket.ietf07.Ietf07Handshake;
+import org.projectodd.stilts.stomp.protocol.websocket.ietf08.Ietf08Handshake;
 import org.projectodd.stilts.stomp.protocol.websocket.ietf17.Ietf17Handshake;
 import org.projectodd.stilts.stomp.server.protocol.HostDecodedEvent;
 
@@ -76,6 +77,7 @@ public class ServerHandshakeHandler extends SimpleChannelUpstreamHandler {
     public ServerHandshakeHandler() throws NoSuchAlgorithmException {
         this.handshakes.add( new Ietf17Handshake( false ) );
         this.handshakes.add( new Ietf07Handshake( false ) );
+        this.handshakes.add( new Ietf08Handshake( false ) );
         this.handshakes.add( new Ietf00Handshake() );
     }
 
