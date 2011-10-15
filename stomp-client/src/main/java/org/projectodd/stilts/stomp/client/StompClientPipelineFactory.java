@@ -62,7 +62,7 @@ public class StompClientPipelineFactory implements ChannelPipelineFactory {
         if (this.handshake != null) {
             pipeline.addLast( "http-encoder", new HttpRequestEncoder() );
             pipeline.addLast( "http-decoder", new WebSocketHttpResponseDecoder( this.handshake ) );
-            pipeline.addLast( "websocket-connection-negotiator", new WebSocketConnectionNegotiator( "localhost", 8675, this.handshake ) );
+            pipeline.addLast( "websocket-connection-negotiator", new WebSocketConnectionNegotiator( this.client.getServerAddress().getHostName(), 8675, this.handshake ) );
             pipeline.addLast( "stomp-frame-decoder", new WebSocketStompFrameDecoder() );
             pipeline.addLast( "stomp-frame-encoder", new WebSocketStompFrameEncoder() );
         } else {

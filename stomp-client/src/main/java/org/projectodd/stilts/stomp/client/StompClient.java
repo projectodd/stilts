@@ -87,6 +87,10 @@ public class StompClient {
 
         }
     }
+    
+    public InetSocketAddress getServerAddress() {
+        return this.serverAddress;
+    }
 
     public void setExecutor(Executor executor) {
         this.executor = executor;
