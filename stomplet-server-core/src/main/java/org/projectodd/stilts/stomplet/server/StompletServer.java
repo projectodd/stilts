@@ -86,7 +86,6 @@ public class StompletServer {
     }
 
     public void start() throws Exception {
-        log.infof( "STOMPLET_SERVER start()" );
         this.server.start();
     }
 

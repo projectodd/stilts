@@ -35,13 +35,7 @@ public class Ietf07WebSocketFrameDecoder extends ReplayingDecoder<VoidEnum> {
 
     @Override
     protected Object decode(ChannelHandlerContext ctx, Channel channel, ChannelBuffer buffer, VoidEnum state) throws Exception {
-
-        log.info( "READABLE! " + actualReadableBytes() );
-
         byte finOpcode = buffer.readByte();
-
-        log.infof( "decode byte1: %x", finOpcode );
-
         boolean fin = ((finOpcode & 0x1) != 0);
         int opcode = ( (finOpcode >> 4) & 0x0F );
 
@@ -49,9 +43,7 @@ public class Ietf07WebSocketFrameDecoder extends ReplayingDecoder<VoidEnum> {
 
         boolean masked = ((lengthMask & 0x80) != 0);
 
-        log.info( "masked=" + masked );
         long length = (lengthMask & 0x7F);
-        log.info( "length.1=" + length );
 
         if (length == 126) {
             length = buffer.readShort();
@@ -59,29 +51,20 @@ public class Ietf07WebSocketFrameDecoder extends ReplayingDecoder<VoidEnum> {
             length = buffer.readLong();
         }
 
-        log.info( "length.2=" + length );
-
         if (length > this.maxFrameSize) {
             throw new TooLongFrameException();
         }
 
-        log.info( "HI -AA" );
-
         byte[] mask = null;
-        log.info( "HI -BB" );
 
         if (masked) {
             mask = new byte[4];
             buffer.readBytes( mask );
         }
 
-        log.info( "HI -CC " + actualReadableBytes() );
-
         byte[] payload = new byte[(int) length];
 
-        log.info( "reading payload" );
         buffer.readBytes( payload );
-        log.info( "read payload" );
 
         if (masked) {
             for (int i = 0; i < payload.length; ++i) {
@@ -89,13 +72,9 @@ public class Ietf07WebSocketFrameDecoder extends ReplayingDecoder<VoidEnum> {
             }
         }
 
-        log.info( "Payload unmasked: " + new String( payload ) );
-
         ChannelBuffer data = ChannelBuffers.wrappedBuffer( payload );
 
-        log.infof( "opcode: %x %d", opcode, opcode );
         FrameType frameType = decodeFrameType( opcode );
-        log.infof( "type: %s", frameType );
         return new DefaultWebSocketFrame( frameType, data );
 
     }

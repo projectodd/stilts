@@ -49,32 +49,6 @@
    <artifactId>jbossjta</artifactId>
    <scope>test</scope>
   </dependency>
-<!--
-  <dependency>
-   <groupId>org.jboss.jbossts</groupId>
-   <artifactId>jbossjta-integration</artifactId>
-   <scope>test</scope>
-  </dependency>
--->
-
-  <!-- Misc -->
-
-<!--
-  <dependency>
-   <groupId>org.slf4j</groupId>
-   <artifactId>slf4j-log4j12</artifactId>
-  </dependency>
-
-  <dependency>
-   <groupId>log4j</groupId>
-   <artifactId>log4j</artifactId>
-  </dependency>
-
-  <dependency>
-   <groupId>junit</groupId>
-   <artifactId>junit</artifactId>
-  </dependency>
--->
 
  </dependencies>
 

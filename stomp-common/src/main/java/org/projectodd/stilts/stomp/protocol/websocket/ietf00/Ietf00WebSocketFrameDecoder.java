@@ -77,7 +77,6 @@ public class Ietf00WebSocketFrameDecoder extends ReplayingDecoder<VoidEnum> {
     }
 
     private WebSocketFrame decodeBinaryFrame(int type, ChannelBuffer buffer) throws TooLongFrameException {
-        log.info( "decode binary frame" );
         long frameSize = 0;
         int lengthFieldSize = 0;
         byte b;
@@ -103,7 +102,6 @@ public class Ietf00WebSocketFrameDecoder extends ReplayingDecoder<VoidEnum> {
     }
 
     private WebSocketFrame decodeTextFrame(int type, ChannelBuffer buffer) throws TooLongFrameException {
-        log.info( "decode text frame" );
         int ridx = buffer.readerIndex();
         int rbytes = actualReadableBytes();
         int delimPos = buffer.indexOf(ridx, ridx + rbytes, (byte) 0xFF);

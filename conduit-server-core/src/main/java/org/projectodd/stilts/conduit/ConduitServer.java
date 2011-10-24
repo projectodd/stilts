@@ -82,7 +82,6 @@ public class ConduitServer<T extends MessageConduitFactory> {
         if ( messageConduitFactory instanceof TransactionalMessageConduitFactory ) {
             this.transactionalMessageConduitFactory = (TransactionalMessageConduitFactory) messageConduitFactory;
         } else {
-            log.errorf( "WRAPPING WITH PSEUDO XA CONDUIT" );
             this.transactionalMessageConduitFactory = new PseudoXAMessageConduitFactory( messageConduitFactory );
         }
     }
@@ -96,7 +95,6 @@ public class ConduitServer<T extends MessageConduitFactory> {
     }
 
     public void start() throws Exception {
-        log.errorf( "CONDUIT_SERVER.start " + this.transactionManager );
         this.transactionalMessageConduitFactory.setTransactionManager( this.transactionManager );
         ConduitStompProvider provider = new ConduitStompProvider( this.transactionManager, getTransactionalMessageConduitFactory() );
         this.server.setStompProvider( provider );

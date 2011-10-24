@@ -234,13 +234,11 @@ public class StompClient {
         waitForConnected( waitTime );
 
         if (this.connectionState == State.CONNECTED) {
-            log.info( "Connected" );
             if (this.clientListener != null) {
                 this.clientListener.connected( this );
             }
         } else {
             // TODO: Handle error
-            log.info( "Failed to connect" );
             disconnect();
         }
     }
