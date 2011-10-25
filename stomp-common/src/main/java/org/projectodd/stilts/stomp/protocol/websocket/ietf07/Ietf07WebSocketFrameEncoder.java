@@ -23,13 +23,10 @@ public class Ietf07WebSocketFrameEncoder extends OneToOneEncoder {
     @Override
     protected Object encode(ChannelHandlerContext ctx, Channel channel, Object msg) throws Exception {
         if (msg instanceof WebSocketFrame) {
-            log.info( "ENCODE " + msg );
             WebSocketFrame frame = (WebSocketFrame) msg;
             FrameType frameType = frame.getType();
             
-            log.infof( "encoding: %s", frameType );
             int opcode = encodeOpcode( frameType );
-            log.infof( "encoded opcode: %d", opcode );
 
             ChannelBuffer data = frame.getBinaryData();
             int dataLen = data.readableBytes();
@@ -39,10 +36,8 @@ public class Ietf07WebSocketFrameEncoder extends OneToOneEncoder {
             byte firstByte = (byte) opcode;
             firstByte = (byte) (firstByte | 0x80);
             
-            log.infof( "encode byte1: %x", firstByte);
             encoded.writeByte( firstByte );
 
-            log.info( "Encode length=" + dataLen );
             if (dataLen <= 125) {
                 encoded.writeByte( applyMaskBit( dataLen ) );
             } else if (dataLen < 0xFFFF) {
