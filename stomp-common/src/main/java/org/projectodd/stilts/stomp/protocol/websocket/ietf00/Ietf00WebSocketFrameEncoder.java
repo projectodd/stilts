@@ -52,14 +52,14 @@ public class Ietf00WebSocketFrameEncoder extends OneToOneEncoder {
 
             switch (frameType) {
             case CLOSE: {
-                log.info(  "encode close"  );
+                log.trace(  "encode close"  );
                 ChannelBuffer encoded = channel.getConfig().getBufferFactory().getBuffer( 2 );
                 encoded.writeByte( 0x80 );
                 encoded.writeByte( 0xFF );
                 return encoded;
             }
             case TEXT: {
-                log.info(  "encode text"  );
+                log.trace(  "encode text"  );
                 ChannelBuffer data = frame.getBinaryData();
                 ChannelBuffer encoded = channel.getConfig().getBufferFactory().getBuffer( data.order(), data.readableBytes() + 2 );
                 encoded.writeByte( 0x00 );
@@ -68,7 +68,7 @@ public class Ietf00WebSocketFrameEncoder extends OneToOneEncoder {
                 return encoded;
             }
             case BINARY: {
-                log.info(  "encode binary"  );
+                log.trace(  "encode binary"  );
                 ChannelBuffer data = frame.getBinaryData();
                 int dataLen = data.readableBytes();
                 ChannelBuffer encoded = channel.getConfig().getBufferFactory().getBuffer( data.order(), dataLen + 5 );
