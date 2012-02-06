@@ -16,6 +16,8 @@
 
 package org.projectodd.stilts.stomplet.bundle;
 
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -33,6 +35,23 @@ import org.projectodd.stilts.stomplet.container.SimpleStompletContainer;
 import org.projectodd.stilts.stomplet.server.StompletServer;
 
 /**
+ * An activator that starts the StompletServer
+ *
+ * The binding address can be configured by a binding spec
+ * which is defined by
+ *
+ *  address[:]port
+ *
+ * e.g.
+ *
+ *  127.0.0.1:8675
+ *
+ * The activator first looks for the binding spec at a framework property
+ *
+ *      org.projectodd.stilts.stomplet.server
+ *
+ * if not found, it looks for a service of type InetSocketAddress
+ * with a property socketBinding=stilts
  *
  * @author thomas.diesler@jboss.com
  * @since 07-Sep-2011
@@ -49,7 +68,36 @@ public class StompletServerActivator implements BundleActivator {
     public void start(BundleContext context) throws Exception {
         log.infof("start: %s", context);
 
-        server = new StompletServer();
+        // Get the binding spec from the framework property
+        InetSocketAddress socketAddress = null;
+        String bindingspec = (String) context.getProperty(StompletServer.class.getPackage().getName());
+        if (bindingspec != null) {
+            String[] parts = bindingspec.split(":");
+            InetAddress address = InetAddress.getByName(parts[0]);
+            int port = Integer.parseInt(parts[1]);
+            socketAddress = new InetSocketAddress(address, port);
+        }
+
+        // Get the InetSocketAddress as a service
+        if (socketAddress == null) {
+            String filter = "(socketBinding=stilts)";
+            ServiceReference[] srefs = context.getServiceReferences(InetSocketAddress.class.getName(), filter);
+            if (srefs != null && srefs.length == 1) {
+                socketAddress = (InetSocketAddress) context.getService(srefs[0]);
+            }
+        }
+
+        // Use the binding spec to construct the server
+        if (socketAddress != null) {
+            log.infof("create server using: %s", socketAddress);
+            server = new StompletServer(socketAddress.getPort());
+            server.setBindAddress(socketAddress.getAddress());
+        }
+
+        // Fall back to the default server binding
+        if (server == null) {
+            server = new StompletServer();
+        }
 
         // Setup the {@link TransactionManager}
         ServiceReference sref = context.getServiceReference(TransactionManager.class.getName());
