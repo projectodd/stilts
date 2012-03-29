@@ -29,7 +29,7 @@ class SubscriptionImpl implements Subscription {
 
     @Override
     public String getId() {
-        return this.subscriber.getId();
+        return this.subscriber.getSubscriptionId();
     }
 
     @Override

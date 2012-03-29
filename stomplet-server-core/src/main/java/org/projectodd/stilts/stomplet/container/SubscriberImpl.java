@@ -49,8 +49,13 @@ public class SubscriberImpl implements Subscriber {
         }
     }
 
-    @Override
+    
     public String getId() {
+        return this.session.getId() + "|" + this.subscriptionId;
+    }
+    
+    @Override
+    public String getSubscriptionId() {
         return this.subscriptionId;
     }
 

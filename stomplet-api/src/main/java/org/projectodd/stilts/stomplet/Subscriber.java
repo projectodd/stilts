@@ -26,6 +26,7 @@ import org.projectodd.stilts.stomp.spi.StompSession;
 public interface Subscriber extends AcknowledgeableMessageSink {
     
     String getId();
+    String getSubscriptionId();
     String getDestination();
     AckMode getAckMode();
     StompSession getSession();
