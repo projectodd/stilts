@@ -16,14 +16,14 @@ public class StompFrameCodec {
     public StompFrameCodec() {
 
     }
-    
+
     // ------------------------------------------------------------------------
     // Decode
     // ------------------------------------------------------------------------
 
     public StompFrame decode(ChannelBuffer buffer) throws Exception {
         FrameHeader header = decodeHeader( buffer );
-        
+
         if (header == null) {
             return null;
         }
@@ -81,6 +81,9 @@ public class StompFrameCodec {
         while (buffer.readable()) {
             int nonNewLineBytes = buffer.bytesBefore( (byte) '\n' );
 
+            if (nonNewLineBytes < 0) {
+                break;
+            }
             if (nonNewLineBytes == 0) {
                 buffer.readByte();
                 break;
