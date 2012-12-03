@@ -55,7 +55,7 @@ public class InstrumentedWebSocket {
         this.executor = Executors.newFixedThreadPool( 4 );
         VirtualExecutorService bossExecutor = new VirtualExecutorService( this.executor );
         VirtualExecutorService workerExecutor = new VirtualExecutorService( this.executor );
-        bootstrap.setFactory( new NioClientSocketChannelFactory( bossExecutor, workerExecutor ) );
+        bootstrap.setFactory( new NioClientSocketChannelFactory( bossExecutor, workerExecutor, 2 ) );
 
         URI uri = new URI( this.url );
 
