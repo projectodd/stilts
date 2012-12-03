@@ -331,6 +331,10 @@
       return this._transmit("NACK", headers);
     };
 
+    Client.prototype.waitForDisconnect = function() {
+      this.ws.waitForClosedState();
+    };
+
     return Client;
 
   })();
