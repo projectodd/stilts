@@ -408,7 +408,7 @@ public class StompClient {
                 this.executor );
         VirtualExecutorService workerExecutor = new VirtualExecutorService(
                 this.executor );
-        return new NioClientSocketChannelFactory( bossExecutor, workerExecutor );
+        return new NioClientSocketChannelFactory( bossExecutor, workerExecutor, 2 );
     }
 
     private static final Callable<Void> NOOP = new Callable<Void>() {

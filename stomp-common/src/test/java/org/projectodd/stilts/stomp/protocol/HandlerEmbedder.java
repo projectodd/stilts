@@ -15,6 +15,7 @@ import java.util.Queue;
 import org.jboss.netty.buffer.ChannelBufferFactory;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelEvent;
+import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.ChannelHandler;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.ChannelPipeline;
@@ -229,6 +230,15 @@ public class HandlerEmbedder {
             }
 
             throw new CodecEmbedderException( actualCause );
+        }
+
+        public ChannelFuture execute(ChannelPipeline pipeline, Runnable task) {
+            try {
+                task.run();
+                return Channels.succeededFuture(pipeline.getChannel());
+            } catch (Throwable t) {
+                return Channels.failedFuture(pipeline.getChannel(), t);
+            }
         }
     }
 
