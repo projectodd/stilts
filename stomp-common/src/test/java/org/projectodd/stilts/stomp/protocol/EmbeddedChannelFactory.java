@@ -39,4 +39,9 @@ class EmbeddedChannelFactory implements ChannelFactory {
     public void releaseExternalResources() {
         // No external resources
     }
+
+    @Override
+    public void shutdown() {
+        // NOOP
+    }
 }
