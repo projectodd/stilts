@@ -54,7 +54,7 @@
     <version.junit>4.7</version.junit>
     <version.log4j>1.2.16</version.log4j>
     <version.mockito>1.8.4</version.mockito>
-    <version.netty>3.5.11.Final</version.netty>
+    <version.netty>3.6.2.Final</version.netty>
     <version.org.osgi>4.2.0</version.org.osgi>
     <version.org.slf4j>1.5.10</version.org.slf4j>
     <version.org.slf4j-log4j>1.6.1</version.org.slf4j-log4j>
