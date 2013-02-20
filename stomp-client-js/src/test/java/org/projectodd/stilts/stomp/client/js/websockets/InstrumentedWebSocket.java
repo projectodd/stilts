@@ -52,7 +52,7 @@ public class InstrumentedWebSocket {
         setReadyState( ReadyState.CONNECTING );
         ClientBootstrap bootstrap = new ClientBootstrap();
 
-        this.executor = Executors.newFixedThreadPool( 4 );
+        this.executor = Executors.newCachedThreadPool();
         VirtualExecutorService bossExecutor = new VirtualExecutorService( this.executor );
         VirtualExecutorService workerExecutor = new VirtualExecutorService( this.executor );
         bootstrap.setFactory( new NioClientSocketChannelFactory( bossExecutor, workerExecutor, 2 ) );

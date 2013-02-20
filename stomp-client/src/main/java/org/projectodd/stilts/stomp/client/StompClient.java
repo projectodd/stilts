@@ -200,7 +200,7 @@ public class StompClient {
             TimeoutException, StompException {
 
         if (this.executor == null) {
-            this.executor = Executors.newFixedThreadPool( 4 );
+            this.executor = Executors.newCachedThreadPool();
             this.destroyExecutor = true;
         }
 
