@@ -28,6 +28,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -87,7 +88,7 @@ public class StompClient {
 
         }
     }
-    
+
     public InetSocketAddress getServerAddress() {
         return this.serverAddress;
     }
@@ -200,7 +201,17 @@ public class StompClient {
             TimeoutException, StompException {
 
         if (this.executor == null) {
-            this.executor = Executors.newCachedThreadPool();
+            this.executor = Executors.newCachedThreadPool( new ThreadFactory() {
+                private int counter = 0;
+
+                @Override
+                public Thread newThread(Runnable r) {
+                    Thread thread = new Thread( r );
+                    thread.setDaemon( true );
+                    thread.setName( "stomp-client-" + (++counter) );
+                    return thread;
+                }
+            } );
             this.destroyExecutor = true;
         }
 
@@ -266,10 +277,14 @@ public class StompClient {
                     if (this.executor instanceof ExecutorService) {
                         ((ExecutorService) this.executor).shutdown();
                     }
+                    this.executor = null;
                     this.destroyExecutor = false;
                 }
             }
         }
+        this.bootstrap.shutdown();
+        this.bootstrap.releaseExternalResources();
+        this.bootstrap = null;
     }
 
     public SubscriptionBuilder subscribe(String destination) {
@@ -404,10 +419,8 @@ public class StompClient {
     }
 
     protected ClientSocketChannelFactory createChannelFactory() {
-        VirtualExecutorService bossExecutor = new VirtualExecutorService(
-                this.executor );
-        VirtualExecutorService workerExecutor = new VirtualExecutorService(
-                this.executor );
+        VirtualExecutorService bossExecutor = new VirtualExecutorService( this.executor );
+        VirtualExecutorService workerExecutor = new VirtualExecutorService( this.executor );
         return new NioClientSocketChannelFactory( bossExecutor, workerExecutor, 2 );
     }
 

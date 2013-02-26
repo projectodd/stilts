@@ -20,7 +20,9 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 
 import org.jboss.netty.bootstrap.ServerBootstrap;
 import org.jboss.netty.channel.Channel;
@@ -109,7 +111,17 @@ public class StompServer<T extends StompProvider> {
 	public void start() throws Exception {
 
 		if (this.channelExecutor == null) {
-			this.channelExecutor = Executors.newCachedThreadPool();
+			this.channelExecutor = Executors.newCachedThreadPool( new ThreadFactory() {
+			    private int counter = 0;
+                @Override
+                public Thread newThread(Runnable r) {
+                    Thread thread = new Thread(r);
+                    thread.setName( "stomp-server-" + ( ++counter ) );
+                    thread.setDaemon( true );
+                    return thread;
+                }
+            });
+			this.destroyExecutor = true;
 		}
 
 		if (this.channelPipelineFactory == null) {
@@ -161,6 +173,13 @@ public class StompServer<T extends StompProvider> {
 	 * @throws Throwable
 	 */
 	public void stop() throws Exception {
+		if ( this.destroyExecutor ) {
+		    if ( this.channelExecutor instanceof ExecutorService ) {
+		        ((ExecutorService) this.channelExecutor).shutdown();
+		        this.channelExecutor = null;
+		        this.destroyExecutor = false;
+		    }
+		}
 		this.channel.close();
 		this.channel = null;
 	}
@@ -170,6 +189,7 @@ public class StompServer<T extends StompProvider> {
 
 	private T stompProvider;
 	private Executor channelExecutor;
+	private boolean destroyExecutor;
 	private ChannelPipelineFactory channelPipelineFactory;
 	private Executor messageHandlingExecutor;
 	private Channel channel;
