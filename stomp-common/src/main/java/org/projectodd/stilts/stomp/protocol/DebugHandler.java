@@ -36,7 +36,7 @@ public class DebugHandler implements ChannelUpstreamHandler, ChannelDownstreamHa
 
     @Override
     public void handleDownstream(ChannelHandlerContext ctx, ChannelEvent e) throws Exception {
-        log.tracef( "%s >>outbound>> %s :: %s", scope, e, e.getClass() );
+        log.tracef(  "%s >>outbound>> %s :: %s", scope, e, e.getClass() );
         dump( ">>outbound>>", e );
         ctx.sendDownstream( e );
     }

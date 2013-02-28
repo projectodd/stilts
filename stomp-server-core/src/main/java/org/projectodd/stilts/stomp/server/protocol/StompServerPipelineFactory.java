@@ -18,31 +18,45 @@ package org.projectodd.stilts.stomp.server.protocol;
 
 import java.util.concurrent.Executor;
 
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLEngine;
+
 import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.jboss.netty.channel.DefaultChannelPipeline;
+import org.jboss.netty.handler.ssl.SslHandler;
 import org.projectodd.stilts.stomp.protocol.DebugHandler;
 import org.projectodd.stilts.stomp.spi.StompProvider;
 
 public class StompServerPipelineFactory implements ChannelPipelineFactory {
 
-    public StompServerPipelineFactory(StompProvider provider, Executor executor) {
+    public StompServerPipelineFactory(StompProvider provider,
+            Executor executor, SSLContext sslContext) {
         this.provider = provider;
         this.executor = executor;
+        this.sslContext = sslContext;
     }
-    
+
     @Override
     public ChannelPipeline getPipeline() throws Exception {
         DefaultChannelPipeline pipeline = new DefaultChannelPipeline();
         pipeline.addFirst( "server-debug-header", new DebugHandler( "SERVER-HEAD" ) );
+        if (this.sslContext != null) {
+            SSLEngine sslEngine = this.sslContext.createSSLEngine();
+            sslEngine.setUseClientMode( false );
+            SslHandler sslHandler = new SslHandler( sslEngine );
+            sslHandler.setEnableRenegotiation( false );
+            pipeline.addLast( "ssl", sslHandler );
+            pipeline.addLast( "server-post-ssl", new DebugHandler( "SERVER-POST-SSL" ) );
+        }
         pipeline.addLast( "protocol-detector", new ProtocolDetector( this.provider, this.executor ) );
         pipeline.addLast( "server-post-proto", new DebugHandler( "SERVER-POST-PROTO" ) );
         return pipeline;
     }
-    
-    private Executor executor;
-    
-    private StompProvider provider;
 
+    private Executor executor;
+
+    private StompProvider provider;
+    private SSLContext sslContext;
 
 }

@@ -25,8 +25,7 @@ import org.jboss.netty.channel.SimpleChannelUpstreamHandler;
 import org.projectodd.stilts.stomp.protocol.StompFrame;
 import org.projectodd.stilts.stomp.protocol.StompFrames;
 
-public abstract class AbstractClientHandler extends
-		SimpleChannelUpstreamHandler {
+public abstract class AbstractClientHandler extends SimpleChannelUpstreamHandler {
 
 	private static Logger log = Logger.getLogger(AbstractClientHandler.class);
 
@@ -56,9 +55,8 @@ public abstract class AbstractClientHandler extends
 	}
 
 	@Override
-	public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e)
-			throws Exception {
-		log.error("An error occurred", e.getCause());
+	public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e) throws Exception {
+		log.error("An error occurred", e.getCause() );
 	}
 
 	private ClientContext clientContext;

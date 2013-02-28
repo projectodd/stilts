@@ -32,6 +32,9 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLException;
+
 import org.jboss.logging.Logger;
 import org.jboss.netty.bootstrap.ClientBootstrap;
 import org.jboss.netty.channel.Channel;
@@ -65,28 +68,59 @@ public class StompClient {
     }
 
     public StompClient(String uri) throws URISyntaxException {
-        this( new URI( uri ) );
+        this( new URI( uri ), null );
+    }
+
+    public StompClient(String uri, SSLContext sslContext) throws URISyntaxException {
+        this( new URI( uri ), sslContext );
     }
 
     public StompClient(URI uri) throws URISyntaxException {
+        this( uri, null );
+    }
+
+    public StompClient(URI uri, SSLContext sslContext) throws URISyntaxException {
+        this.sslContext = sslContext;
+
         String scheme = uri.getScheme();
+        String host = "";
+        int port = -1;
 
         if (scheme.startsWith( "stomp" )) {
-            int port = Constants.DEFAULT_PORT;
-            String host = uri.getHost();
+            host = uri.getHost();
+
             int uriPort = uri.getPort();
             if (uriPort > 0) {
                 port = uriPort;
             }
 
-            this.serverAddress = new InetSocketAddress( host, port );
-
             if (scheme.endsWith( "+ws" )) {
                 this.useWebSockets = true;
+            } else if (scheme.endsWith( "+wss" )) {
+                this.useWebSockets = true;
+                this.useSSL = true;
+            } else if (scheme.endsWith( "+ssl" )) {
+                this.useSSL = true;
             }
-        } else {
-
         }
+        
+        if ( port < 0 ) {
+            if ( useSSL ) {
+                port = Constants.DEFAULT_SECURE_PORT;
+            } else {
+                port = Constants.DEFAULT_PORT;
+            }
+            
+        }
+        this.serverAddress = new InetSocketAddress( host, port );
+    }
+
+    public boolean isSecure() {
+        return this.useSSL;
+    }
+
+    public SSLContext getSSLContext() {
+        return this.sslContext;
     }
 
     public InetSocketAddress getServerAddress() {
@@ -101,8 +135,7 @@ public class StompClient {
         return this.executor;
     }
 
-    public void setWebSocketHandshakeClass(
-            Class<? extends Handshake> handshakeClass) {
+    public void setWebSocketHandshakeClass(Class<? extends Handshake> handshakeClass) {
         this.webSocketHandshakeClass = handshakeClass;
     }
 
@@ -193,12 +226,15 @@ public class StompClient {
         }
     }
 
-    public void connect() throws InterruptedException, TimeoutException, StompException {
+    public void connect() throws InterruptedException, TimeoutException, StompException, SSLException {
         connect( DEFAULT_CONNECT_WAIT_TIME );
     }
 
-    public void connect(long waitTime) throws InterruptedException,
-            TimeoutException, StompException {
+    public void connect(long waitTime) throws InterruptedException, TimeoutException, StompException, SSLException {
+
+        if (this.useSSL && this.sslContext == null) {
+            throw new SSLException( "No SSL context provided for SSL connection: " + this.serverAddress );
+        }
 
         if (this.executor == null) {
             this.executor = Executors.newCachedThreadPool( new ThreadFactory() {
@@ -409,8 +445,7 @@ public class StompClient {
         }
     }
 
-    protected ChannelPipelineFactory createPipelineFactory()
-            throws InstantiationException, IllegalAccessException {
+    protected ChannelPipelineFactory createPipelineFactory() throws InstantiationException, IllegalAccessException {
         if (this.useWebSockets) {
             return new StompClientPipelineFactory( this, new ClientContextImpl( this ), this.webSocketHandshakeClass.newInstance() );
         } else {
@@ -452,6 +487,8 @@ public class StompClient {
     private InetSocketAddress serverAddress;
     private Version version = Version.VERSION_1_0;
     private boolean useWebSockets = false;
+    private boolean useSSL = false;
     private Class<? extends Handshake> webSocketHandshakeClass = Ietf17Handshake.class;
+    private SSLContext sslContext;
 
 }

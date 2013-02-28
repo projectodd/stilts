@@ -24,21 +24,26 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 
+import javax.net.ssl.SSLContext;
+
 import org.jboss.netty.bootstrap.ServerBootstrap;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.jboss.netty.channel.socket.ServerSocketChannelFactory;
 import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
 import org.jboss.netty.util.VirtualExecutorService;
+import org.projectodd.stilts.stomp.Constants;
 import org.projectodd.stilts.stomp.server.protocol.StompServerPipelineFactory;
 import org.projectodd.stilts.stomp.spi.StompProvider;
 
 public class StompServer<T extends StompProvider> {
 
-	public static final int DEFAULT_PORT = 8675;
-
 	public StompServer() throws UnknownHostException {
-		this(DEFAULT_PORT);
+		this(null, Constants.DEFAULT_PORT, null);
+	}
+	
+	public StompServer(SSLContext sslContext) throws UnknownHostException {
+		this( null, (sslContext == null ? Constants.DEFAULT_PORT : Constants.DEFAULT_SECURE_PORT ), sslContext ) ;
 	}
 
 	/**
@@ -49,14 +54,27 @@ public class StompServer<T extends StompProvider> {
 	 * @throws UnknownHostException
 	 */
 	public StompServer(int port) {
-		this(null, port);
+		this(null, port, null);
+	}
+	
+	public StompServer(int port, SSLContext sslContext) {
+		this(null, port, sslContext );
 	}
 
 	public StompServer(InetAddress bindAddress, int port) {
+		this( bindAddress, port, null );
+	}
+	
+	public StompServer(InetAddress bindAddress, int port, SSLContext sslContext) {
 		this.bindAddress = bindAddress;
 		this.port = port;
+		this.sslContext = sslContext;
 	}
-
+	
+	public SSLContext getSSLContext() {
+		return this.sslContext;
+	}
+	
 	/**
 	 * Retrieve the bind port.
 	 * 
@@ -69,7 +87,7 @@ public class StompServer<T extends StompProvider> {
 	public void setPort(int port) {
 		this.port = port;
 	}
-
+	
 	public InetAddress getBindAddress() {
 		return this.bindAddress;
 	}
@@ -125,8 +143,7 @@ public class StompServer<T extends StompProvider> {
 		}
 
 		if (this.channelPipelineFactory == null) {
-			this.channelPipelineFactory = new StompServerPipelineFactory(
-					getStompProvider(), getMessageHandlingExector());
+			this.channelPipelineFactory = new StompServerPipelineFactory( getStompProvider(), getMessageHandlingExector(), getSSLContext() );
 		}
 
 		ServerBootstrap bootstrap = createServerBootstrap();
@@ -184,6 +201,7 @@ public class StompServer<T extends StompProvider> {
 		this.channel = null;
 	}
 
+	private SSLContext sslContext;
 	private int port;
 	private InetAddress bindAddress;
 

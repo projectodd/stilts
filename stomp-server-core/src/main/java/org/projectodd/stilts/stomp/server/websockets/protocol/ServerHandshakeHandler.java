@@ -72,13 +72,13 @@ public class ServerHandshakeHandler extends SimpleChannelUpstreamHandler {
      * Construct.
      * 
      * @param contextRegistry The context registry.
-     * @throws NoSuchAlgorithmException 
+     * @throws NoSuchAlgorithmException
      */
-    public ServerHandshakeHandler() throws NoSuchAlgorithmException {
-        this.handshakes.add( new Ietf17Handshake( false ) );
-        this.handshakes.add( new Ietf07Handshake( false ) );
-        this.handshakes.add( new Ietf08Handshake( false ) );
-        this.handshakes.add( new Ietf00Handshake() );
+    public ServerHandshakeHandler(boolean secure) throws NoSuchAlgorithmException {
+        this.handshakes.add( new Ietf17Handshake( false ).setSecure( secure ) );
+        this.handshakes.add( new Ietf07Handshake( false ).setSecure( secure ) );
+        this.handshakes.add( new Ietf08Handshake( false ).setSecure( secure ) );
+        this.handshakes.add( new Ietf00Handshake().setSecure( secure ) );
     }
 
     @Override
@@ -199,9 +199,9 @@ public class ServerHandshakeHandler extends SimpleChannelUpstreamHandler {
         pipeline.replace( "http-decoder", "websockets-decoder", handshake.newDecoder() );
         ChannelHandler[] additionalHandlers = handshake.newAdditionalHandlers();
         String currentTail = "websockets-decoder";
-        for ( ChannelHandler each : additionalHandlers ) {
+        for (ChannelHandler each : additionalHandlers) {
             String handlerName = "additional-" + each.getClass().getSimpleName();
-            pipeline.addAfter( currentTail, handlerName, each); 
+            pipeline.addAfter( currentTail, handlerName, each );
             currentTail = handlerName;
         }
     }

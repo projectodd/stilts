@@ -1,5 +1,6 @@
 package org.projectodd.stilts.stomp.client.protocol.websockets;
 
+import java.net.InetSocketAddress;
 import java.net.URI;
 import java.security.NoSuchAlgorithmException;
 
@@ -30,15 +31,15 @@ import org.projectodd.stilts.stomp.protocol.websocket.WebSocketDisconnectionNego
 public class WebSocketConnectionNegotiator extends SimpleChannelUpstreamHandler {
     
 
-    public WebSocketConnectionNegotiator(String host, int port, Handshake handshake) throws NoSuchAlgorithmException {
-        this.host = host;
-        this.port = port;
+    public WebSocketConnectionNegotiator(InetSocketAddress serverAddress, Handshake handshake, boolean useSSL) throws NoSuchAlgorithmException {
+        this.serverAddress = serverAddress;
         this.handshake = handshake;
+        this.useSSL = useSSL;
     }
 
     @Override
     public void channelConnected(ChannelHandlerContext context, ChannelStateEvent e) throws Exception {
-        URI uri = new URI( "ws://" + this.host + ":" + this.port + "/" );
+        URI uri = new URI( ( this.useSSL ? "wss" : "ws" ) + "://" + this.serverAddress.getHostName() + ":" + this.serverAddress.getPort() + "/" );
         HttpRequest request = this.handshake.generateRequest( uri );
         this.connectedEvent = e;
         Channel channel = context.getChannel();
@@ -80,8 +81,8 @@ public class WebSocketConnectionNegotiator extends SimpleChannelUpstreamHandler 
     }
 
     private static final Logger log = Logger.getLogger( "stomp.proto.client.websocket" );
-    private String host;
-    private int port;
+    private InetSocketAddress serverAddress;
+    private boolean useSSL;
     private Handshake handshake;
     private ChannelStateEvent connectedEvent;
 

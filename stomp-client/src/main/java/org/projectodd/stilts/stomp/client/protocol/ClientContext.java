@@ -16,14 +16,22 @@
 
 package org.projectodd.stilts.stomp.client.protocol;
 
+import java.net.InetSocketAddress;
+
+import javax.net.ssl.SSLContext;
+
 import org.projectodd.stilts.stomp.StompMessage;
 import org.projectodd.stilts.stomp.client.StompClient.State;
 import org.projectodd.stilts.stomp.protocol.StompFrame.Version;
 
 public interface ClientContext {
     
+    InetSocketAddress getServerAddress();
     State getConnectionState();
     Version getVersion();
+    
+    boolean isSecure();
+    SSLContext getSSLContext();
     
     void setConnectionState(State state);
     void setVersion(Version version);

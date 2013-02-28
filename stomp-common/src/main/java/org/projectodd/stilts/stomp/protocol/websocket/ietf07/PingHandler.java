@@ -11,18 +11,18 @@ public class PingHandler extends SimpleChannelUpstreamHandler {
 
     @Override
     public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) throws Exception {
-        if ( e.getMessage() instanceof WebSocketFrame ) {
+        if (e.getMessage() instanceof WebSocketFrame) {
             WebSocketFrame frame = (WebSocketFrame) e.getMessage();
-            
-            if ( frame.getType() == FrameType.PING ) {
-                ctx.getChannel().write(  new DefaultWebSocketFrame( FrameType.PONG, frame.getBinaryData() ) );
-                return;
+
+            if (frame.getType() == FrameType.PING) {
+                if (ctx.getChannel().isWritable()) {
+                    ctx.getChannel().write( new DefaultWebSocketFrame( FrameType.PONG, frame.getBinaryData() ) );
+                    return;
+                }
             }
-            
-        } 
+
+        }
         super.messageReceived( ctx, e );
     }
-    
-    
 
 }

@@ -47,9 +47,14 @@ public abstract class Handshake {
     public String getVersion() {
         return this.version;
     }
+    
+    public Handshake setSecure(boolean secure) {
+        this.secure = secure;
+        return this;
+    }
 
     protected String getWebSocketLocation(HttpRequest request) {
-        return "ws://" + request.getHeader( HttpHeaders.Names.HOST ) + request.getUri();
+        return ( this.secure ? "wss" : "ws" ) + "://" + request.getHeader( HttpHeaders.Names.HOST ) + request.getUri();
     }
 
     public abstract boolean matches(HttpRequest request);
@@ -65,5 +70,6 @@ public abstract class Handshake {
     public abstract int readResponseBody();
 
     private String version;
+    private boolean secure;
 
 }

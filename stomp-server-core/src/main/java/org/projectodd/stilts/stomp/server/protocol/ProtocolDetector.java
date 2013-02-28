@@ -15,6 +15,7 @@ import org.jboss.netty.handler.codec.http.HttpResponseEncoder;
 import org.jboss.netty.handler.codec.replay.ReplayingDecoder;
 import org.jboss.netty.handler.codec.replay.VoidEnum;
 import org.jboss.netty.handler.execution.ExecutionHandler;
+import org.jboss.netty.handler.ssl.SslHandler;
 import org.projectodd.stilts.stomp.protocol.DebugHandler;
 import org.projectodd.stilts.stomp.protocol.StompFrameDecoder;
 import org.projectodd.stilts.stomp.protocol.StompFrameEncoder;
@@ -48,18 +49,28 @@ public class ProtocolDetector extends ReplayingDecoder<VoidEnum> {
             ChannelBuffer lineBuffer = buffer.readBytes( nonNewlineBytes );
             String line = lineBuffer.toString( UTF_8 );
 
+            SslHandler sslHandler = context.getPipeline().get( SslHandler.class );
+            
             buffer.resetReaderIndex();
             ChannelBuffer fullBuffer = null;
             if (line.startsWith( "CONNECT" ) || line.startsWith( "STOMP" )) {
                 fullBuffer = switchToPureStomp( context, buffer );
             } else {
-                fullBuffer = switchToStompOverWebSockets( context, buffer );
+                fullBuffer = switchToStompOverWebSockets( context, buffer, ( sslHandler != null )  );
             }
 
-            // We want to restart at the entire head of the pipeline, 
+            // We want to restart at the entire head of the pipeline,
             // not just the next handler, since we jiggled the whole
             // thing pretty hard.
-            context.getPipeline().sendUpstream( new UpstreamMessageEvent( context.getChannel(), fullBuffer, context.getChannel().getRemoteAddress() ) );
+            //
+            // Unless we're SSL, then we want to send upstream /after/ the SSL
+            // handler, because we are re-sending the unencrypted payload.
+            if (sslHandler != null) {
+                ChannelHandlerContext sslHandlerContext = context.getPipeline().getContext( sslHandler );
+                sslHandlerContext.sendUpstream( new UpstreamMessageEvent( context.getChannel(), fullBuffer, context.getChannel().getRemoteAddress() ) );
+            } else {
+                context.getPipeline().sendUpstream( new UpstreamMessageEvent( context.getChannel(), fullBuffer, context.getChannel().getRemoteAddress() ) );
+            }
         }
 
         return null;
@@ -71,29 +82,31 @@ public class ProtocolDetector extends ReplayingDecoder<VoidEnum> {
         ChannelPipeline pipeline = context.getPipeline();
 
         pipeline.remove( this );
-        
-        //pipeline.addLast( "server-debug-header", new DebugHandler( "SERVER-HEAD" ) );
-        
+
+        // pipeline.addLast( "server-debug-header", new DebugHandler(
+        // "SERVER-HEAD" ) );
+
         pipeline.addLast( "stomp-frame-encoder", new StompFrameEncoder() );
         pipeline.addLast( "stomp-frame-decoder", new StompFrameDecoder() );
-        
+
         appendCommonHandlers( pipeline );
 
         return fullBuffer;
 
     }
 
-    protected ChannelBuffer switchToStompOverWebSockets(ChannelHandlerContext context, ChannelBuffer buffer) throws NoSuchAlgorithmException {
+    protected ChannelBuffer switchToStompOverWebSockets(ChannelHandlerContext context, ChannelBuffer buffer, boolean secure) throws NoSuchAlgorithmException {
         ChannelBuffer fullBuffer = buffer.readBytes( super.actualReadableBytes() );
         ChannelPipeline pipeline = context.getPipeline();
         pipeline.remove( this );
 
-        //pipeline.addFirst( "server-debug-header", new DebugHandler( "SERVER-HEAD" ) );
+        // pipeline.addFirst( "server-debug-header", new DebugHandler(
+        // "SERVER-HEAD" ) );
         pipeline.addFirst( "disorderly-close", new DisorderlyCloseHandler() );
         pipeline.addLast( "http-encoder", new HttpResponseEncoder() );
         pipeline.addLast( "http-decoder", new HttpRequestDecoder() );
-        pipeline.addLast( "websocket-handshake", new ServerHandshakeHandler() );
-        
+        pipeline.addLast( "websocket-handshake", new ServerHandshakeHandler( secure ) );
+
         pipeline.addLast( "stomp-frame-encoder", new WebSocketStompFrameEncoder() );
         pipeline.addLast( "stomp-frame-decoder", new WebSocketStompFrameDecoder() );
 
@@ -106,7 +119,7 @@ public class ProtocolDetector extends ReplayingDecoder<VoidEnum> {
 
         ConnectionContext context = new ConnectionContext();
 
-        pipeline.addLast( "stomp-disorderly-close-handler", new StompDisorderlyCloseHandler( provider, context ));
+        pipeline.addLast( "stomp-disorderly-close-handler", new StompDisorderlyCloseHandler( provider, context ) );
 
         pipeline.addLast( "stomp-server-connect", new ConnectHandler( provider, context ) );
         pipeline.addLast( "stomp-server-disconnect", new DisconnectHandler( provider, context ) );
@@ -117,7 +130,7 @@ public class ProtocolDetector extends ReplayingDecoder<VoidEnum> {
         pipeline.addLast( "stomp-server-begin", new BeginHandler( provider, context ) );
         pipeline.addLast( "stomp-server-commit", new CommitHandler( provider, context ) );
         pipeline.addLast( "stomp-server-abort", new AbortHandler( provider, context ) );
-        
+
         pipeline.addLast( "stomp-server-ack", new AckHandler( provider, context ) );
         pipeline.addLast( "stomp-server-nack", new NackHandler( provider, context ) );
 

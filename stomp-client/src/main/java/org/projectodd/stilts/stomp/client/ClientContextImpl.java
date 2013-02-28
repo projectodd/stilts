@@ -16,6 +16,10 @@
 
 package org.projectodd.stilts.stomp.client;
 
+import java.net.InetSocketAddress;
+
+import javax.net.ssl.SSLContext;
+
 import org.projectodd.stilts.stomp.StompMessage;
 import org.projectodd.stilts.stomp.client.StompClient.State;
 import org.projectodd.stilts.stomp.client.protocol.ClientContext;
@@ -26,14 +30,25 @@ class ClientContextImpl implements ClientContext {
     ClientContextImpl(StompClient client) {
         this.client = client;
     }
+    
+    @Override
+    public InetSocketAddress getServerAddress() {
+        return this.client.getServerAddress();
+    }
 
     @Override
     public State getConnectionState() {
         return this.client.getConnectionState();
     }
     
+    @Override
     public Version getVersion() {
         return this.client.getVersion();
+    }
+    
+    @Override
+    public boolean isSecure() {
+    	return this.client.isSecure();
     }
 
     @Override
@@ -59,6 +74,11 @@ class ClientContextImpl implements ClientContext {
     @Override
     public void receiptReceived(String receiptId) {
         this.client.receiptReceived( receiptId );
+    }
+    
+    @Override
+    public SSLContext getSSLContext() {
+    	return this.client.getSSLContext();
     }
 
     private StompClient client;

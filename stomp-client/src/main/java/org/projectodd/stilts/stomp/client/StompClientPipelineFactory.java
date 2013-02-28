@@ -18,10 +18,13 @@ package org.projectodd.stilts.stomp.client;
 
 import java.security.NoSuchAlgorithmException;
 
+import javax.net.ssl.SSLEngine;
+
 import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.jboss.netty.channel.Channels;
 import org.jboss.netty.handler.codec.http.HttpRequestEncoder;
+import org.jboss.netty.handler.ssl.SslHandler;
 import org.projectodd.stilts.stomp.client.protocol.ClientContext;
 import org.projectodd.stilts.stomp.client.protocol.ClientMessageHandler;
 import org.projectodd.stilts.stomp.client.protocol.ClientReceiptHandler;
@@ -59,17 +62,26 @@ public class StompClientPipelineFactory implements ChannelPipelineFactory {
         ChannelPipeline pipeline = Channels.pipeline();
 
         pipeline.addLast( "debug-client-head", new DebugHandler( "CLIENT_HEAD" ) );
+        if (this.clientContext.isSecure()) {
+            SSLEngine sslEngine = this.clientContext.getSSLContext().createSSLEngine();
+            sslEngine.setUseClientMode( true );
+            SslHandler sslHandler = new SslHandler( sslEngine );
+            sslHandler.setEnableRenegotiation( false );
+            sslHandler.setIssueHandshake( true );
+            pipeline.addLast( "ssl", sslHandler );
+            pipeline.addLast( "client-post-ssl", new DebugHandler( "SERVER-POST-SSL" ) );
+        }
         if (this.handshake != null) {
             pipeline.addLast( "http-encoder", new HttpRequestEncoder() );
             pipeline.addLast( "http-decoder", new WebSocketHttpResponseDecoder( this.handshake ) );
-            pipeline.addLast( "websocket-connection-negotiator", new WebSocketConnectionNegotiator( this.client.getServerAddress().getHostName(), 8675, this.handshake ) );
+            pipeline.addLast( "websocket-connection-negotiator", new WebSocketConnectionNegotiator( this.clientContext.getServerAddress(), this.handshake, this.clientContext.isSecure() ) );
             pipeline.addLast( "stomp-frame-decoder", new WebSocketStompFrameDecoder() );
             pipeline.addLast( "stomp-frame-encoder", new WebSocketStompFrameEncoder() );
         } else {
             pipeline.addLast( "stomp-frame-decoder", new StompFrameDecoder() );
             pipeline.addLast( "stomp-frame-encoder", new StompFrameEncoder() );
         }
-        
+
         pipeline.addLast( "debug-client-mid", new DebugHandler( "CLIENT_MID" ) );
 
         pipeline.addLast( "stomp-connection-negotiator", new StompConnectionNegotiator( clientContext, "localhost" ) );

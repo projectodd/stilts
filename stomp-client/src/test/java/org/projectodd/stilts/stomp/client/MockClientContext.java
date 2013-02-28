@@ -1,7 +1,10 @@
 package org.projectodd.stilts.stomp.client;
 
+import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.net.ssl.SSLContext;
 
 import org.projectodd.stilts.stomp.StompMessage;
 import org.projectodd.stilts.stomp.client.StompClient.State;
@@ -10,6 +13,30 @@ import org.projectodd.stilts.stomp.protocol.StompFrame.Version;
 
 public class MockClientContext implements ClientContext {
 
+    public void setServerAddress(InetSocketAddress serverAddress) {
+        this.serverAddress = serverAddress;
+    }
+    
+    public InetSocketAddress getServerAddress() {
+        return this.serverAddress;
+    }
+    
+	public void setSecure(boolean secure) {
+		this.secure = secure;
+	}
+	
+	public boolean isSecure() {
+		return this.secure;
+	}
+	
+	public void setSSLContext(SSLContext sslContext) {
+		this.sslContext = sslContext;
+	}
+	
+	public SSLContext getSSLContext() {
+		return this.sslContext;
+	}
+	
     @Override
     public State getConnectionState() {
         return this.state;
@@ -58,8 +85,12 @@ public class MockClientContext implements ClientContext {
         this.version = version;
     }    
     
+    private InetSocketAddress serverAddress;
     private State state;
     private Version version = Version.VERSION_1_0;
+    private boolean secure = false;
+    private SSLContext sslContext;
+    
     
     private List<String> receipts = new ArrayList<String>();
     private List<StompMessage> messages = new ArrayList<StompMessage>();
