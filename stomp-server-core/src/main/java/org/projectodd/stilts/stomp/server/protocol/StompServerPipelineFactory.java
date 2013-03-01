@@ -30,8 +30,7 @@ import org.projectodd.stilts.stomp.spi.StompProvider;
 
 public class StompServerPipelineFactory implements ChannelPipelineFactory {
 
-    public StompServerPipelineFactory(StompProvider provider,
-            Executor executor, SSLContext sslContext) {
+    public StompServerPipelineFactory(StompProvider provider, Executor executor, SSLContext sslContext) {
         this.provider = provider;
         this.executor = executor;
         this.sslContext = sslContext;

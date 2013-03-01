@@ -19,6 +19,7 @@ public class BasicStompServerTest extends AbstractStompServerTestCase<MockStompP
     protected StompServer<MockStompProvider> createServer() throws Exception {
         StompServer<MockStompProvider> server = new StompServer<MockStompProvider>();
         server.setStompProvider( new MockStompProvider() );
+        server.addConnector( new InsecureConnector() );
         return server;
     }
     

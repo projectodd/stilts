@@ -41,7 +41,8 @@ public class Ietf07BasicSecureWebSocketsStompServerTest extends AbstractWebSocke
     
     @Override
     protected StompServer<MockStompProvider> createServer() throws Exception {
-        StompServer<MockStompProvider> server = new StompServer<MockStompProvider>( SSL_CONTEXT );
+        StompServer<MockStompProvider> server = new StompServer<MockStompProvider>();
+        server.addConnector( new SecureConnector( SSL_CONTEXT ) );
         server.setStompProvider(new MockStompProvider());
         return server;
     }

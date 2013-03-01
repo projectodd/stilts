@@ -4,6 +4,7 @@ import javax.transaction.TransactionManager;
 
 import org.junit.After;
 import org.junit.Before;
+import org.projectodd.stilts.stomp.server.InsecureConnector;
 import org.projectodd.stilts.stomplet.server.StompletServer;
 
 import com.arjuna.ats.jta.common.jtaPropertyManager;
@@ -16,6 +17,7 @@ public abstract class AbstractStompletServerTestCase {
 	public void setUpServer() throws Exception {
 		this.server = new StompletServer();
 		this.server.setTransactionManager( getTransactionManager() );
+		this.server.addConnector( new InsecureConnector() );
 		this.server.start();
 		configureServer();
 	}

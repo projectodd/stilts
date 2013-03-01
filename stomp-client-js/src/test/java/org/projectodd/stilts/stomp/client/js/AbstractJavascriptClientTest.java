@@ -2,6 +2,7 @@ package org.projectodd.stilts.stomp.client.js;
 
 import org.junit.runner.RunWith;
 import org.projectodd.stilts.stomp.server.AbstractStompServerTestCase;
+import org.projectodd.stilts.stomp.server.InsecureConnector;
 import org.projectodd.stilts.stomp.server.MockStompProvider;
 import org.projectodd.stilts.stomp.server.StompServer;
 
@@ -16,6 +17,7 @@ public abstract class AbstractJavascriptClientTest extends AbstractStompServerTe
     @Override
     protected StompServer<MockStompProvider> createServer() throws Exception {
         StompServer<MockStompProvider> server = new StompServer<MockStompProvider>();
+        server.addConnector( new InsecureConnector() );
         server.setStompProvider( new MockStompProvider() );
         return server;
     }

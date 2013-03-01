@@ -27,6 +27,7 @@ import org.junit.Test;
 import org.projectodd.stilts.conduit.stomp.SimpleStompSessionManager;
 import org.projectodd.stilts.stomp.client.StompClient;
 import org.projectodd.stilts.stomp.client.StompClient.State;
+import org.projectodd.stilts.stomp.server.InsecureConnector;
 import org.projectodd.stilts.stomplet.container.SimpleStompletContainer;
 import org.projectodd.stilts.stomplet.server.StompletServer;
 
@@ -73,6 +74,7 @@ public class ClientConnectionTest {
         {
             server.setDefaultContainer(new SimpleStompletContainer());
             server.setDefaultSessionManager(new SimpleStompSessionManager());
+            server.addConnector( new InsecureConnector() );
             server.start();
             
             // Verify that the client got connected

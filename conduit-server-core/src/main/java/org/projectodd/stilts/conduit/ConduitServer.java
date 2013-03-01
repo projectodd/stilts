@@ -16,8 +16,8 @@
 
 package org.projectodd.stilts.conduit;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
+import java.util.List;
+import java.util.concurrent.Executor;
 
 import javax.transaction.TransactionManager;
 
@@ -26,8 +26,10 @@ import org.projectodd.stilts.conduit.spi.MessageConduitFactory;
 import org.projectodd.stilts.conduit.spi.TransactionalMessageConduitFactory;
 import org.projectodd.stilts.conduit.stomp.ConduitStompProvider;
 import org.projectodd.stilts.conduit.xa.PseudoXAMessageConduitFactory;
-import org.projectodd.stilts.stomp.Constants;
+import org.projectodd.stilts.stomp.server.Connector;
+import org.projectodd.stilts.stomp.server.Server;
 import org.projectodd.stilts.stomp.server.StompServer;
+import org.projectodd.stilts.stomp.spi.StompProvider;
 
 /** Adapts basic STOMP server to simpler <code>MessageConduit</code> interface.
  *
@@ -35,38 +37,32 @@ import org.projectodd.stilts.stomp.server.StompServer;
  *
  * @author Bob McWhirter
  */
-public class ConduitServer<T extends MessageConduitFactory> {
+public class ConduitServer<T extends MessageConduitFactory> implements Server {
 
     private static Logger log = Logger.getLogger(ConduitServer.class);
 
-	public ConduitServer() throws UnknownHostException {
-		this( Constants.DEFAULT_PORT );
-    }
-
-    /**
-     * Construct with a port.
-     *
-     * @param port The listen port to bind to.
-     * @throws UnknownHostException 
-     */
-    public ConduitServer(int port) {
-    	this.server = new StompServer<ConduitStompProvider>( port );
+    public ConduitServer() {
+    	this.server = new StompServer<ConduitStompProvider>();
     }
     
-    public void setPort(int port) {
-    	this.server.setPort( port );
+    public void addConnector(Connector connector) throws Exception {
+        this.server.addConnector( connector );
     }
     
-    public int getPort() {
-    	return this.server.getPort();
+    public List<Connector> getConnectors() {
+        return this.server.getConnectors();
     }
     
-    public void setBindAddress(InetAddress bindAddress) {
-    	this.server.setBindAddress(bindAddress);
+    public void removeConnector(Connector connector) throws Exception {
+        this.server.removeConnector( connector );
     }
     
-    public InetAddress getBindAddress() {
-    	return this.server.getBindAddress();
+    public StompProvider getStompProvider() {
+        return this.server.getStompProvider();
+    }
+    
+    public Executor getMessageHandlingExecutor() {
+        return this.server.getMessageHandlingExecutor();
     }
 
     public void setTransactionManager(TransactionManager transactionManager) {

@@ -30,6 +30,7 @@ import org.osgi.framework.ServiceReference;
 import org.osgi.util.tracker.ServiceTracker;
 import org.projectodd.stilts.conduit.stomp.SimpleStompSessionManager;
 import org.projectodd.stilts.stomp.StompException;
+import org.projectodd.stilts.stomp.server.InsecureConnector;
 import org.projectodd.stilts.stomplet.Stomplet;
 import org.projectodd.stilts.stomplet.container.SimpleStompletContainer;
 import org.projectodd.stilts.stomplet.server.StompletServer;
@@ -90,8 +91,8 @@ public class StompletServerActivator implements BundleActivator {
         // Use the binding spec to construct the server
         if (socketAddress != null) {
             log.infof("create server using: %s", socketAddress);
-            server = new StompletServer(socketAddress.getPort());
-            server.setBindAddress(socketAddress.getAddress());
+            server = new StompletServer();
+            server.addConnector( new InsecureConnector( socketAddress ));
         }
 
         // Fall back to the default server binding

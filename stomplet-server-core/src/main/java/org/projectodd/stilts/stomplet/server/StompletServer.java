@@ -16,14 +16,17 @@
 
 package org.projectodd.stilts.stomplet.server;
 
-import java.net.InetAddress;
+import java.util.List;
+import java.util.concurrent.Executor;
 
 import javax.transaction.TransactionManager;
 
 import org.jboss.logging.Logger;
 import org.projectodd.stilts.conduit.ConduitServer;
 import org.projectodd.stilts.conduit.spi.StompSessionManager;
-import org.projectodd.stilts.stomp.Constants;
+import org.projectodd.stilts.stomp.server.Connector;
+import org.projectodd.stilts.stomp.server.Server;
+import org.projectodd.stilts.stomp.spi.StompProvider;
 import org.projectodd.stilts.stomplet.container.StompletContainer;
 import org.projectodd.stilts.stomplet.container.StompletMessageConduitFactory;
 
@@ -32,35 +35,35 @@ import org.projectodd.stilts.stomplet.container.StompletMessageConduitFactory;
  *
  * @author Bob McWhirter
  */
-public class StompletServer {
+public class StompletServer implements Server {
 
     private static Logger log = Logger.getLogger(StompletServer.class);
 
     public StompletServer() {
-        this( Constants.DEFAULT_PORT );
-    }
-
-    public StompletServer(int port) {
-        this.server = new ConduitServer<StompletMessageConduitFactory>( port );
+        this.server = new ConduitServer<StompletMessageConduitFactory>();
         this.server.setMessageConduitFactory( new StompletMessageConduitFactory() );
     }
     
-    public void setPort(int port) {
-    	this.server.setPort( port );
+    public void addConnector(Connector connector) throws Exception {
+        this.server.addConnector( connector);
     }
     
-    public int getPort() {
-    	return this.server.getPort();
+    public List<Connector> getConnectors() {
+        return this.server.getConnectors();
     }
     
-    public void setBindAddress(InetAddress bindAddress) {
-    	this.server.setBindAddress( bindAddress );
+    public void removeConnector(Connector connector) throws Exception {
+        this.server.removeConnector( connector );
     }
     
-    public InetAddress getBindAddress() {
-    	return this.server.getBindAddress();
+    public StompProvider getStompProvider() {
+        return this.server.getStompProvider();
     }
-
+    
+    public Executor getMessageHandlingExecutor() {
+        return this.server.getMessageHandlingExecutor();
+    }
+    
     public void setTransactionManager(TransactionManager transactionManager) {
         this.server.setTransactionManager( transactionManager );
     }

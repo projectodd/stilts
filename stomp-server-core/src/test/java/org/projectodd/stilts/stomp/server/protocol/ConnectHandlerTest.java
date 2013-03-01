@@ -17,6 +17,7 @@ import org.projectodd.stilts.stomp.protocol.StompFrame.Command;
 import org.projectodd.stilts.stomp.protocol.StompFrame.Header;
 import org.projectodd.stilts.stomp.protocol.StompFrame.Version;
 import org.projectodd.stilts.stomp.server.AbstractStompServerTestCase;
+import org.projectodd.stilts.stomp.server.InsecureConnector;
 import org.projectodd.stilts.stomp.server.MockStompConnection;
 import org.projectodd.stilts.stomp.server.MockStompConnection.Send;
 import org.projectodd.stilts.stomp.server.MockStompProvider;
@@ -29,6 +30,7 @@ public class ConnectHandlerTest extends AbstractStompServerTestCase<MockStompPro
     @Override
     protected StompServer<MockStompProvider> createServer() throws Exception {
         StompServer<MockStompProvider> server = new StompServer<MockStompProvider>();
+        server.addConnector( new InsecureConnector() );
         server.setStompProvider( new MockStompProvider() );
         return server;
     }

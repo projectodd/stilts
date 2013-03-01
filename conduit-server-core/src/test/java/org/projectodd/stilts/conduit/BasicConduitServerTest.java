@@ -9,6 +9,7 @@ import org.projectodd.stilts.stomp.StompMessage;
 import org.projectodd.stilts.stomp.StompMessages;
 import org.projectodd.stilts.stomp.client.ClientTransaction;
 import org.projectodd.stilts.stomp.client.StompClient;
+import org.projectodd.stilts.stomp.server.InsecureConnector;
 
 public class BasicConduitServerTest extends AbstractConduitServerTestCase<MockMessageConduitFactory> {
 
@@ -16,6 +17,7 @@ public class BasicConduitServerTest extends AbstractConduitServerTestCase<MockMe
     protected ConduitServer<MockMessageConduitFactory> createServer() throws Exception {
         ConduitServer<MockMessageConduitFactory> server = new ConduitServer<MockMessageConduitFactory>();
         server.setMessageConduitFactory( new MockMessageConduitFactory() );
+        server.addConnector( new InsecureConnector() );
         return server;
     }
     

@@ -7,6 +7,7 @@ import org.junit.Before;
 import org.projectodd.stilts.stomp.protocol.StompFrame;
 import org.projectodd.stilts.stomp.protocol.StompFrame.Version;
 import org.projectodd.stilts.stomp.server.AbstractStompServerTestCase;
+import org.projectodd.stilts.stomp.server.InsecureConnector;
 import org.projectodd.stilts.stomp.server.MockStompProvider;
 import org.projectodd.stilts.stomp.server.StompServer;
 import org.projectodd.stilts.stomp.spi.StompConnection;
@@ -17,6 +18,7 @@ public abstract class AbstractServerProtocolFrameHandlerTest<T extends ChannelUp
     protected StompServer<MockStompProvider> createServer() throws Exception {
         StompServer<MockStompProvider> server = new StompServer<MockStompProvider>();
         server.setStompProvider( new MockStompProvider() );
+        server.addConnector( new InsecureConnector() );
         return server;
     }
 
