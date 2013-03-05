@@ -87,7 +87,11 @@ public class ConnectHandler extends AbstractControlFrameHandler {
                 if (hb != null) {
                     connected.setHeader( Header.HEARTBEAT, hb.getServerSend() + "," + hb.getServerReceive() );
                 }
+                log.debugf( "connected: %s", frame );
                 sendFrame( channelContext, connected );
+            } else {
+                log.error( "unable to create STOMP connection" );
+                sendErrorAndClose( channelContext, "unable to open STOMP connection", frame );
             }
         } catch (StompException e) {
             log.error( "Error connecting", e );

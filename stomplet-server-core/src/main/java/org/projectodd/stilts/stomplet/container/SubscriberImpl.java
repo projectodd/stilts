@@ -16,6 +16,7 @@
 
 package org.projectodd.stilts.stomplet.container;
 
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.projectodd.stilts.stomp.Acknowledger;
@@ -31,11 +32,13 @@ import org.projectodd.stilts.stomplet.Subscriber;
 
 public class SubscriberImpl implements Subscriber {
 
-    public SubscriberImpl(StompSession session, Stomplet stomplet, String subscriptionId, String destination, AcknowledgeableMessageSink messageSink, AckMode ackMode) {
+
+    public SubscriberImpl(StompSession session, Stomplet stomplet, String subscriptionId, String destination, Map<String,String> parameters, AcknowledgeableMessageSink messageSink, AckMode ackMode) {
         this.session = session;
         this.stomplet = stomplet;
         this.subscriptionId = subscriptionId;
         this.destination = destination;
+        this.parameters = parameters;
         this.messageSink = messageSink;
         //this.messageConduit = messageConduit;
         this.ackMode = ackMode;
@@ -124,6 +127,20 @@ public class SubscriberImpl implements Subscriber {
     protected String getNextMessageId() {
         return this.subscriptionId + "-message-" + messageCounter.getAndIncrement();
     }
+    
+    public String getParameter(String name) {
+        return this.parameters.get(  name  );
+    }
+    
+    public Map<String,String> getParamters() {
+        return this.parameters;
+    }
+    
+    @Override
+    public String toString() {
+        return "Subscriber [id=" + subscriptionId + ", destination=" + destination + ", ackMode=" + ackMode + "]";
+    }
+
 
     private AtomicLong messageCounter = new AtomicLong();
     private StompSession session;
@@ -134,10 +151,6 @@ public class SubscriberImpl implements Subscriber {
     private String destination;
     private AckMode ackMode;
     private AckSet ackSet;
-
-    @Override
-    public String toString() {
-        return "Subscriber [id=" + subscriptionId + ", destination=" + destination + ", ackMode=" + ackMode + "]";
-    }
+    private Map<String, String> parameters;
 
 }

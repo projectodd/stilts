@@ -25,6 +25,7 @@ import javax.transaction.Transaction;
 import javax.transaction.TransactionManager;
 import javax.transaction.xa.XAResource;
 
+import org.jboss.logging.Logger;
 import org.projectodd.stilts.conduit.spi.MessageConduit;
 import org.projectodd.stilts.stomp.Headers;
 import org.projectodd.stilts.stomp.StompException;
@@ -35,6 +36,8 @@ import org.projectodd.stilts.stomp.spi.StompSession;
 
 public class StompletMessageConduit implements MessageConduit {
 
+    private static Logger log = Logger.getLogger(StompletMessageConduit.class);
+    
     public StompletMessageConduit(TransactionManager transactionManager, StompletContainer stompletContainer, AcknowledgeableMessageSink messageSink, StompSession session)
             throws StompException {
         this.transactionManager = transactionManager;
@@ -81,6 +84,7 @@ public class StompletMessageConduit implements MessageConduit {
     public Subscription subscribe(String subscriptionId, String destination, Headers headers) throws Exception {
         StompletActivator activator = this.stompletContainer.getActivator( destination );
         if (activator == null) {
+            log.warnf(  "unable to find activator for destination: %s", destination );
             return null;
         }
 

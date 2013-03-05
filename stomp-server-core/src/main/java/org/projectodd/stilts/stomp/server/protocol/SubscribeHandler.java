@@ -20,6 +20,7 @@ import org.apache.commons.lang.StringUtils;
 import org.jboss.logging.Logger;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.projectodd.stilts.stomp.StompException;
+import org.projectodd.stilts.stomp.Subscription;
 import org.projectodd.stilts.stomp.protocol.StompFrame;
 import org.projectodd.stilts.stomp.protocol.StompFrame.Command;
 import org.projectodd.stilts.stomp.protocol.StompFrame.Header;
@@ -47,7 +48,8 @@ public class SubscribeHandler extends AbstractControlFrameHandler {
                 throw new StompException( "Cannot subscribe without ID." );
             }
 
-            getStompConnection().subscribe( destination, id, frame.getHeaders() );
+            Subscription subscription = getStompConnection().subscribe( destination, id, frame.getHeaders() );
+            log.debugf( "subscribed: %s %s as %s", destination, id, subscription );
         } catch (StompException e) {
             log.error( "Error performing subscription to '" + destination + "' for id '" + id + "'", e );
             sendError( channelContext, e.getMessage(), frame );

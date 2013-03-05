@@ -175,6 +175,7 @@ public class ConduitStompConnection implements StompConnection {
         try {
             Subscription subscription = createSubscription( destination, subscriptionId, headers );
             if (subscription == null) {
+                log.debugf( "unable to create subscription for destination %s", destination );
                 return null;
             }
             this.subscriptions.put( subscription.getId(), subscription );

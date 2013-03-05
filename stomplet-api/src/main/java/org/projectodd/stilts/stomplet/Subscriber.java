@@ -19,6 +19,8 @@
 
 package org.projectodd.stilts.stomplet;
 
+import java.util.Map;
+
 import org.projectodd.stilts.stomp.Subscription.AckMode;
 import org.projectodd.stilts.stomp.spi.AcknowledgeableMessageSink;
 import org.projectodd.stilts.stomp.spi.StompSession;
@@ -30,5 +32,7 @@ public interface Subscriber extends AcknowledgeableMessageSink {
     String getDestination();
     AckMode getAckMode();
     StompSession getSession();
+    String getParameter(String name);
+    Map<String,String> getParamters();
 
 }

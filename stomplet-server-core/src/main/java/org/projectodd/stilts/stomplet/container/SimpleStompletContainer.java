@@ -22,6 +22,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.jboss.logging.Logger;
 import org.projectodd.stilts.stomp.InvalidDestinationException;
 import org.projectodd.stilts.stomp.StompException;
 import org.projectodd.stilts.stomp.StompMessage;
@@ -56,7 +57,7 @@ public class SimpleStompletContainer implements StompletContainer, MessageRouter
         addStomplet( destinationPattern, stomplet, new HashMap<String, String>() );
     }
 
-    public void addStomplet(String destinationPattern, Stomplet stomplet, Map<String, String> properties) throws StompException {
+    public synchronized void addStomplet(String destinationPattern, Stomplet stomplet, Map<String, String> properties) throws StompException {
         StompletConfig config = new DefaultStompletConfig( this.stompletContext, properties );
         XAStomplet xaStomplet = null;
         if (stomplet instanceof XAStomplet) {
@@ -69,7 +70,7 @@ public class SimpleStompletContainer implements StompletContainer, MessageRouter
         this.routes.add( route );
     }
 
-    public void removeStomplet(String destinationPattern) throws StompException {
+    public synchronized void removeStomplet(String destinationPattern) throws StompException {
         Iterator<Route> iterator = routes.iterator();
         while(iterator.hasNext()) {
             Route route = iterator.next();
@@ -91,10 +92,13 @@ public class SimpleStompletContainer implements StompletContainer, MessageRouter
 
     @Override
     public StompletActivator getActivator(String destination) {
+        //log.tracef(  "locate activator for destination: [%s]", destination );
         StompletActivator activator = null;
         for (Route route : this.routes) {
+            //log.tracef(  "test route: %s", route );
             activator = route.match( destination );
             if (activator != null) {
+                log.tracef( "matched route: %s", route );
                 break;
             }
         }
@@ -102,6 +106,7 @@ public class SimpleStompletContainer implements StompletContainer, MessageRouter
         return activator;
     }
 
+    private static Logger log = Logger.getLogger(SimpleStompletContainer.class);
     private DefaultStompletContext stompletContext;
     private final List<Route> routes = new ArrayList<Route>();
 
