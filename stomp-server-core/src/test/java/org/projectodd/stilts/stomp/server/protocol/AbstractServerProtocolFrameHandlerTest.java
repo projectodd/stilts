@@ -32,7 +32,7 @@ public abstract class AbstractServerProtocolFrameHandlerTest<T extends ChannelUp
 
     @Before
     public void before() throws Exception {
-        ctx = new ConnectionContext();
+        ctx = new DefaultConnectionContext();
         handler = new DecoderEmbedder<StompFrame>( getHandler() );
         StompConnection c = server.getStompProvider().createConnection( null, null, Version.VERSION_1_1 );
         ctx.setStompConnection( c );

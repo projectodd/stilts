@@ -29,6 +29,7 @@ import org.projectodd.stilts.conduit.xa.PseudoXAMessageConduitFactory;
 import org.projectodd.stilts.stomp.server.Connector;
 import org.projectodd.stilts.stomp.server.Server;
 import org.projectodd.stilts.stomp.server.StompServer;
+import org.projectodd.stilts.stomp.server.protocol.resource.ResourceManager;
 import org.projectodd.stilts.stomp.spi.StompProvider;
 
 /** Adapts basic STOMP server to simpler <code>MessageConduit</code> interface.
@@ -59,6 +60,14 @@ public class ConduitServer<T extends MessageConduitFactory> implements Server {
     
     public StompProvider getStompProvider() {
         return this.server.getStompProvider();
+    }
+    
+    public void setResourceManager(ResourceManager resourceManager) {
+        this.server.setResourceManager( resourceManager );
+    }
+    
+    public ResourceManager getResourceManager() {
+        return this.server.getResourceManager();
     }
     
     public Executor getMessageHandlingExecutor() {

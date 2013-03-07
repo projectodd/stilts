@@ -1,14 +1,13 @@
-package org.projectodd.stilts.stomp.server.websockets.protocol;
+package org.projectodd.stilts.stomp.server.protocol.websockets;
 
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelEvent;
 import org.jboss.netty.channel.ChannelFuture;
 
-public class SessionDecodedEvent implements ChannelEvent {
+public class DisorderlyCloseEvent implements ChannelEvent {
 
-    public SessionDecodedEvent(Channel channel, String sessionId) {
+    public DisorderlyCloseEvent(Channel channel) {
         this.channel = channel;
-        this.sessionId = sessionId;
     }
     
     @Override
@@ -21,15 +20,10 @@ public class SessionDecodedEvent implements ChannelEvent {
         return null;
     }
     
-    public String getSessionId() {
-        return this.sessionId;
-    }
-    
     public String toString() {
-        return "[SessionDecodeEvent: " + this.sessionId + "]";
+        return "[DisorderlyCloseEvent]";
     }
     
     private Channel channel;
-    private String sessionId;
 
 }

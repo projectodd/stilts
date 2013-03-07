@@ -21,13 +21,13 @@ import java.util.Map;
 
 import org.projectodd.stilts.stomp.TransactionalAcknowledger;
 
-class AckManager {
+public class AckManager {
 
     AckManager() {
 
     }
 
-    void registerAcknowledger(String messageId, TransactionalAcknowledger acknowledger) {
+    public void registerAcknowledger(String messageId, TransactionalAcknowledger acknowledger) {
         this.acknowledgers.put( messageId, acknowledger );
     }
 

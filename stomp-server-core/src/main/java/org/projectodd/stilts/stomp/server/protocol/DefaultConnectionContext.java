@@ -18,13 +18,34 @@ package org.projectodd.stilts.stomp.server.protocol;
 
 import org.projectodd.stilts.stomp.spi.StompConnection;
 
-public interface ConnectionContext {
+public class DefaultConnectionContext implements ConnectionContext {
     
+    public DefaultConnectionContext() {
+        this.ackManager = new AckManager();
+    }
     
-    AckManager getAckManager();
-    void setStompConnection(StompConnection clientAgent);
-    StompConnection getStompConnection();
-    boolean isActive();
-    void setActive(boolean active);
+    public AckManager getAckManager() {
+        return this.ackManager;
+    }
     
+    public void setStompConnection(StompConnection clientAgent) {
+        this.stompConnection = clientAgent;
+    }
+    
+    public StompConnection getStompConnection() {
+        return this.stompConnection;
+    }
+    
+    public boolean isActive() {
+        return this.active;
+    }
+    
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+    
+    private AckManager ackManager;
+    private StompConnection stompConnection;
+    private boolean active = true;
+
 }

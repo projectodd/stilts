@@ -42,7 +42,7 @@ public class ConnectHandlerTest extends AbstractStompServerTestCase<MockStompPro
 
     @Before
     public void before() throws Exception {
-        ConnectionContext ctx = new ConnectionContext();
+        ConnectionContext ctx = new DefaultConnectionContext();
         handler = new DecoderEmbedder<StompFrame>( new ConnectHandler( server.getStompProvider(), ctx ) );
     }
 

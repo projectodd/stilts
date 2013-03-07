@@ -26,18 +26,29 @@ import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.jboss.netty.channel.DefaultChannelPipeline;
 import org.jboss.netty.handler.ssl.SslHandler;
 import org.projectodd.stilts.stomp.protocol.DebugHandler;
+import org.projectodd.stilts.stomp.server.protocol.longpoll.ConnectionManager;
+import org.projectodd.stilts.stomp.server.protocol.longpoll.SinkManager;
+import org.projectodd.stilts.stomp.server.protocol.resource.ResourceManager;
+import org.projectodd.stilts.stomp.server.protocol.resource.SimpleResourceManager;
 import org.projectodd.stilts.stomp.spi.StompProvider;
 
 public class StompServerPipelineFactory implements ChannelPipelineFactory {
 
-    public StompServerPipelineFactory(StompProvider provider, Executor executor, SSLContext sslContext) {
+    public StompServerPipelineFactory(StompProvider provider, Executor executor, ResourceManager resourceManager, SSLContext sslContext) {
         this.provider = provider;
         this.executor = executor;
         this.sslContext = sslContext;
+        this.resourceManager = resourceManager;
     }
 
     @Override
     public ChannelPipeline getPipeline() throws Exception {
+        
+        ResourceManager rm = this.resourceManager;
+        if ( rm == null ) {
+            rm = new SimpleResourceManager();
+        }
+        
         DefaultChannelPipeline pipeline = new DefaultChannelPipeline();
         pipeline.addFirst( "server-debug-header", new DebugHandler( "SERVER-HEAD" ) );
         if (this.sslContext != null) {
@@ -48,14 +59,17 @@ public class StompServerPipelineFactory implements ChannelPipelineFactory {
             pipeline.addLast( "ssl", sslHandler );
             pipeline.addLast( "server-post-ssl", new DebugHandler( "SERVER-POST-SSL" ) );
         }
-        pipeline.addLast( "protocol-detector", new ProtocolDetector( this.provider, this.executor ) );
+        pipeline.addLast( "protocol-detector", new ProtocolDetector( this.connectionManager, this.sinkManager, this.provider, this.executor, rm) );
         pipeline.addLast( "server-post-proto", new DebugHandler( "SERVER-POST-PROTO" ) );
         return pipeline;
     }
 
+    private ConnectionManager connectionManager = new ConnectionManager();
+    private SinkManager sinkManager = new SinkManager();
     private Executor executor;
 
     private StompProvider provider;
     private SSLContext sslContext;
+    private ResourceManager resourceManager;
 
 }

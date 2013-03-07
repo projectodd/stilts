@@ -26,6 +26,7 @@ import org.projectodd.stilts.conduit.ConduitServer;
 import org.projectodd.stilts.conduit.spi.StompSessionManager;
 import org.projectodd.stilts.stomp.server.Connector;
 import org.projectodd.stilts.stomp.server.Server;
+import org.projectodd.stilts.stomp.server.protocol.resource.ResourceManager;
 import org.projectodd.stilts.stomp.spi.StompProvider;
 import org.projectodd.stilts.stomplet.container.StompletContainer;
 import org.projectodd.stilts.stomplet.container.StompletMessageConduitFactory;
@@ -58,6 +59,14 @@ public class StompletServer implements Server {
     
     public StompProvider getStompProvider() {
         return this.server.getStompProvider();
+    }
+    
+    public void setResourceManager(ResourceManager resourceManager) {
+        this.server.setResourceManager( resourceManager );
+    }
+    
+    public ResourceManager getResourceManager() {
+        return this.server.getResourceManager();
     }
     
     public Executor getMessageHandlingExecutor() {

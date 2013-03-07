@@ -1,4 +1,4 @@
-package org.projectodd.stilts.stomp.server.websockets.protocol;
+package org.projectodd.stilts.stomp.server.protocol.websockets;
 
 import java.io.IOException;
 

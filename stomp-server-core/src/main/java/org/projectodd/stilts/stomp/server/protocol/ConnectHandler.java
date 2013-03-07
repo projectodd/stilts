@@ -30,9 +30,10 @@ import org.projectodd.stilts.stomp.protocol.StompFrame.Command;
 import org.projectodd.stilts.stomp.protocol.StompFrame.Header;
 import org.projectodd.stilts.stomp.protocol.StompFrame.Version;
 import org.projectodd.stilts.stomp.protocol.StompFrames;
-import org.projectodd.stilts.stomp.server.websockets.protocol.SessionDecodedEvent;
+import org.projectodd.stilts.stomp.server.protocol.websockets.SessionDecodedEvent;
 import org.projectodd.stilts.stomp.spi.StompConnection;
 import org.projectodd.stilts.stomp.spi.StompProvider;
+import org.projectodd.stilts.stomp.spi.TransactionalAcknowledgeableMessageSink;
 
 public class ConnectHandler extends AbstractControlFrameHandler {
 
@@ -45,7 +46,7 @@ public class ConnectHandler extends AbstractControlFrameHandler {
     public void handleUpstream(ChannelHandlerContext ctx, ChannelEvent e) throws Exception {
         if (e instanceof HostDecodedEvent) {
             this.host = ((HostDecodedEvent) e).getHost();
-        } else if ( e instanceof SessionDecodedEvent ) {
+        } else if (e instanceof SessionDecodedEvent) {
             this.sessionId = ((SessionDecodedEvent) e).getSessionId();
         } else {
             super.handleUpstream( ctx, e );
@@ -71,16 +72,16 @@ public class ConnectHandler extends AbstractControlFrameHandler {
                     }
                 }
             }
-            
-            headers.remove(  Header.SESSION );
-            
-            if ( this.sessionId != null ) {
+
+            headers.remove( Header.SESSION );
+
+            if (this.sessionId != null) {
                 headers.put( Header.SESSION, this.sessionId );
             }
 
             checkHost( headers, version );
-            StompConnection stompConnection = getStompProvider().createConnection( new ChannelMessageSink( channelContext.getChannel(), getContext().getAckManager() ),
-                    headers, version, hb );
+            StompConnection stompConnection = getStompProvider().createConnection( createMessageSink( channelContext ), headers, version, hb );
+            log.debugf(  "setting stomp connection", stompConnection );
             if (stompConnection != null) {
                 getContext().setStompConnection( stompConnection );
                 StompFrame connected = StompFrames.newConnectedFrame( stompConnection.getSession().getId(), version );
@@ -98,11 +99,15 @@ public class ConnectHandler extends AbstractControlFrameHandler {
             sendErrorAndClose( channelContext, e.getMessage(), frame );
         }
     }
+    
+    protected TransactionalAcknowledgeableMessageSink createMessageSink(ChannelHandlerContext ctx) {
+        return new ChannelMessageSink( ctx.getChannel(), getContext().getAckManager() );
+    }
 
     private Heartbeat checkHeartbeat(StompFrame frame, Version version) throws StompException {
         Heartbeat hb = null;
         String heartBeat = frame.getHeader( Header.HEARTBEAT );
-        if ( StringUtils.isNotBlank( heartBeat ) && !version.isBefore( Version.VERSION_1_1 )) {
+        if (StringUtils.isNotBlank( heartBeat ) && !version.isBefore( Version.VERSION_1_1 )) {
             if (!HEART_BEAT_PATTERN.matcher( heartBeat ).matches()) {
                 throw new StompException( "Heartbeat must be specified in msec as two comma-separated values." );
             }
@@ -120,7 +125,7 @@ public class ConnectHandler extends AbstractControlFrameHandler {
 
     private String checkHost(Headers headers, Version version) throws StompException {
         String host = headers.get( Header.HOST );
-        if ( StringUtils.isBlank( host ) && version.isAfter( Version.VERSION_1_0 )) {
+        if (StringUtils.isBlank( host ) && version.isAfter( Version.VERSION_1_0 )) {
             throw new StompException( "Must specify host in STOMP protocol 1.1 and above." );
         }
         return host;
@@ -146,7 +151,7 @@ public class ConnectHandler extends AbstractControlFrameHandler {
         return selectedVersion;
 
     }
-    
+
     private static Logger log = Logger.getLogger( ConnectHandler.class );
 
     private static final Pattern HEART_BEAT_PATTERN = Pattern.compile( "^\\d+,\\d+$" );

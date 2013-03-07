@@ -9,18 +9,16 @@ import org.projectodd.stilts.stomp.server.protocol.StompServerPipelineFactory;
 public class InsecureConnector extends AbstractConnector {
 
     public InsecureConnector() {
-        this( new InetSocketAddress( Constants.DEFAULT_PORT ));
+        this( new InetSocketAddress( Constants.DEFAULT_PORT ) );
     }
-    
+
     public InsecureConnector(InetSocketAddress socketAddress) {
         super( socketAddress );
     }
-
+    
     @Override
     protected ChannelPipelineFactory getChannelPipelineFactory() {
-        return new StompServerPipelineFactory( getServer().getStompProvider(), getServer().getMessageHandlingExecutor(), null );
+        return new StompServerPipelineFactory( getServer().getStompProvider(), getServer().getMessageHandlingExecutor(), getServer().getResourceManager(), null );
     }
-
-
 
 }

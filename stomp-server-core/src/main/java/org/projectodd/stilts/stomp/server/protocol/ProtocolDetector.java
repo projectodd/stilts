@@ -1,7 +1,6 @@
 package org.projectodd.stilts.stomp.server.protocol;
 
 import java.nio.charset.Charset;
-import java.security.NoSuchAlgorithmException;
 import java.util.concurrent.Executor;
 
 import org.jboss.logging.Logger;
@@ -10,29 +9,28 @@ import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.UpstreamMessageEvent;
-import org.jboss.netty.handler.codec.http.HttpRequestDecoder;
-import org.jboss.netty.handler.codec.http.HttpResponseEncoder;
+import org.jboss.netty.handler.codec.http.HttpServerCodec;
 import org.jboss.netty.handler.codec.replay.ReplayingDecoder;
 import org.jboss.netty.handler.codec.replay.VoidEnum;
 import org.jboss.netty.handler.execution.ExecutionHandler;
 import org.jboss.netty.handler.ssl.SslHandler;
-import org.projectodd.stilts.stomp.protocol.DebugHandler;
 import org.projectodd.stilts.stomp.protocol.StompFrameDecoder;
 import org.projectodd.stilts.stomp.protocol.StompFrameEncoder;
 import org.projectodd.stilts.stomp.protocol.StompMessageDecoder;
 import org.projectodd.stilts.stomp.protocol.StompMessageEncoder;
-import org.projectodd.stilts.stomp.protocol.websocket.WebSocketStompFrameDecoder;
-import org.projectodd.stilts.stomp.protocol.websocket.WebSocketStompFrameEncoder;
 import org.projectodd.stilts.stomp.server.ServerStompMessageFactory;
-import org.projectodd.stilts.stomp.server.websockets.protocol.DisorderlyCloseHandler;
-import org.projectodd.stilts.stomp.server.websockets.protocol.ServerHandshakeHandler;
+import org.projectodd.stilts.stomp.server.protocol.longpoll.ConnectionManager;
+import org.projectodd.stilts.stomp.server.protocol.longpoll.SinkManager;
+import org.projectodd.stilts.stomp.server.protocol.resource.ResourceManager;
 import org.projectodd.stilts.stomp.spi.StompProvider;
 
 public class ProtocolDetector extends ReplayingDecoder<VoidEnum> {
 
-    public ProtocolDetector(StompProvider provider, Executor executor) {
+    public ProtocolDetector(ConnectionManager connectionManager, SinkManager sinkManager, StompProvider provider, Executor executor, ResourceManager resourceManager) {
         this.provider = provider;
         this.executor = executor;
+        this.connectionManager = connectionManager;
+        this.sinkManager = sinkManager;
 
         if (this.executor != null) {
             this.executionHandler = new ExecutionHandler( this.executor );
@@ -50,13 +48,13 @@ public class ProtocolDetector extends ReplayingDecoder<VoidEnum> {
             String line = lineBuffer.toString( UTF_8 );
 
             SslHandler sslHandler = context.getPipeline().get( SslHandler.class );
-            
+
             buffer.resetReaderIndex();
-            ChannelBuffer fullBuffer = null;
+            ChannelBuffer fullBuffer = buffer.readBytes( super.actualReadableBytes() );
             if (line.startsWith( "CONNECT" ) || line.startsWith( "STOMP" )) {
-                fullBuffer = switchToPureStomp( context, buffer );
+                switchToPureStomp( context );
             } else {
-                fullBuffer = switchToStompOverWebSockets( context, buffer, ( sslHandler != null )  );
+                switchToHttp( context );
             }
 
             // We want to restart at the entire head of the pipeline,
@@ -76,48 +74,23 @@ public class ProtocolDetector extends ReplayingDecoder<VoidEnum> {
         return null;
     }
 
-    protected ChannelBuffer switchToPureStomp(ChannelHandlerContext context, ChannelBuffer buffer) {
-        ChannelBuffer fullBuffer = buffer.readBytes( super.actualReadableBytes() );
-
-        ChannelPipeline pipeline = context.getPipeline();
+    protected void switchToHttp(ChannelHandlerContext ctx) {
+        ChannelPipeline pipeline = ctx.getPipeline();
 
         pipeline.remove( this );
+        pipeline.addLast( "http-codec", new HttpServerCodec() );
+        pipeline.addLast( "http-handler", new HTTPProtocolHandler( provider, executionHandler, connectionManager, sinkManager, resourceManager ) );
+    }
 
-        // pipeline.addLast( "server-debug-header", new DebugHandler(
-        // "SERVER-HEAD" ) );
+    protected void switchToPureStomp(ChannelHandlerContext ctx) {
+        ChannelPipeline pipeline = ctx.getPipeline();
+
+        pipeline.remove( this );
 
         pipeline.addLast( "stomp-frame-encoder", new StompFrameEncoder() );
         pipeline.addLast( "stomp-frame-decoder", new StompFrameDecoder() );
 
-        appendCommonHandlers( pipeline );
-
-        return fullBuffer;
-
-    }
-
-    protected ChannelBuffer switchToStompOverWebSockets(ChannelHandlerContext context, ChannelBuffer buffer, boolean secure) throws NoSuchAlgorithmException {
-        ChannelBuffer fullBuffer = buffer.readBytes( super.actualReadableBytes() );
-        ChannelPipeline pipeline = context.getPipeline();
-        pipeline.remove( this );
-
-        // pipeline.addFirst( "server-debug-header", new DebugHandler(
-        // "SERVER-HEAD" ) );
-        pipeline.addFirst( "disorderly-close", new DisorderlyCloseHandler() );
-        pipeline.addLast( "http-encoder", new HttpResponseEncoder() );
-        pipeline.addLast( "http-decoder", new HttpRequestDecoder() );
-        pipeline.addLast( "websocket-handshake", new ServerHandshakeHandler( secure ) );
-
-        pipeline.addLast( "stomp-frame-encoder", new WebSocketStompFrameEncoder() );
-        pipeline.addLast( "stomp-frame-decoder", new WebSocketStompFrameDecoder() );
-
-        appendCommonHandlers( pipeline );
-
-        return fullBuffer;
-    }
-
-    protected void appendCommonHandlers(ChannelPipeline pipeline) {
-
-        ConnectionContext context = new ConnectionContext();
+        ConnectionContext context = new DefaultConnectionContext();
 
         pipeline.addLast( "stomp-disorderly-close-handler", new StompDisorderlyCloseHandler( provider, context ) );
 
@@ -153,5 +126,7 @@ public class ProtocolDetector extends ReplayingDecoder<VoidEnum> {
     private StompProvider provider;
     private Executor executor;
     private ExecutionHandler executionHandler;
-
+    private ConnectionManager connectionManager;
+    private SinkManager sinkManager;
+    private ResourceManager resourceManager;
 }

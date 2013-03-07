@@ -61,6 +61,9 @@
     <version.shrinkwrap>1.0.0-beta-1</version.shrinkwrap>
     <version.weld-core>1.1.1.Final</version.weld-core>
     <version.weld-spi>1.1.Final</version.weld-spi>
+    <version.org.apache.httpcomponents>4.3-alpha1</version.org.apache.httpcomponents>
+
+
     
     <version.bundle.plugin>2.3.5</version.bundle.plugin>
 	<version.maven.jdocbook.plugin>2.3.3</version.maven.jdocbook.plugin>
@@ -318,6 +321,11 @@
         <artifactId>slf4j-log4j12</artifactId>
         <version>${version.org.slf4j-log4j}</version>
       </dependency>
+      <dependency>
+        <groupId>org.apache.httpcomponents</groupId>
+        <artifactId>httpclient</artifactId>
+        <version>${version.org.apache.httpcomponents}</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
@@ -325,6 +333,11 @@
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.httpcomponents</groupId>
+      <artifactId>httpclient</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>

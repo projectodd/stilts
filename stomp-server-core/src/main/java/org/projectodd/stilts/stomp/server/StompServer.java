@@ -19,8 +19,8 @@ package org.projectodd.stilts.stomp.server;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executor;
-import java.util.concurrent.ExecutorService;
 
+import org.projectodd.stilts.stomp.server.protocol.resource.ResourceManager;
 import org.projectodd.stilts.stomp.spi.StompProvider;
 
 public class StompServer<T extends StompProvider> implements Server {
@@ -42,6 +42,14 @@ public class StompServer<T extends StompProvider> implements Server {
 
     public T getStompProvider() {
         return this.stompProvider;
+    }
+    
+    public void setResourceManager(ResourceManager resourceManager) {
+        this.resourceManager = resourceManager;
+    }
+    
+    public ResourceManager getResourceManager() {
+        return this.resourceManager;
     }
 
     public synchronized void addConnector(Connector connector) throws Exception {
@@ -76,7 +84,7 @@ public class StompServer<T extends StompProvider> implements Server {
         if (running) {
             return;
         }
-
+        
         List<Connector> startedConnectors = new ArrayList<Connector>();
         for (Connector each : this.connectors) {
             try {
@@ -124,5 +132,6 @@ public class StompServer<T extends StompProvider> implements Server {
     private T stompProvider;
     private Executor messageHandlingExecutor;
     private List<Connector> connectors = new ArrayList<Connector>();
+    private ResourceManager resourceManager;
 
 }

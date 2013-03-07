@@ -22,7 +22,7 @@ public class TransactionHandlersTest {
     @Before
     public void setUp() throws StompException {
         this.stompProvider = new MockStompProvider();
-        this.connectionContext = new ConnectionContext();
+        this.connectionContext = new DefaultConnectionContext();
         this.connection = this.stompProvider.createConnection( null, null, Version.VERSION_1_1 );
         this.connectionContext.setStompConnection( this.connection );
         this.handler = new DecoderEmbedder<Object>(

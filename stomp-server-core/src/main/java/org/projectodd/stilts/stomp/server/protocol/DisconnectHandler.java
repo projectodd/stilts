@@ -29,7 +29,12 @@ import org.projectodd.stilts.stomp.spi.StompProvider;
 public class DisconnectHandler extends AbstractControlFrameHandler {
 
     public DisconnectHandler(StompProvider server, ConnectionContext context) {
+        this( server, context, true );
+    }
+    
+    public DisconnectHandler(StompProvider server, ConnectionContext context, boolean shouldClose) {
         super( server, context, Command.DISCONNECT );
+        this.shouldClose = shouldClose;
     }
 
     @Override
@@ -41,12 +46,16 @@ public class DisconnectHandler extends AbstractControlFrameHandler {
         }
         getContext().setActive( false );
         String receiptId = frame.getHeader( Header.RECEIPT );
-        if (receiptId != null) {
-            ChannelFuture future = channelContext.getChannel().write( StompFrames.newReceiptFrame( receiptId ) );
-            future.addListener( ChannelFutureListener.CLOSE );
-        } else {
-            channelContext.getChannel().close();
+        if (shouldClose) {
+            if (receiptId != null) {
+                ChannelFuture future = channelContext.getChannel().write( StompFrames.newReceiptFrame( receiptId ) );
+                future.addListener( ChannelFutureListener.CLOSE );
+            } else {
+                channelContext.getChannel().close();
+            }
         }
     }
+
+    private boolean shouldClose;
 
 }
