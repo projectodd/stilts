@@ -10,6 +10,12 @@ var Stomp = {
     ACCEPT_VERSION : 'accept-version',
     VERSION : 'version'
   },
+  
+  Transport: {
+  
+  },
+  
+  Transports: [],
 
   unmarshal: function(data) {
     var divider     = data.search(/\n\n/);
@@ -76,139 +82,7 @@ var Stomp = {
     }
   },
   
-  Transport: {
-  
-  }
 };
-
-Stomp.Transport.WebSocket = function(host, port, secure) {
-  this._host = host;
-  this._port = port;
-  this._secure = secure;
-}
-
-Stomp.Transport.WebSocket.prototype = {
-  _ws: undefined,
-  
-  close: function() {
-    this._ws.close(); 
-  },
-  
-  send: function(data) {
-    this._ws.send(data);
-  },
-}
-
-// ----------------------------------------
-// Long-Poll Transport
-// ----------------------------------------
-
-Stomp.Transport.LongPoll = function(host, port, secure) {
-  this._host = host;
-  this._port = port;
-  this._secure = secure;
-}
-
-Stomp.Transport.LongPoll.prototype = {
-
-  _receiverRequest: undefined,
-  _disconnectReceiver: false,
-  
-  connect: function() {
-    var headers = {};
-    if ( this._login ) {
-      headers.login = this._login;
-    }
-    if ( this._passcode ) {
-      headers.passcode = this._passcode;
-    }
-    try {
-      this.transmitSync( "CONNECT", headers );
-    } catch (err) {
-      return;
-    }
-    
-    this.connectMessageReceiver();
-    
-    return this;
-  },
-
-  connectMessageReceiver: function() {
-    var transport = this;
-  
-    var request = new XMLHttpRequest();
-    request.open( "GET", this._url(), true );
-    request.onload = function() {
-      var message = Stomp.unmarshal( request.response );
-      transport.client.processMessage( message );
-    }
-  
-    request.onloadend = function() {
-      if ( transport._disconnectReceiver ) {
-        return;
-      }
-      transport.connectMessageReceiver();
-    }
-    
-    setTimeout( function() {
-      if ( request.readyState != 0 && request.readyState != 4 ) {
-        request.abort();
-      }
-    }, 10000 );
-    
-    request.setRequestHeader("Content-type","text/stomp-poll");
-    request.withCredentials = true;
-    request.send();
-    this._receiverRequest = request;
-  },
-
-  disconnectMessageReceiver: function() {
-    this._disconnectReceiver = true;
-    this._receiverRequest.abort();
-  },
-
-  close: function() {
-    this.disconnectMessageReceiver();
-  },
-
-  transmitSync: function(command, headers, body, callbacks) {
-    var data = Stomp.marshal(command, headers, body);
-    this.send(data, callbacks, false);
-  },
-  
-  transmit: function(command, headers, body, callbacks) {
-    var data = Stomp.marshal(command, headers, body);
-    this.send(data, callbacks);
-  },
-  
-  send: function(data, callbacks, async) {
-    callbacks = callbacks || {};
-    var request = new XMLHttpRequest();
-    request.open( "POST", this._url(), async );
-    if ( callbacks['load'] ) {
-      request.onload = function() {
-        callbacks['load'](request);
-      }
-    }
-    if ( callbacks['error'] ) {
-      requrest.onerror = function() {
-        callbacks['error'](request);
-      }
-    }
-    request.setRequestHeader("Content-type","text/stomp");
-    request.withCredentials = true;
-    request.send(data);
-  },
-  
-  _url: function() {
-    if ( this._secure ) {
-      return "https://" + this._host + ":" + this._port + "/";
-    }
-    return "http://" + this._host + ":" + this._port + "/";
-  },
-  
-}
-
 
 
 Stomp.Client = function(host, port, secure) {
@@ -223,17 +97,10 @@ Stomp.Client.prototype = {
     VERSION_1_0 : "1.0", 
     VERSION_1_1 : "1.1",
   
-    supportedVersions : function() {
-      return "1.0,1.1";
-    }
   },
   
-  disableWebSocket: function() {
-    this._webSocketEnabled = false;
-  },
-  
-  disableLongPoll: function() {
-    this._longPollEnabled = false;
+  supportedVersions : function() {
+    return "1.0,1.1";
   },
   
   connect: function(callback) {
@@ -256,28 +123,28 @@ Stomp.Client.prototype = {
       this._errorCallback = arguments[3];
     }
     
-    this._connectTransport();
+    console.log( "connecting" );
+    if ( this._connectTransport(callback) ) {
+      console.log( "connected!" );
+    } else {
+      console.log( "not connected!" );
+    }
     
-    if ( ! this._transport ) {
-      return;
+  },
+  
+  _connectTransport: function(callback) {
+    for ( i = 0 ; i < Stomp.Transports.length ; ++i ) {
+      try {
+        this._transport = new Stomp.Transports[i]( this._host, this._port, this._secure );
+        this._transport.client = this;
+        if ( this._transport.connect(callback) ) {
+          return true;
+        }
+      } catch (err) {
+        this._transport = undefined;
+      }
     }
-    this._transport.client = this;
-    callback();
-  },
-  
-  _connectTransport: function() {
-    this._transport = this._connectWebSocket();
-    if ( ! this._transport ) {
-      this._transport = this._connectLongPoll();
-    }
-  },
-  
-  _connectWebSocket: function() {
-  },
-  
-  _connectLongPoll: function() {
-    var transport = new Stomp.Transport.LongPoll( this._host, this._port, this._secure );
-    return transport.connect();
+    return false;
   },
   
   disconnect: function(disconnectCallback) {
@@ -345,9 +212,15 @@ Stomp.Client.prototype = {
   
   // ----------------------------------------
   processMessage: function(message) {
-    var subId = message.headers['subscription'];
-    var callback = this._subscriptions[ subId ];
-    callback(message);
+    if (message.command == "MESSAGE") {
+      var subId = message.headers['subscription'];
+      var callback = this._subscriptions[ subId ];
+      callback(message);
+    } else if (message.command == "RECEIPT" && this.onreceipt) {
+      this.onreceipt(message);
+    } else if (message.command == "ERROR" && this.onerror) {
+      this.onerror(message);
+    }
   },
   // ----------------------------------------
   
@@ -365,6 +238,5 @@ Stomp.Client.prototype = {
   _transmit: function(command, headers, body) {
 	this._transport.transmit(command, headers, body);
   },
-  
   
 }
