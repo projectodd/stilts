@@ -31,12 +31,13 @@ public class StompMessageEncoder extends OneToOneEncoder {
     protected Object encode(ChannelHandlerContext ctx, Channel channel, Object msg) throws Exception {
         if (msg instanceof StompMessage) {
             StompMessage message = (StompMessage) msg;
-            log.trace(  "encode: " + message );
+            log.debug(  "encode: " + message );
             FrameHeader header = new FrameHeader( Command.MESSAGE, message.getHeaders() );
             StompContentFrame frame = new StompContentFrame( header, message.getContent() );
-            log.trace(  "encode.frame: " + frame );
+            log.debug(  "encode.frame: " + frame );
             return frame;
         }
+        log.debug( "decoded: " + msg );
         return msg;
     }
 

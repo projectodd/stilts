@@ -27,11 +27,10 @@ import org.projectodd.stilts.stomp.spi.StompProvider;
 
 public abstract class AbstractControlFrameHandler extends AbstractProviderHandler {
 
-    private static final Logger log = Logger.getLogger( AbstractControlFrameHandler.class );
-
     public AbstractControlFrameHandler(StompProvider provider, ConnectionContext context, Command command) {
         super( provider, context );
         this.command = command;
+        this.log = Logger.getLogger( getClass() );
     }
 
     @Override
@@ -69,6 +68,7 @@ public abstract class AbstractControlFrameHandler extends AbstractProviderHandle
 
     public abstract void handleControlFrame(ChannelHandlerContext channelContext, StompFrame frame);
 
+    private Logger log = null;
     private Command command;
     private boolean requiresClientIdentification = true;
 

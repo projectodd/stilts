@@ -43,7 +43,7 @@ public class StompMessageDecoder extends OneToOneDecoder {
             }
             return this.messageFactory.createMessage( frame.getHeaders(), frame.getContent(), isError );
         }
-        return null;
+        return msg;
     }
 
 }

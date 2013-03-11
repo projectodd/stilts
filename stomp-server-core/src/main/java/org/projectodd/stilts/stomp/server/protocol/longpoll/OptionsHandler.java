@@ -17,40 +17,37 @@
 package org.projectodd.stilts.stomp.server.protocol.longpoll;
 
 import org.jboss.logging.Logger;
-import org.jboss.netty.channel.ChannelEvent;
 import org.jboss.netty.channel.ChannelHandlerContext;
-import org.jboss.netty.channel.ChannelUpstreamHandler;
-import org.jboss.netty.channel.Channels;
-import org.jboss.netty.channel.DownstreamMessageEvent;
 import org.jboss.netty.channel.MessageEvent;
+import org.jboss.netty.channel.SimpleChannelUpstreamHandler;
 import org.jboss.netty.handler.codec.http.DefaultHttpResponse;
+import org.jboss.netty.handler.codec.http.HttpMethod;
+import org.jboss.netty.handler.codec.http.HttpRequest;
 import org.jboss.netty.handler.codec.http.HttpResponse;
 import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.jboss.netty.handler.codec.http.HttpVersion;
-import org.projectodd.stilts.stomp.protocol.StompFrame;
-import org.projectodd.stilts.stomp.protocol.StompFrame.Command;
 
-public class HttpResponder implements ChannelUpstreamHandler {
+public class OptionsHandler extends SimpleChannelUpstreamHandler {
 
-    private static Logger log = Logger.getLogger( HttpResponder.class );
+    private static Logger log = Logger.getLogger( OptionsHandler.class );
 
-    public HttpResponder() {
+    public OptionsHandler() {
 
     }
 
     @Override
-    public void handleUpstream(ChannelHandlerContext ctx, ChannelEvent e) throws Exception {
-        if (e instanceof MessageEvent && ((MessageEvent) e).getMessage() instanceof StompFrame) {
-            StompFrame frame = (StompFrame) ((MessageEvent) e).getMessage();
-            if (frame.getCommand() != Command.CONNECT) {
-                HttpResponse httpResp = new DefaultHttpResponse( HttpVersion.HTTP_1_1, HttpResponseStatus.NO_CONTENT );
+    public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) throws Exception {
+        if (e.getMessage() instanceof HttpRequest) {
+            HttpRequest httpReq = (HttpRequest) e.getMessage();
+            if (httpReq.getMethod().equals( HttpMethod.OPTIONS )) {
+                HttpResponse httpResp = new DefaultHttpResponse( HttpVersion.HTTP_1_1, HttpResponseStatus.OK );
+                httpResp.setHeader( "Allow", "OPTIONS,POST,GET" );
                 httpResp.setHeader( "Content-Length", "0" );
-                ctx.sendDownstream( new DownstreamMessageEvent( ctx.getChannel(), Channels.future( ctx.getChannel() ), httpResp, ctx.getChannel().getRemoteAddress() ) );
+                ctx.getChannel().write( httpResp );
                 return;
             }
         }
-
-        ctx.sendUpstream( e );
+        super.messageReceived( ctx, e );
     }
 
 }

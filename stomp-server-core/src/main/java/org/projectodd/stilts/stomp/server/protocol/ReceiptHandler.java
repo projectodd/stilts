@@ -37,6 +37,7 @@ public class ReceiptHandler extends AbstractProviderHandler {
         if (e.getMessage() instanceof StompFrame) {
             handleStompFrame( channelContext, (StompFrame) e.getMessage() );
         }
+        log.debug( "sending further upstream: " + this.getClass().getSimpleName());
         super.messageReceived( channelContext, e );
     }
 

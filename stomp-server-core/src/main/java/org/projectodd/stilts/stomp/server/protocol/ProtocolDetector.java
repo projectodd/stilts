@@ -19,7 +19,9 @@ import org.projectodd.stilts.stomp.protocol.StompFrameEncoder;
 import org.projectodd.stilts.stomp.protocol.StompMessageDecoder;
 import org.projectodd.stilts.stomp.protocol.StompMessageEncoder;
 import org.projectodd.stilts.stomp.server.ServerStompMessageFactory;
+import org.projectodd.stilts.stomp.server.protocol.longpoll.CORSHandler;
 import org.projectodd.stilts.stomp.server.protocol.longpoll.ConnectionManager;
+import org.projectodd.stilts.stomp.server.protocol.longpoll.OptionsHandler;
 import org.projectodd.stilts.stomp.server.protocol.longpoll.SinkManager;
 import org.projectodd.stilts.stomp.server.protocol.resource.ResourceManager;
 import org.projectodd.stilts.stomp.spi.StompProvider;
@@ -79,6 +81,8 @@ public class ProtocolDetector extends ReplayingDecoder<VoidEnum> {
 
         pipeline.remove( this );
         pipeline.addLast( "http-codec", new HttpServerCodec() );
+        pipeline.addLast( "cors-handler", new CORSHandler() );
+        pipeline.addLast( "options-handler", new OptionsHandler() );
         pipeline.addLast( "http-handler", new HTTPProtocolHandler( provider, executionHandler, connectionManager, sinkManager, resourceManager ) );
     }
 

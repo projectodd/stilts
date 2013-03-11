@@ -15,17 +15,18 @@ public class HttpServerStompFrameEncoder extends OneToOneEncoder {
 
     public HttpServerStompFrameEncoder() {
     }
-    
+
     @Override
     protected Object encode(ChannelHandlerContext ctx, Channel channel, Object msg) throws Exception {
-        if ( msg instanceof StompFrame ) {
+        if (msg instanceof StompFrame) {
             ChannelBuffer buffer = StompFrameCodec.INSTANCE.encode( (StompFrame) msg );
             HttpResponse httpResp = new DefaultHttpResponse( HttpVersion.HTTP_1_1, HttpResponseStatus.OK );
-            httpResp.setContent(  buffer );
+            httpResp.setContent( buffer );
+            httpResp.setHeader( "Content-Length", "" + buffer.readableBytes() );
+            httpResp.setHeader( "Content-Type", "text/stomp" );
             return httpResp;
         }
         return msg;
     }
-    
 
 }

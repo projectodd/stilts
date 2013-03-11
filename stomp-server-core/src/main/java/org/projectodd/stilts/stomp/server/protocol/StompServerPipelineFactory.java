@@ -57,10 +57,8 @@ public class StompServerPipelineFactory implements ChannelPipelineFactory {
             SslHandler sslHandler = new SslHandler( sslEngine );
             sslHandler.setEnableRenegotiation( false );
             pipeline.addLast( "ssl", sslHandler );
-            pipeline.addLast( "server-post-ssl", new DebugHandler( "SERVER-POST-SSL" ) );
         }
         pipeline.addLast( "protocol-detector", new ProtocolDetector( this.connectionManager, this.sinkManager, this.provider, this.executor, rm) );
-        pipeline.addLast( "server-post-proto", new DebugHandler( "SERVER-POST-PROTO" ) );
         return pipeline;
     }
 

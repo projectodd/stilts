@@ -1,10 +1,6 @@
 package org.projectodd.stilts.stomp.protocol;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import org.jboss.netty.handler.codec.embedder.DecoderEmbedder;
 import org.junit.Before;
@@ -28,7 +24,9 @@ public class StompMessageDecoderTest {
     public void testControlFrame() throws Exception {
         StompFrame frame = StompFrames.newAckFrame( new DefaultHeaders() );
         boolean result = this.decoder.offer( frame );
-        assertFalse( result );
+        Object output = this.decoder.poll();
+        assertSame( frame, output );
+        //assertFalse( result );
     }
     
     @Test

@@ -8,6 +8,7 @@ import org.jboss.netty.channel.ChannelDownstreamHandler;
 import org.jboss.netty.channel.ChannelEvent;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.ChannelUpstreamHandler;
+import org.jboss.netty.channel.Channels;
 import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.handler.codec.http.Cookie;
 import org.jboss.netty.handler.codec.http.CookieDecoder;
@@ -32,7 +33,6 @@ public class ConnectionResumeHandler implements ChannelUpstreamHandler, ChannelD
     @Override
     public void handleUpstream(ChannelHandlerContext ctx, ChannelEvent e) throws Exception {
         if (e instanceof MessageEvent) {
-            log.debug( "RESUME: " + e );
             if (((MessageEvent) e).getMessage() instanceof HttpRequest) {
 
                 CookieDecoder cookieDecoder = new CookieDecoder();
@@ -45,51 +45,46 @@ public class ConnectionResumeHandler implements ChannelUpstreamHandler, ChannelD
                     for (Cookie cookie : cookies) {
                         if (cookie.getName().equals( "stomp-connection-id" )) {
                             this.connectionId = cookie.getValue();
-                            log.debugf( "reconnect to connection: %s", connectionId );
                             connectionContext = this.connectionManager.get( connectionId );
-                            log.debugf( "reconnected to connection: %s", connectionContext );
                             break;
                         }
                     }
                 }
 
-                boolean newConnection = false;
                 if (connectionContext == null) {
                     connectionContext = new DefaultConnectionContext();
                     this.connectionId = createConnectionId( connectionContext );
-                    log.debugf( "stash connection %s as %s", connectionContext, connectionId );
                     this.connectionManager.put( connectionId, connectionContext );
-                    newConnection = true;
                 }
 
                 this.context.setConnectionContext( connectionContext );
 
-                if (newConnection) {
-                    String hostPort = httpReq.getHeader( HttpHeaders.Names.HOST );
+                // if (newConnection) {
+                String hostPort = httpReq.getHeader( HttpHeaders.Names.HOST );
 
-                    if (hostPort != null) {
-                        int colonLoc = hostPort.indexOf( ':' );
-                        String host = hostPort;
-                        if (colonLoc > 0) {
-                            host = hostPort.substring( 0, colonLoc );
-                        }
-
-                        ChannelEvent hostDecodedEvent = new HostDecodedEvent( ctx.getChannel(), host );
-                        ctx.sendUpstream( hostDecodedEvent );
+                if (hostPort != null) {
+                    int colonLoc = hostPort.indexOf( ':' );
+                    String host = hostPort;
+                    if (colonLoc > 0) {
+                        host = hostPort.substring( 0, colonLoc );
                     }
 
-                    if (cookieHeader != null) {
-                        Set<Cookie> cookies = cookieDecoder.decode( cookieHeader );
+                    ChannelEvent hostDecodedEvent = new HostDecodedEvent( ctx.getChannel(), host );
+                    ctx.sendUpstream( hostDecodedEvent );
+                }
 
-                        for (Cookie each : cookies) {
-                            if (each.getName().equalsIgnoreCase( "jsessionid" )) {
-                                ChannelEvent sessionDecodedEvent = new SessionDecodedEvent( ctx.getChannel(), each.getValue() );
-                                ctx.sendUpstream( sessionDecodedEvent );
-                                break;
-                            }
+                if (cookieHeader != null) {
+                    Set<Cookie> cookies = cookieDecoder.decode( cookieHeader );
+
+                    for (Cookie each : cookies) {
+                        if (each.getName().equalsIgnoreCase( "jsessionid" )) {
+                            ChannelEvent sessionDecodedEvent = new SessionDecodedEvent( ctx.getChannel(), each.getValue() );
+                            ctx.sendUpstream( sessionDecodedEvent );
+                            break;
                         }
                     }
                 }
+                // }
             }
         }
         ctx.sendUpstream( e );

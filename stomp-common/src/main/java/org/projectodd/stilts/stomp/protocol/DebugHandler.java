@@ -36,14 +36,14 @@ public class DebugHandler implements ChannelUpstreamHandler, ChannelDownstreamHa
 
     @Override
     public void handleDownstream(ChannelHandlerContext ctx, ChannelEvent e) throws Exception {
-        log.tracef(  "%s >>outbound>> %s :: %s", scope, e, e.getClass() );
+        log.tracef(  "%s >>outbound>> %s :: %s ** %s", scope, ctx.getChannel(), e, e.getClass() );
         dump( ">>outbound>>", e );
         ctx.sendDownstream( e );
     }
 
     @Override
     public void handleUpstream(ChannelHandlerContext ctx, ChannelEvent e) throws Exception {
-        log.tracef( "%s <<inbound<< %s :: %s", scope, e, e.getClass() );
+        log.tracef( "%s <<inbound<< %s :: %s ** %s", scope, ctx.getChannel(), e, e.getClass() );
         dump( "<<inbound<<", e );
         ctx.sendUpstream( e );
     }
@@ -57,7 +57,7 @@ public class DebugHandler implements ChannelUpstreamHandler, ChannelDownstreamHa
     }
 
     protected void dump(String direction, ExceptionEvent e) {
-        log.errorf(e.getCause(), "%s %s EXCEPTION", scope, direction);
+        log.errorf(e.getCause(), "%s %s %s :: EXCEPTION", scope, direction, e.getChannel() );
     }
 
     protected void dump(String direction, MessageEvent e) {
@@ -65,13 +65,13 @@ public class DebugHandler implements ChannelUpstreamHandler, ChannelDownstreamHa
 
         if (message instanceof ChannelBuffer) {
             ChannelBuffer buffer = (ChannelBuffer) message;
-            log.tracef( "%s %s MESSAGE+BUFFER %s", scope, direction, buffer.toString(Charset.forName("UTF-8")) );
+            log.tracef( "%s %s %s :: MESSAGE+BUFFER %s", scope, direction, e.getChannel(), buffer.toString(Charset.forName("UTF-8")) );
         } else if (message instanceof HttpResponse) {
             HttpResponse response = (HttpResponse) message;
-            log.tracef( "%s %s MESSAGE+HTTP_RESPONSE %s", scope, direction, response );
-            log.tracef( "%s %s MESSAGE+HTTP_RESPONSE+BUFFER %s", scope, direction, response.getContent() );
+            log.tracef( "%s %s %s :: MESSAGE+HTTP_RESPONSE %s", scope, direction, e.getChannel(), response );
+            log.tracef( "%s %s %s :: MESSAGE+HTTP_RESPONSE+BUFFER %s", scope, direction, e.getChannel(), response.getContent() );
         } else {
-            log.tracef( "%s %s MESSAGE %s", scope, direction, message );
+            log.tracef( "%s %s %s :: MESSAGE %s", scope, direction, e.getChannel(), message );
         }
     }
 

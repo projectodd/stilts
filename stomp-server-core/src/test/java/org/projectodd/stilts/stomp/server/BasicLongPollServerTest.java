@@ -81,6 +81,8 @@ public class BasicLongPollServerTest extends AbstractStompServerTestCase<MockSto
         ByteArrayEntity entity = new ByteArrayEntity( fullPayload.toString().getBytes() );
         request.setEntity( entity );
 
+        request.setHeader( "Content-Type", "text/stomp" );
+
         client.execute( request, new ResponseHandler<Void>() {
 
             @Override
