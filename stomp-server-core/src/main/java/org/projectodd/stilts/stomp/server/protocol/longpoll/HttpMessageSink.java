@@ -31,30 +31,44 @@ public class HttpMessageSink implements TransactionalAcknowledgeableMessageSink 
         if (this.channel != null) {
             log.debug( "write message to channel : " + message );
             this.channel.write( message );
-            this.channel = null;
+            if (this.single) {
+                this.channel = null;
+            }
+        } else {
+            this.messages.add( message );
         }
     }
 
-    public synchronized void provideChannel(Channel channel) {
+    public synchronized void provideChannel(Channel channel, boolean single) {
         log.debug( "someone provided a channel: " + channel );
-        if (this.messages.isEmpty()) {
-            this.channel = channel;
+
+        if (single && !this.messages.isEmpty()) {
+            StompMessage message = messages.removeFirst();
+            channel.write( message );
             return;
         }
 
-        StompMessage message = messages.removeFirst();
-        log.debug( "write message to channel : " + message );
-        channel.write( message );
+        if (!single) {
+            for (StompMessage each : this.messages) {
+                channel.write( each );
+            }
+            this.messages.clear();
+        }
+
+        this.channel = channel;
+        this.single = single;
     }
 
     public synchronized void clearChannel() {
         this.channel = null;
+        this.single = false;
     }
 
     private static Logger log = Logger.getLogger( HttpMessageSink.class );
-    
-    private AckManager ackManager;
-    private Channel channel;
-    private LinkedList<StompMessage> messages = new LinkedList<StompMessage>();
+
+    protected AckManager ackManager;
+    protected Channel channel;
+    protected LinkedList<StompMessage> messages = new LinkedList<StompMessage>();
+    protected boolean single;
 
 }

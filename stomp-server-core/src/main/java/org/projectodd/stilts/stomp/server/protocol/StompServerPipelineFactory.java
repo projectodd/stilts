@@ -27,9 +27,10 @@ import org.jboss.netty.channel.DefaultChannelPipeline;
 import org.jboss.netty.handler.ssl.SslHandler;
 import org.projectodd.stilts.stomp.protocol.DebugHandler;
 import org.projectodd.stilts.stomp.server.protocol.longpoll.ConnectionManager;
+import org.projectodd.stilts.stomp.server.protocol.longpoll.FlashPolicyFileHandler;
 import org.projectodd.stilts.stomp.server.protocol.longpoll.SinkManager;
+import org.projectodd.stilts.stomp.server.protocol.resource.ClasspathResourceManager;
 import org.projectodd.stilts.stomp.server.protocol.resource.ResourceManager;
-import org.projectodd.stilts.stomp.server.protocol.resource.SimpleResourceManager;
 import org.projectodd.stilts.stomp.spi.StompProvider;
 
 public class StompServerPipelineFactory implements ChannelPipelineFactory {
@@ -46,7 +47,7 @@ public class StompServerPipelineFactory implements ChannelPipelineFactory {
         
         ResourceManager rm = this.resourceManager;
         if ( rm == null ) {
-            rm = new SimpleResourceManager();
+            rm = new ClasspathResourceManager();
         }
         
         DefaultChannelPipeline pipeline = new DefaultChannelPipeline();
@@ -58,6 +59,7 @@ public class StompServerPipelineFactory implements ChannelPipelineFactory {
             sslHandler.setEnableRenegotiation( false );
             pipeline.addLast( "ssl", sslHandler );
         }
+        pipeline.addLast( "flash-policy-file-handler", new FlashPolicyFileHandler() );
         pipeline.addLast( "protocol-detector", new ProtocolDetector( this.connectionManager, this.sinkManager, this.provider, this.executor, rm) );
         return pipeline;
     }

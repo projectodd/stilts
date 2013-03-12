@@ -18,7 +18,6 @@ import org.jboss.netty.handler.ssl.SslHandler;
 import org.projectodd.stilts.stomp.protocol.DebugHandler;
 import org.projectodd.stilts.stomp.protocol.StompMessageDecoder;
 import org.projectodd.stilts.stomp.protocol.StompMessageEncoder;
-import org.projectodd.stilts.stomp.protocol.longpoll.HttpServerStompFrameEncoder;
 import org.projectodd.stilts.stomp.protocol.longpoll.HttpStompFrameDecoder;
 import org.projectodd.stilts.stomp.protocol.websocket.WebSocketStompFrameDecoder;
 import org.projectodd.stilts.stomp.protocol.websocket.WebSocketStompFrameEncoder;
@@ -27,8 +26,11 @@ import org.projectodd.stilts.stomp.server.protocol.longpoll.ConnectionManager;
 import org.projectodd.stilts.stomp.server.protocol.longpoll.ConnectionResumeHandler;
 import org.projectodd.stilts.stomp.server.protocol.longpoll.HttpConnectHandler;
 import org.projectodd.stilts.stomp.server.protocol.longpoll.HttpResponder;
+import org.projectodd.stilts.stomp.server.protocol.longpoll.HttpServerStompFrameEncoder;
 import org.projectodd.stilts.stomp.server.protocol.longpoll.HttpSinkHandler;
+import org.projectodd.stilts.stomp.server.protocol.longpoll.SSESinkHandler;
 import org.projectodd.stilts.stomp.server.protocol.longpoll.SinkManager;
+import org.projectodd.stilts.stomp.server.protocol.resource.ResourceHandler;
 import org.projectodd.stilts.stomp.server.protocol.resource.ResourceManager;
 import org.projectodd.stilts.stomp.server.protocol.websockets.DisorderlyCloseHandler;
 import org.projectodd.stilts.stomp.server.protocol.websockets.ServerHandshakeHandler;
@@ -66,7 +68,7 @@ public class HTTPProtocolHandler extends SimpleChannelUpstreamHandler {
             ChannelHandlerContext connectorContext = ctx.getPipeline().getContext( "longpoll-connector" );
             connector.handleUpstream( connectorContext, e );
             return;
-            
+
         }
         super.messageReceived( ctx, e );
     }
@@ -122,12 +124,14 @@ public class HTTPProtocolHandler extends SimpleChannelUpstreamHandler {
         WrappedConnectionContext context = new WrappedConnectionContext();
 
         pipeline.addLast( "longpoll-connector", new ConnectionResumeHandler( connectionManager, context ) );
-        
-        //pipeline.addLast( "http-resource-handler", new ResourceHandler( this.resourceManager ) );
+
+        pipeline.addLast( "http-resource-handler", new ResourceHandler(  this.resourceManager ) );
 
         pipeline.addLast( "stomp-http-encoder", new HttpServerStompFrameEncoder() );
         pipeline.addLast( "stomp-http-decoder", new HttpStompFrameDecoder() );
         pipeline.addLast( "stomp-disorderly-close-handler", new StompDisorderlyCloseHandler( provider, context ) );
+
+        pipeline.addLast( "DEBUG_A", new DebugHandler( "debug-a" ) );
 
         pipeline.addLast( "stomp-server-connect", new HttpConnectHandler( provider, context, sinkManager ) );
         pipeline.addLast( "stomp-server-disconnect", new DisconnectHandler( provider, context, false ) );
@@ -146,11 +150,11 @@ public class HTTPProtocolHandler extends SimpleChannelUpstreamHandler {
 
         pipeline.addLast( "stomp-message-encoder", new StompMessageEncoder() );
         pipeline.addLast( "stomp-message-decoder", new StompMessageDecoder( ServerStompMessageFactory.INSTANCE ) );
-        
 
+        pipeline.addLast( "sse-sink-handler", new SSESinkHandler( context, sinkManager ) );
         pipeline.addLast( "longpoll-sink-handler", new HttpSinkHandler( context, sinkManager ) );
         pipeline.addLast( "stomp-http-responder", new HttpResponder() );
-        
+
         if (this.executionHandler != null) {
             pipeline.addLast( "stomp-server-send-threading", this.executionHandler );
         }

@@ -33,6 +33,7 @@ public class ProtocolDetector extends ReplayingDecoder<VoidEnum> {
         this.executor = executor;
         this.connectionManager = connectionManager;
         this.sinkManager = sinkManager;
+        this.resourceManager = resourceManager;
 
         if (this.executor != null) {
             this.executionHandler = new ExecutionHandler( this.executor );

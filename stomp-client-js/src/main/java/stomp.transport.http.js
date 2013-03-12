@@ -1,15 +1,14 @@
 // ----------------------------------------
-// Long-Poll Transport
+// HTTP Transport
 // ----------------------------------------
 
-
-Stomp.Transport.LongPoll = function(host, port, secure) {
+Stomp.Transport.HTTP = function(host, port, secure) {
   this._host = host;
   this._port = port;
   this._secure = secure;
 }
 
-Stomp.Transport.LongPoll.prototype = {
+Stomp.Transport.HTTP.prototype = {
 
   _receiverRequest: undefined,
   _disconnectReceiver: false,
@@ -53,6 +52,31 @@ Stomp.Transport.LongPoll.prototype = {
 
   connectMessageReceiver: function() {
     var transport = this;
+    try {
+      this._eventSource = new EventSource( this._url(), { withCredentials: true } );
+      this._eventSource.withCredentials = true;
+      this._eventSource.onerror = function() {
+        transport._eventSource.close();
+        transport._eventSource = undefined;
+        transport.connectLongPoll();
+      };
+      this._eventSource.onopen = function() {
+        transport._eventSource.onerror = undefined; 
+      };
+      this._eventSource.onmessage = function(e) {
+        var message = Stomp.unmarshal( e.data );
+        transport.client.processMessage( message );
+      };
+    } catch (err) {
+      console.debug( err );
+      this._eventSource.close();
+      this._eventSource = undefined;
+      this.connectLongPoll();
+    }
+  },
+  
+  connectLongPoll: function() {
+    var transport = this;
   
     var request = new XMLHttpRequest();
     request.open( "GET", this._url(), true );
@@ -65,7 +89,7 @@ Stomp.Transport.LongPoll.prototype = {
       if ( transport._disconnectReceiver ) {
         return;
       }
-      transport.connectMessageReceiver();
+      transport.connectLongPoll();
     }
     
     setTimeout( function() {
@@ -82,7 +106,14 @@ Stomp.Transport.LongPoll.prototype = {
 
   disconnectMessageReceiver: function() {
     this._disconnectReceiver = true;
-    this._receiverRequest.abort();
+    if ( this._eventSource ) {
+      this._eventSource.close();
+      this._eventSource = undefined;
+    }
+    if ( this._receiverRequest ) {
+      this._receiverRequest.abort();
+      this._receiverRequest = undefined;
+    }
   },
 
   close: function() {
@@ -123,4 +154,4 @@ Stomp.Transport.LongPoll.prototype = {
   
 };
 
-Stomp.Transports.push( Stomp.Transport.LongPoll );
+Stomp.Transports.push( Stomp.Transport.HTTP );
