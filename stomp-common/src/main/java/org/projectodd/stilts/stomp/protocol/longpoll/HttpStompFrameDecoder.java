@@ -34,16 +34,22 @@ public class HttpStompFrameDecoder extends OneToOneDecoder {
 
     @Override
     protected Object decode(ChannelHandlerContext ctx, Channel channel, Object msg) throws Exception {
-        log.debug( "ask to decode: " + msg );
-        if (msg instanceof HttpMessage && "text/stomp".equals( ((HttpMessage) msg).getHeader( "content-type" ) )  ) {
-            log.debug( "attempt to decode: " + msg );
-            HttpMessage httpMessage = (HttpMessage) msg;
-            ChannelBuffer buffer = httpMessage.getContent();
-            StompFrame stompFrame = StompFrameCodec.INSTANCE.decode( buffer );
-            log.debug( "decode to : " + stompFrame );
-            return stompFrame;
+        if (msg instanceof HttpMessage) {
+            String contentType = ((HttpMessage) msg).getHeader( "content-type" );
+            if (contentType != null) {
+                int semiLoc = contentType.indexOf( ";" );
+                if (semiLoc > 0) {
+                    contentType = contentType.substring( 0, semiLoc );
+                }
+                contentType = contentType.trim();
+                if (contentType.equals( "text/stomp" )) {
+                    HttpMessage httpMessage = (HttpMessage) msg;
+                    ChannelBuffer buffer = httpMessage.getContent();
+                    StompFrame stompFrame = StompFrameCodec.INSTANCE.decode( buffer );
+                    return stompFrame;
+                }
+            }
         }
-        log.debug( "returning inbound message unmolested" );
         return msg;
     }
 

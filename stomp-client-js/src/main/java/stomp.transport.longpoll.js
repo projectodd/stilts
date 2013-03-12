@@ -14,7 +14,7 @@ Stomp.Transport.LongPoll.prototype = {
   _receiverRequest: undefined,
   _disconnectReceiver: false,
   
-  connect: function(callback) {
+  connect: function(callback, errorCallback) {
     var headers = {};
     if ( this._login ) {
       headers.login = this._login;
@@ -25,19 +25,30 @@ Stomp.Transport.LongPoll.prototype = {
     
     headers[Stomp.Headers.ACCEPT_VERSION] = this.client.supportedVersions();
     
-    try {
-      this.transmitSync( "CONNECT", headers );
-    } catch (err) {
-      return false;
-    }
+    var transport = this;
     
-    this.connectMessageReceiver();
+    var request = new XMLHttpRequest();
+    request.open( "POST", this._url(), true );
+    request.withCredentials = true;
     
-    if ( callback ) {
+    var timeoutHandle = setTimeout( function() {
+      if ( request.readyState != 0 && request.readyState != 4 ) {
+        request.abort();
+        errorCallack();
+      }
+    }, 5000 );
+    
+    request.onerror = errorCallback;
+    
+    request.onload = function() {
+      clearTimeout( timeoutHandle );
+      transport.connectMessageReceiver();
       callback();
     }
+    request.setRequestHeader("Content-type","text/stomp");
     
-    return true;
+    var data = Stomp.marshal("CONNECT", headers);
+    request.send(data);
   },
 
   connectMessageReceiver: function() {
@@ -78,20 +89,17 @@ Stomp.Transport.LongPoll.prototype = {
     this.disconnectMessageReceiver();
   },
 
-  transmitSync: function(command, headers, body, callbacks) {
+  transmit: function(command, headers, body, callbacks, timeoutMs) {
     var data = Stomp.marshal(command, headers, body);
-    this.send(data, callbacks, false);
+    this.send(data, callbacks, timeoutMs);
   },
   
-  transmit: function(command, headers, body, callbacks) {
-    var data = Stomp.marshal(command, headers, body);
-    this.send(data, callbacks);
-  },
-  
-  send: function(data, callbacks, async) {
+  send: function(data, callbacks) {
     callbacks = callbacks || {};
     var request = new XMLHttpRequest();
-    request.open( "POST", this._url(), async );
+    request.open( "POST", this._url(), true );
+    request.withCredentials = true;
+    console.debug( request );
     if ( callbacks['load'] ) {
       request.onload = function() {
         callbacks['load'](request);
@@ -103,7 +111,6 @@ Stomp.Transport.LongPoll.prototype = {
       }
     }
     request.setRequestHeader("Content-type","text/stomp");
-    request.withCredentials = true;
     request.send(data);
   },
   

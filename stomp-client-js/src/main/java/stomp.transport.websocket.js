@@ -14,7 +14,7 @@ Stomp.Transport.WebSocket.prototype = {
     this._ws.send(out);
   },
   
-  connect: function(callback) {
+  connect: function(callback, errorCallback) {
     var wsClass = null;
     if ( typeof WebSocket != 'undefined' ) {
       wsClass = WebSocket;
@@ -28,8 +28,7 @@ Stomp.Transport.WebSocket.prototype = {
     this._ws = new wsClass( this._url() );
     this._ws.onopen = this._issueConnect.bind(this);
     this._ws.onmessage = this._handleMessage.bind(this);
-    
-    return true;
+    this._ws.onerror = errorCallback;
   },
   
   close: function() {
@@ -42,6 +41,7 @@ Stomp.Transport.WebSocket.prototype = {
   
   _issueConnect: function() {
     var headers = {};
+    this._ws.onerror = this.client.onerror;
     if ( this._login ) {
       headers['login'] = this._login;
     }

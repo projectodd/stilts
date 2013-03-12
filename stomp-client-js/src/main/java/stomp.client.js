@@ -123,28 +123,57 @@ Stomp.Client.prototype = {
       this._errorCallback = arguments[3];
     }
     
-    console.log( "connecting" );
-    if ( this._connectTransport(callback) ) {
-      console.log( "connected!" );
-    } else {
-      console.log( "not connected!" );
-    }
+    this._connectTransport(callback);
     
   },
   
   _connectTransport: function(callback) {
+    var transports = [];
     for ( i = 0 ; i < Stomp.Transports.length ; ++i ) {
-      try {
-        this._transport = new Stomp.Transports[i]( this._host, this._port, this._secure );
-        this._transport.client = this;
-        if ( this._transport.connect(callback) ) {
-          return true;
+       var t = new Stomp.Transports[i]( this._host, this._port, this._secure );
+       t.client = this;
+       transports.push( t );
+     }
+     
+     this._buildConnector( transports, 0, callback )();
+  },
+  
+  
+  _buildConnector: function(transports, i, callback) {
+    var client = this;
+    if ( i+1 < transports.length ) {
+      return function() {
+        var fallback = client._buildConnector( transports, i+1, callback );
+        try {
+          transports[i].connect( function() {
+            client._transport = transports[i];
+            callback();
+          }, fallback );
+        } catch (err) {
+          fallback();
         }
-      } catch (err) {
-        this._transport = undefined;
-      }
+      };
+    } else if ( i < transports.length ) {
+      return function() {
+        var fallback = client.connectionFailed.bind( this );
+        try {
+          transports[i].connect( function() {
+            client._transport = transports[i];
+            callback();
+          }, client.connectionFailed.bind( this ) );
+        } catch(err) {
+          fallback();
+        }
+      };
+    } else {
+      return function() {
+        client.connectionFailed(this);
+      };
     }
-    return false;
+  },
+  
+  connectionFailed: function() {
+    console.log( "unable to connect" );
   },
   
   disconnect: function(disconnectCallback) {
