@@ -26,11 +26,23 @@ public class ResourceHandler extends SimpleChannelUpstreamHandler {
             if (buffer != null) {
                 HttpResponse httpResp = new DefaultHttpResponse( HttpVersion.HTTP_1_1, HttpResponseStatus.OK );
                 httpResp.setContent( buffer );
+                httpResp.setHeader( "Content-Length", "" + buffer.readableBytes() );
+                httpResp.setHeader( "Content-Type", getContentType( uri ) );
                 ctx.getChannel().write( httpResp );
                 return;
             }
         }
         super.messageReceived( ctx, e );
+    }
+
+    protected String getContentType(String uri) {
+        if (uri.endsWith( ".html" )) {
+            return "text/html";
+        }
+        if (uri.endsWith( ".js" )) {
+            return "text/javascript";
+        }
+        return "application/octet-stream";
     }
 
     private ResourceManager resourceManager;

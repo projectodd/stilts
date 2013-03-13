@@ -1,17 +1,21 @@
-package org.projectodd.stilts.stomp.server.protocol.longpoll;
+package org.projectodd.stilts.stomp.server.protocol.http;
 
 import org.jboss.logging.Logger;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.ChannelStateEvent;
 import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.channel.SimpleChannelUpstreamHandler;
+import org.jboss.netty.handler.codec.http.DefaultHttpResponse;
 import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.jboss.netty.handler.codec.http.HttpRequest;
+import org.jboss.netty.handler.codec.http.HttpResponse;
+import org.jboss.netty.handler.codec.http.HttpResponseStatus;
+import org.jboss.netty.handler.codec.http.HttpVersion;
 import org.projectodd.stilts.stomp.server.protocol.WrappedConnectionContext;
 
-public class HttpSinkHandler extends SimpleChannelUpstreamHandler {
+public class SSESinkHandler extends SimpleChannelUpstreamHandler {
 
-    public HttpSinkHandler(WrappedConnectionContext context, SinkManager sinkManager) {
+    public SSESinkHandler(WrappedConnectionContext context, SinkManager sinkManager) {
         this.context = context;
         this.sinkManager = sinkManager;
     }
@@ -20,11 +24,15 @@ public class HttpSinkHandler extends SimpleChannelUpstreamHandler {
     public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) throws Exception {
         if (e.getMessage() instanceof HttpRequest) {
             HttpRequest httpReq = (HttpRequest) e.getMessage();
-            if (httpReq.getMethod().equals( HttpMethod.GET ) && "text/stomp-poll".equals( httpReq.getHeader( "Content-Type" ) )) {
-                log.debug( "Hooking up the sink" );
+            log.debug( "method: " + httpReq.getMethod() );
+            log.debug( "content-type: " + httpReq.getHeader( "Content-Type" ) );
+            if (httpReq.getMethod().equals( HttpMethod.GET ) && "text/event-stream".equals( httpReq.getHeader( "Accept" ) )) {
                 HttpMessageSink sink = this.sinkManager.get( this.context.getConnectionContext() );
-                sink.provideChannel( ctx.getChannel(), true );
+                sink.provideChannel( ctx.getChannel(), false );
                 this.provided = true;
+                HttpResponse httpResp = new DefaultHttpResponse( HttpVersion.HTTP_1_1, HttpResponseStatus.OK );
+                httpResp.setHeader( "Content-Type", "text/event-stream" );
+                ctx.getChannel().write( httpResp );
             }
         }
         if (!this.provided) {
@@ -41,7 +49,7 @@ public class HttpSinkHandler extends SimpleChannelUpstreamHandler {
         }
     }
 
-    private static Logger log = Logger.getLogger( HttpSinkHandler.class );
+    private static Logger log = Logger.getLogger( SSESinkHandler.class );
 
     private boolean provided = false;
     private WrappedConnectionContext context;

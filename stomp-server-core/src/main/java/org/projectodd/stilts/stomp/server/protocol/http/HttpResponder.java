@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.projectodd.stilts.stomp.server.protocol.longpoll;
+package org.projectodd.stilts.stomp.server.protocol.http;
 
 import org.jboss.logging.Logger;
 import org.jboss.netty.channel.ChannelEvent;
@@ -31,8 +31,6 @@ import org.projectodd.stilts.stomp.protocol.StompFrame;
 import org.projectodd.stilts.stomp.protocol.StompFrame.Command;
 
 public class HttpResponder implements ChannelUpstreamHandler {
-
-    private static Logger log = Logger.getLogger( HttpResponder.class );
 
     public HttpResponder() {
 
@@ -52,5 +50,8 @@ public class HttpResponder implements ChannelUpstreamHandler {
 
         ctx.sendUpstream( e );
     }
+
+    @SuppressWarnings("unused")
+    private static Logger log = Logger.getLogger( HttpResponder.class );
 
 }

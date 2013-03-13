@@ -22,7 +22,7 @@ public class SecureConnector extends AbstractConnector {
     
     @Override
     protected ChannelPipelineFactory getChannelPipelineFactory() {
-        return new StompServerPipelineFactory( getServer().getStompProvider(), getServer().getMessageHandlingExecutor(), getServer().getResourceManager(), this.sslContext );
+        return new StompServerPipelineFactory( getServer().getStompProvider(), getServer().getMessageHandlingExecutor(), this.sslContext );
     }
 
     private SSLContext sslContext;

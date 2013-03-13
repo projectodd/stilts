@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.projectodd.stilts.stomp.server.protocol.longpoll;
+package org.projectodd.stilts.stomp.server.protocol.http;
 
 import org.jboss.logging.Logger;
 import org.jboss.netty.channel.ChannelHandlerContext;
@@ -29,7 +29,6 @@ import org.jboss.netty.handler.codec.http.HttpVersion;
 
 public class OptionsHandler extends SimpleChannelUpstreamHandler {
 
-    private static Logger log = Logger.getLogger( OptionsHandler.class );
 
     public OptionsHandler() {
 
@@ -49,5 +48,8 @@ public class OptionsHandler extends SimpleChannelUpstreamHandler {
         }
         super.messageReceived( ctx, e );
     }
+    
+    @SuppressWarnings("unused")
+    private static Logger log = Logger.getLogger( OptionsHandler.class );
 
 }

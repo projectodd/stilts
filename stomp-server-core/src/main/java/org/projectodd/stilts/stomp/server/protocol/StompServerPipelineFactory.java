@@ -26,29 +26,22 @@ import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.jboss.netty.channel.DefaultChannelPipeline;
 import org.jboss.netty.handler.ssl.SslHandler;
 import org.projectodd.stilts.stomp.protocol.DebugHandler;
-import org.projectodd.stilts.stomp.server.protocol.longpoll.ConnectionManager;
-import org.projectodd.stilts.stomp.server.protocol.longpoll.FlashPolicyFileHandler;
-import org.projectodd.stilts.stomp.server.protocol.longpoll.SinkManager;
-import org.projectodd.stilts.stomp.server.protocol.resource.ClasspathResourceManager;
+import org.projectodd.stilts.stomp.server.protocol.http.ConnectionManager;
+import org.projectodd.stilts.stomp.server.protocol.http.FlashPolicyFileHandler;
+import org.projectodd.stilts.stomp.server.protocol.http.SinkManager;
 import org.projectodd.stilts.stomp.server.protocol.resource.ResourceManager;
 import org.projectodd.stilts.stomp.spi.StompProvider;
 
 public class StompServerPipelineFactory implements ChannelPipelineFactory {
 
-    public StompServerPipelineFactory(StompProvider provider, Executor executor, ResourceManager resourceManager, SSLContext sslContext) {
+    public StompServerPipelineFactory(StompProvider provider, Executor executor, SSLContext sslContext) {
         this.provider = provider;
         this.executor = executor;
         this.sslContext = sslContext;
-        this.resourceManager = resourceManager;
     }
 
     @Override
     public ChannelPipeline getPipeline() throws Exception {
-        
-        ResourceManager rm = this.resourceManager;
-        if ( rm == null ) {
-            rm = new ClasspathResourceManager();
-        }
         
         DefaultChannelPipeline pipeline = new DefaultChannelPipeline();
         pipeline.addFirst( "server-debug-header", new DebugHandler( "SERVER-HEAD" ) );
@@ -60,7 +53,7 @@ public class StompServerPipelineFactory implements ChannelPipelineFactory {
             pipeline.addLast( "ssl", sslHandler );
         }
         pipeline.addLast( "flash-policy-file-handler", new FlashPolicyFileHandler() );
-        pipeline.addLast( "protocol-detector", new ProtocolDetector( this.connectionManager, this.sinkManager, this.provider, this.executor, rm) );
+        pipeline.addLast( "protocol-detector", new ProtocolDetector( this.connectionManager, this.sinkManager, this.provider, this.executor, this.resourceManager) );
         return pipeline;
     }
 
@@ -70,6 +63,6 @@ public class StompServerPipelineFactory implements ChannelPipelineFactory {
 
     private StompProvider provider;
     private SSLContext sslContext;
-    private ResourceManager resourceManager;
+    private ResourceManager resourceManager = new ResourceManager();;
 
 }

@@ -3,7 +3,6 @@ package org.projectodd.stilts.stomp.server;
 import java.util.List;
 import java.util.concurrent.Executor;
 
-import org.projectodd.stilts.stomp.server.protocol.resource.ResourceManager;
 import org.projectodd.stilts.stomp.spi.StompProvider;
 
 public interface Server {
@@ -14,6 +13,5 @@ public interface Server {
     
     StompProvider getStompProvider();
     Executor getMessageHandlingExecutor();
-    ResourceManager getResourceManager();
 
 }

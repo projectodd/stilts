@@ -60,11 +60,10 @@
   <build>
     <resources>
       <resource>
-        <directory>src/main/java</directory>
+        <directory>src/main/javascript</directory>
         <includes>
           <include>**/*.js</include>
         </includes>
-        <filtering>true</filtering>
       </resource>
     </resources>
     <testResources>
@@ -92,9 +91,9 @@
             <configuration>
               <artifacts>
                 <artifact>
-                  <file>target/classes/stilts-stomp.js</file>
+                  <file>target/classes/stomp.js</file>
                   <type>js</type>
-                  <classifier />
+                  <classifier/>
                 </artifact>
               </artifacts>
             </configuration>

@@ -19,10 +19,11 @@ import org.projectodd.stilts.stomp.protocol.StompFrameEncoder;
 import org.projectodd.stilts.stomp.protocol.StompMessageDecoder;
 import org.projectodd.stilts.stomp.protocol.StompMessageEncoder;
 import org.projectodd.stilts.stomp.server.ServerStompMessageFactory;
-import org.projectodd.stilts.stomp.server.protocol.longpoll.CORSHandler;
-import org.projectodd.stilts.stomp.server.protocol.longpoll.ConnectionManager;
-import org.projectodd.stilts.stomp.server.protocol.longpoll.OptionsHandler;
-import org.projectodd.stilts.stomp.server.protocol.longpoll.SinkManager;
+import org.projectodd.stilts.stomp.server.protocol.http.CORSHandler;
+import org.projectodd.stilts.stomp.server.protocol.http.ConnectionManager;
+import org.projectodd.stilts.stomp.server.protocol.http.HTTPProtocolHandler;
+import org.projectodd.stilts.stomp.server.protocol.http.OptionsHandler;
+import org.projectodd.stilts.stomp.server.protocol.http.SinkManager;
 import org.projectodd.stilts.stomp.server.protocol.resource.ResourceManager;
 import org.projectodd.stilts.stomp.spi.StompProvider;
 

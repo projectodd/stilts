@@ -1,4 +1,4 @@
-package org.projectodd.stilts.stomp.server.protocol.longpoll;
+package org.projectodd.stilts.stomp.server.protocol.http;
 
 import java.util.Random;
 import java.util.Set;
@@ -8,7 +8,6 @@ import org.jboss.netty.channel.ChannelDownstreamHandler;
 import org.jboss.netty.channel.ChannelEvent;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.ChannelUpstreamHandler;
-import org.jboss.netty.channel.Channels;
 import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.handler.codec.http.Cookie;
 import org.jboss.netty.handler.codec.http.CookieDecoder;
@@ -119,6 +118,7 @@ public class ConnectionResumeHandler implements ChannelUpstreamHandler, ChannelD
         return Long.toHexString( new Random( System.identityHashCode( connectionContext ) ).nextLong() );
     }
 
+    @SuppressWarnings("unused")
     private static Logger log = Logger.getLogger( ConnectionResumeHandler.class );
 
     private ConnectionManager connectionManager;

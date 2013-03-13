@@ -1,4 +1,4 @@
-package org.projectodd.stilts.stomp.server.protocol.longpoll;
+package org.projectodd.stilts.stomp.server.protocol.http;
 
 import java.util.HashMap;
 import java.util.Map;

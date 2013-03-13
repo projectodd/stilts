@@ -44,14 +44,6 @@ public class StompServer<T extends StompProvider> implements Server {
         return this.stompProvider;
     }
     
-    public void setResourceManager(ResourceManager resourceManager) {
-        this.resourceManager = resourceManager;
-    }
-    
-    public ResourceManager getResourceManager() {
-        return this.resourceManager;
-    }
-
     public synchronized void addConnector(Connector connector) throws Exception {
         if (this.connectors.contains( connector )) {
             return;

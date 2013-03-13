@@ -1,4 +1,4 @@
-package org.projectodd.stilts.stomp.server.protocol.longpoll;
+package org.projectodd.stilts.stomp.server.protocol.http;
 
 import org.jboss.logging.Logger;
 import org.jboss.netty.buffer.ChannelBuffer;

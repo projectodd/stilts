@@ -18,7 +18,7 @@ public class InsecureConnector extends AbstractConnector {
     
     @Override
     protected ChannelPipelineFactory getChannelPipelineFactory() {
-        return new StompServerPipelineFactory( getServer().getStompProvider(), getServer().getMessageHandlingExecutor(), getServer().getResourceManager(), null );
+        return new StompServerPipelineFactory( getServer().getStompProvider(), getServer().getMessageHandlingExecutor(), null );
     }
 
 }

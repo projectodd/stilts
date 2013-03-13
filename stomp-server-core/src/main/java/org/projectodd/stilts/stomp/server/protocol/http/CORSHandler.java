@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.projectodd.stilts.stomp.server.protocol.longpoll;
+package org.projectodd.stilts.stomp.server.protocol.http;
 
 import org.jboss.logging.Logger;
 import org.jboss.netty.channel.ChannelDownstreamHandler;
@@ -26,8 +26,6 @@ import org.jboss.netty.handler.codec.http.HttpRequest;
 import org.jboss.netty.handler.codec.http.HttpResponse;
 
 public class CORSHandler extends SimpleChannelUpstreamHandler implements ChannelDownstreamHandler {
-
-    private static Logger log = Logger.getLogger( CORSHandler.class );
 
     public CORSHandler() {
 
@@ -52,12 +50,15 @@ public class CORSHandler extends SimpleChannelUpstreamHandler implements Channel
                 HttpResponse httpResp = (HttpResponse) ((MessageEvent) e).getMessage();
                 httpResp.setHeader( "Access-Control-Allow-Origin", this.origin );
                 httpResp.setHeader( "Access-Control-Allow-Methods", "OPTIONS,POST,GET" );
-                httpResp.setHeader( "Access-Control-Allow-Headers", "content-type" );
+                httpResp.setHeader( "Access-Control-Allow-Headers", "Accept, Content-Type" );
                 httpResp.setHeader( "Access-Control-Allow-Credentials", "true" );
             }
         }
         ctx.sendDownstream( e );
     }
+
+    @SuppressWarnings("unused")
+    private static Logger log = Logger.getLogger( CORSHandler.class );
 
     private String origin = "*";
 }

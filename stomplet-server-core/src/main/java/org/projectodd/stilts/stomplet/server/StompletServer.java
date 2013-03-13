@@ -61,14 +61,6 @@ public class StompletServer implements Server {
         return this.server.getStompProvider();
     }
     
-    public void setResourceManager(ResourceManager resourceManager) {
-        this.server.setResourceManager( resourceManager );
-    }
-    
-    public ResourceManager getResourceManager() {
-        return this.server.getResourceManager();
-    }
-    
     public Executor getMessageHandlingExecutor() {
         return this.server.getMessageHandlingExecutor();
     }

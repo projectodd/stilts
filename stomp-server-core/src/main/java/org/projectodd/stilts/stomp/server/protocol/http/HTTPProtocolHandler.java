@@ -1,4 +1,4 @@
-package org.projectodd.stilts.stomp.server.protocol;
+package org.projectodd.stilts.stomp.server.protocol.http;
 
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
@@ -22,14 +22,21 @@ import org.projectodd.stilts.stomp.protocol.longpoll.HttpStompFrameDecoder;
 import org.projectodd.stilts.stomp.protocol.websocket.WebSocketStompFrameDecoder;
 import org.projectodd.stilts.stomp.protocol.websocket.WebSocketStompFrameEncoder;
 import org.projectodd.stilts.stomp.server.ServerStompMessageFactory;
-import org.projectodd.stilts.stomp.server.protocol.longpoll.ConnectionManager;
-import org.projectodd.stilts.stomp.server.protocol.longpoll.ConnectionResumeHandler;
-import org.projectodd.stilts.stomp.server.protocol.longpoll.HttpConnectHandler;
-import org.projectodd.stilts.stomp.server.protocol.longpoll.HttpResponder;
-import org.projectodd.stilts.stomp.server.protocol.longpoll.HttpServerStompFrameEncoder;
-import org.projectodd.stilts.stomp.server.protocol.longpoll.HttpSinkHandler;
-import org.projectodd.stilts.stomp.server.protocol.longpoll.SSESinkHandler;
-import org.projectodd.stilts.stomp.server.protocol.longpoll.SinkManager;
+import org.projectodd.stilts.stomp.server.protocol.AbortHandler;
+import org.projectodd.stilts.stomp.server.protocol.AckHandler;
+import org.projectodd.stilts.stomp.server.protocol.BeginHandler;
+import org.projectodd.stilts.stomp.server.protocol.CommitHandler;
+import org.projectodd.stilts.stomp.server.protocol.ConnectHandler;
+import org.projectodd.stilts.stomp.server.protocol.ConnectionContext;
+import org.projectodd.stilts.stomp.server.protocol.DefaultConnectionContext;
+import org.projectodd.stilts.stomp.server.protocol.DisconnectHandler;
+import org.projectodd.stilts.stomp.server.protocol.NackHandler;
+import org.projectodd.stilts.stomp.server.protocol.ReceiptHandler;
+import org.projectodd.stilts.stomp.server.protocol.SendHandler;
+import org.projectodd.stilts.stomp.server.protocol.StompDisorderlyCloseHandler;
+import org.projectodd.stilts.stomp.server.protocol.SubscribeHandler;
+import org.projectodd.stilts.stomp.server.protocol.UnsubscribeHandler;
+import org.projectodd.stilts.stomp.server.protocol.WrappedConnectionContext;
 import org.projectodd.stilts.stomp.server.protocol.resource.ResourceHandler;
 import org.projectodd.stilts.stomp.server.protocol.resource.ResourceManager;
 import org.projectodd.stilts.stomp.server.protocol.websockets.DisorderlyCloseHandler;
@@ -38,8 +45,7 @@ import org.projectodd.stilts.stomp.spi.StompProvider;
 
 public class HTTPProtocolHandler extends SimpleChannelUpstreamHandler {
 
-    public HTTPProtocolHandler(StompProvider provider, ExecutionHandler executionHandler, ConnectionManager connectionManager, SinkManager sinkManager,
-            ResourceManager resourceManager) {
+    public HTTPProtocolHandler(StompProvider provider, ExecutionHandler executionHandler, ConnectionManager connectionManager, SinkManager sinkManager, ResourceManager resourceManager) {
         this.provider = provider;
         this.executionHandler = executionHandler;
         this.connectionManager = connectionManager;
@@ -163,6 +169,7 @@ public class HTTPProtocolHandler extends SimpleChannelUpstreamHandler {
 
     }
 
+    @SuppressWarnings("unused")
     private static final Logger log = Logger.getLogger( "org.projectodd.stilts.stomp.server.protocol" );
 
     private StompProvider provider;

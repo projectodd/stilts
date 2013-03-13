@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.projectodd.stilts.stomp.server.protocol.longpoll;
+package org.projectodd.stilts.stomp.server.protocol.http;
 
 import org.jboss.logging.Logger;
 import org.jboss.netty.channel.ChannelHandlerContext;
@@ -36,6 +36,7 @@ public class HttpConnectHandler extends ConnectHandler {
         return sink;
     }
 
+    @SuppressWarnings("unused")
     private static Logger log = Logger.getLogger( HttpConnectHandler.class );
     private SinkManager sinkManager;
 
