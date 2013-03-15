@@ -86,9 +86,9 @@ var Stomp = {
 
 
 Stomp.Client = function(host, port, secure) {
-  this._host   = host;
-  this._port   = port   || 8675;
-  this._secure = secure || false;
+  this._host   = host   || Stomp.DEFAULT_HOST;
+  this._port   = port   || Stomp.DEFAULT_PORT || 8675;
+  this._secure = secure || Stomp.DEFAULT_SECURE_FLAG || false;
 }
 
 Stomp.Client.prototype = {

@@ -30,6 +30,7 @@ import org.projectodd.stilts.stomp.server.protocol.ConnectHandler;
 import org.projectodd.stilts.stomp.server.protocol.ConnectionContext;
 import org.projectodd.stilts.stomp.server.protocol.DefaultConnectionContext;
 import org.projectodd.stilts.stomp.server.protocol.DisconnectHandler;
+import org.projectodd.stilts.stomp.server.protocol.HostDecodingHandler;
 import org.projectodd.stilts.stomp.server.protocol.NackHandler;
 import org.projectodd.stilts.stomp.server.protocol.ReceiptHandler;
 import org.projectodd.stilts.stomp.server.protocol.SendHandler;
@@ -70,8 +71,8 @@ public class HTTPProtocolHandler extends SimpleChannelUpstreamHandler {
             }
 
             switchToRequestOriented( ctx );
-            ChannelUpstreamHandler connector = (ChannelUpstreamHandler) ctx.getPipeline().get( "longpoll-connector" );
-            ChannelHandlerContext connectorContext = ctx.getPipeline().getContext( "longpoll-connector" );
+            ChannelUpstreamHandler connector = (ChannelUpstreamHandler) ctx.getPipeline().get( "head" );
+            ChannelHandlerContext connectorContext = ctx.getPipeline().getContext( "head" );
             connector.handleUpstream( connectorContext, e );
             return;
 
@@ -129,6 +130,8 @@ public class HTTPProtocolHandler extends SimpleChannelUpstreamHandler {
 
         WrappedConnectionContext context = new WrappedConnectionContext();
 
+        pipeline.addLast( "head", new SimpleChannelUpstreamHandler() );
+        pipeline.addLast( "host-decoding-handling", new HostDecodingHandler() );
         pipeline.addLast( "longpoll-connector", new ConnectionResumeHandler( connectionManager, context ) );
 
         pipeline.addLast( "http-resource-handler", new ResourceHandler(  this.resourceManager ) );

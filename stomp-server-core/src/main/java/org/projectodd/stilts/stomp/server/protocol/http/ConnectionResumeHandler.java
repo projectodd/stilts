@@ -58,20 +58,6 @@ public class ConnectionResumeHandler implements ChannelUpstreamHandler, ChannelD
 
                 this.context.setConnectionContext( connectionContext );
 
-                // if (newConnection) {
-                String hostPort = httpReq.getHeader( HttpHeaders.Names.HOST );
-
-                if (hostPort != null) {
-                    int colonLoc = hostPort.indexOf( ':' );
-                    String host = hostPort;
-                    if (colonLoc > 0) {
-                        host = hostPort.substring( 0, colonLoc );
-                    }
-
-                    ChannelEvent hostDecodedEvent = new HostDecodedEvent( ctx.getChannel(), host );
-                    ctx.sendUpstream( hostDecodedEvent );
-                }
-
                 if (cookieHeader != null) {
                     Set<Cookie> cookies = cookieDecoder.decode( cookieHeader );
 

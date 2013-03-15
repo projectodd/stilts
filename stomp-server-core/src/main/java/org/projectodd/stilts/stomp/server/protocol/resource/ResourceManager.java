@@ -20,27 +20,34 @@ public class ResourceManager {
 
     public ChannelBuffer getResource(String uri) {
         if (KNOWN_RESOURCES.contains( uri )) {
-            InputStream in = getClass().getClassLoader().getResourceAsStream( uri );
-
-            if (in != null) {
-                byte[] bytes = new byte[4096];
-
-                int numRead = 0;
-
-                ChannelBuffer buffer = ChannelBuffers.dynamicBuffer();
-
-                try {
-                    while ((numRead = in.read( bytes )) >= 0) {
-                        buffer.writeBytes( bytes, 0, numRead );
-                    }
-                } catch (IOException e) {
-                    return null;
-                }
-                return buffer;
-            }
+            return loadFromClassPath( uri );
         }
         return null;
     }
+
+
+    protected ChannelBuffer loadFromClassPath(String uri) {
+        InputStream in = getClass().getClassLoader().getResourceAsStream( uri );
+
+        if (in != null) {
+            byte[] bytes = new byte[4096];
+
+            int numRead = 0;
+
+            ChannelBuffer buffer = ChannelBuffers.dynamicBuffer();
+
+            try {
+                while ((numRead = in.read( bytes )) >= 0) {
+                    buffer.writeBytes( bytes, 0, numRead );
+                }
+            } catch (IOException e) {
+                return null;
+            }
+            return buffer;
+        }
+        return null;
+    }
+
     private static Logger log = Logger.getLogger( ResourceManager.class );
 
 }
