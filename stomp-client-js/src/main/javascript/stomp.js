@@ -1,5 +1,6 @@
 // Stilts stomp-client.js ${project.version}
 // Some parts (c) 2010 Jeff Mesnil -- http://jmesnil.net/
+// ${project.version}
 
 var Stomp = {
 
