@@ -30,7 +30,7 @@ public class Ietf07WebSocketFrameEncoder extends OneToOneEncoder {
 
             ChannelBuffer data = frame.getBinaryData();
             int dataLen = data.readableBytes();
-
+            
             ChannelBuffer encoded = ChannelBuffers.dynamicBuffer( ByteOrder.BIG_ENDIAN, data.readableBytes() + 32 );
 
             byte firstByte = (byte) opcode;
@@ -45,7 +45,7 @@ public class Ietf07WebSocketFrameEncoder extends OneToOneEncoder {
                 encoded.writeShort( dataLen );
             } else {
                 encoded.writeByte( applyMaskBit( 0x7F ) );
-                encoded.writeInt( dataLen );
+                encoded.writeLong( dataLen );
             }
 
             if (shouldMask()) {
