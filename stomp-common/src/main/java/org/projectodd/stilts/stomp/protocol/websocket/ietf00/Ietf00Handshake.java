@@ -63,7 +63,7 @@ public class Ietf00Handshake extends Handshake {
         request.addHeader( HttpHeaders.Names.CONNECTION, "Upgrade" );
         request.addHeader( HttpHeaders.Names.UPGRADE, "WebSocket" );
         request.addHeader( HttpHeaders.Names.HOST, uri.getHost()+ ":" + uri.getPort() );
-        request.addHeader( HttpHeaders.Names.SEC_WEBSOCKET_PROTOCOL, "stomp" );
+        request.addHeader( HttpHeaders.Names.SEC_WEBSOCKET_PROTOCOL, "v11.stomp" );
 
         request.addHeader( HttpHeaders.Names.SEC_WEBSOCKET_KEY1, this.challenge.getKey1String() );
         request.addHeader( HttpHeaders.Names.SEC_WEBSOCKET_KEY2, this.challenge.getKey2String() );
