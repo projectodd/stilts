@@ -24,13 +24,14 @@ public class PseudoXAStompletAcknowledger implements Acknowledger {
     private static Logger log = Logger.getLogger(PseudoXAStompletAcknowledger.class);
 
     public PseudoXAStompletAcknowledger(PseudoXAStompletResourceManager resourceManager, Acknowledger acknowledger) {
+        //log.errorf( "PXA ctor: " + resourceManager );
         this.resourceManager = resourceManager;
         this.acknowledger = acknowledger;
     }
 
     @Override
     public void ack() throws Exception {
-        log.errorf( "PXA ack()" );
+        //log.errorf( "PXA ack()" );
         PseudoXAStompletTransaction tx = this.resourceManager.currentTransaction();
         if (tx != null) {
             tx.addAck( this.acknowledger );
@@ -41,7 +42,7 @@ public class PseudoXAStompletAcknowledger implements Acknowledger {
 
     @Override
     public void nack() throws Exception {
-        log.errorf( "PXA nack()" );
+        //log.errorf( "PXA nack()" );
         PseudoXAStompletTransaction tx = this.resourceManager.currentTransaction();
         if (tx != null) {
             tx.addNack(  this.acknowledger );

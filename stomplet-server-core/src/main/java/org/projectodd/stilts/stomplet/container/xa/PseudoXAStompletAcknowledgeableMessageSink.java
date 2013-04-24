@@ -16,14 +16,18 @@
 
 package org.projectodd.stilts.stomplet.container.xa;
 
+import org.jboss.logging.Logger;
 import org.projectodd.stilts.stomp.Acknowledger;
 import org.projectodd.stilts.stomp.StompException;
 import org.projectodd.stilts.stomp.StompMessage;
 import org.projectodd.stilts.stomp.spi.AcknowledgeableMessageSink;
 
 public class PseudoXAStompletAcknowledgeableMessageSink implements AcknowledgeableMessageSink {
+    
+    private static Logger log = Logger.getLogger(PseudoXAStompletAcknowledgeableMessageSink.class);
 
     public PseudoXAStompletAcknowledgeableMessageSink(PseudoXAStompletResourceManager resourceManager, AcknowledgeableMessageSink sink) {
+        log.error( "PXAMessageSink ctor: " + resourceManager);
         this.resourceManager = resourceManager;
         this.sink = sink;
     }

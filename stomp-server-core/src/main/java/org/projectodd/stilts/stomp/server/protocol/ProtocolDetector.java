@@ -13,6 +13,7 @@ import org.jboss.netty.handler.codec.http.HttpServerCodec;
 import org.jboss.netty.handler.codec.replay.ReplayingDecoder;
 import org.jboss.netty.handler.codec.replay.VoidEnum;
 import org.jboss.netty.handler.execution.ExecutionHandler;
+import org.jboss.netty.handler.execution.OrderedMemoryAwareThreadPoolExecutor;
 import org.jboss.netty.handler.ssl.SslHandler;
 import org.projectodd.stilts.stomp.protocol.StompFrameDecoder;
 import org.projectodd.stilts.stomp.protocol.StompFrameEncoder;

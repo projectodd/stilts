@@ -54,6 +54,11 @@
       <artifactId>jbossjta</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>javax.jms</groupId>
+      <artifactId>jms-api</artifactId>
+    </dependency>
+
   </dependencies>
 
   <build>
