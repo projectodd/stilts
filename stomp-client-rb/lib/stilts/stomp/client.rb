@@ -17,8 +17,24 @@ module Stilts
 
       alias_method :original_send, :send
     
-      def send(destination, message)
-        stomp_message = org.projectodd.stilts.stomp::StompMessages.createStompMessage( destination, message )
+      def send(destination, message, headers = nil)
+
+        method_args = [destination]
+
+        if headers
+          # convert Ruby hash to org.projectodd.stilts.stomp.Headers
+          stomp_headers = org.projectodd.stilts.stomp.Headers.new
+          headers.each do |key,val|
+            stomp_headers.put(key.to_s, val.to_s)
+          end
+          method_args << stomp_headers
+        end
+
+        method_args << message
+
+
+        stomp_message = org.projectodd.stilts.stomp::StompMessages.createStompMessage( *method_args )
+
         original_send( stomp_message )
       end
 
