@@ -23,7 +23,7 @@ module Stilts
 
         if headers
           # convert Ruby hash to org.projectodd.stilts.stomp.Headers
-          stomp_headers = org.projectodd.stilts.stomp.Headers.new
+          stomp_headers = org.projectodd.stilts.stomp.DefaultHeaders.new
           headers.each do |key,val|
             stomp_headers.put(key.to_s, val.to_s)
           end
