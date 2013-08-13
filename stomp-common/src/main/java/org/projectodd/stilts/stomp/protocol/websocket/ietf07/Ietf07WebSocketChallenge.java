@@ -45,12 +45,12 @@ public class Ietf07WebSocketChallenge {
     }
 
     public boolean verify(String solution) throws NoSuchAlgorithmException {
-        log.errorf( "VERIFY VERIFY " + solution );
+        log.debugf( "VERIFY VERIFY " + solution );
         if ( solution == null ) {
             return false;
         }
         String localSolution = solve( getNonceBase64() );
-        log.errorf( "verify [" + solution + "] vs [" + localSolution + "]" );
+        log.debugf( "verify [" + solution + "] vs [" + localSolution + "]" );
         return localSolution.equals( solution );
     }
 }

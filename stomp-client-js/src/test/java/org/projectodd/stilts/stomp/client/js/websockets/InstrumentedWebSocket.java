@@ -8,6 +8,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeoutException;
 
+import org.jboss.logging.Logger;
 import org.jboss.netty.bootstrap.ClientBootstrap;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelPipelineFactory;
@@ -22,6 +23,8 @@ import org.projectodd.stilts.stomp.client.js.JSpec;
 import org.projectodd.stilts.stomp.protocol.websocket.DefaultWebSocketFrame;
 
 public class InstrumentedWebSocket {
+
+    private static Logger log = Logger.getLogger(InstrumentedWebSocket.class);
 
     public enum ReadyState {
         CONNECTING,
@@ -94,16 +97,16 @@ public class InstrumentedWebSocket {
             long startTime = System.currentTimeMillis();
             long remainingWait = fullWait;
 
-            System.err.println( "waiting for ws close" );
+            log.debug( "waiting for ws close" );
             while (remainingWait > 0 && this.readyState != ReadyState.CLOSED) {
                 this.readyStateLock.wait( remainingWait );
-                System.err.println( "wait notified on " + this.readyState );
+                log.debug( "wait notified on " + this.readyState );
                 if (this.readyState != ReadyState.CLOSED) {
                     long elapsed = System.currentTimeMillis() - startTime;
                     remainingWait = fullWait - elapsed;
                 }
             }
-            System.err.println( "ws closed!" );
+            log.debug( "ws closed!" );
         }
     }
 
@@ -151,7 +154,7 @@ public class InstrumentedWebSocket {
     }
 
     protected void fireOnMessage(Object message) {
-        System.err.println( "sending message" );
+        log.debug( "sending message" );
         fireEvent( this.onMessage, new MessageEvent( message ) );
     }
 

@@ -1,5 +1,6 @@
 package org.projectodd.stilts.stomp.client.js.websockets;
 
+import org.jboss.logging.Logger;
 import org.jboss.netty.channel.ChannelEvent;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.ChannelState;
@@ -16,7 +17,7 @@ public class WebSocketClientConnectionWaiter implements ChannelUpstreamHandler {
 
     @Override
     public void handleUpstream(ChannelHandlerContext ctx, ChannelEvent e) throws Exception {
-        System.err.println( "UPSTREAM: "+ e );
+        log.debug( "UPSTREAM: "+ e );
         if ( e instanceof ChannelStateEvent ) {
             ChannelStateEvent event = (ChannelStateEvent) e;
             if ( event.getState() == ChannelState.CONNECTED && event.getValue() != null ) {
@@ -32,5 +33,6 @@ public class WebSocketClientConnectionWaiter implements ChannelUpstreamHandler {
     }
     
     private InstrumentedWebSocket socket;
+    private static Logger log = Logger.getLogger(WebSocketClientConnectionWaiter.class);
 
 }

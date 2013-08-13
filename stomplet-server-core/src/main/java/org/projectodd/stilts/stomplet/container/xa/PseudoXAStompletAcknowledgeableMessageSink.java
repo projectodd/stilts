@@ -27,7 +27,7 @@ public class PseudoXAStompletAcknowledgeableMessageSink implements Acknowledgeab
     private static Logger log = Logger.getLogger(PseudoXAStompletAcknowledgeableMessageSink.class);
 
     public PseudoXAStompletAcknowledgeableMessageSink(PseudoXAStompletResourceManager resourceManager, AcknowledgeableMessageSink sink) {
-        log.error( "PXAMessageSink ctor: " + resourceManager);
+        log.debug( "PXAMessageSink ctor: " + resourceManager);
         this.resourceManager = resourceManager;
         this.sink = sink;
     }

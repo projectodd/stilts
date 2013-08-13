@@ -26,9 +26,8 @@ public class PseudoXAStomplet implements XAStomplet {
         this.resourceManager = new PseudoXAStompletResourceManager( stomplet );
         this.xaResources = new HashSet<XAResource>();
         this.xaResources.add( resourceManager );
-        
-        System.err.println(  "PXAStomplet ctor: " + this.resourceManager );
-        log.error(  "PXAStomplet ctor: " + this.resourceManager );
+
+        log.debug(  "PXAStomplet ctor: " + this.resourceManager );
     }
 
     @Override
@@ -58,7 +57,7 @@ public class PseudoXAStomplet implements XAStomplet {
 
     @Override
     public void onSubscribe(Subscriber subscriber) throws StompException {
-        log.error(  "PXAStomplet on_subscribe: " + this.resourceManager );
+        log.debug(  "PXAStomplet on_subscribe: " + this.resourceManager );
         String subscriptionId = subscriber.getSubscriptionId();
         Subscriber xaSubscriber = new SubscriberImpl( subscriber.getSession(), stomplet, subscriptionId, subscriber.getDestination(), subscriber.getParamters(), new PseudoXAStompletAcknowledgeableMessageSink( this.resourceManager, subscriber ), subscriber.getAckMode() );
         this.subscribers.put( subscriber.getId(), xaSubscriber );

@@ -108,7 +108,7 @@ public class Ietf08Handshake extends Handshake {
 
     @Override
     public boolean isComplete(HttpResponse response) throws Exception {
-        log.errorf( "COMPLETE? " + response );
+        log.debugf( "COMPLETE? " + response );
         String challengeResponse = response.getHeader( "Sec-WebSocket-Accept" );
         return this.challenge.verify( challengeResponse );
     }
