@@ -194,7 +194,14 @@ Stomp.Client.prototype = {
   },
   
   connectionFailed: function() {
-    Stomp.logger.log( "unable to connect" );
+    if (this._errorCallback)
+    {
+    	this._errorCallback.apply(this._errorCallback, arguments);
+    }
+    else
+    {
+    	Stomp.logger.log( "unable to connect" );
+    }
   },
   
   disconnect: function(disconnectCallback) {
