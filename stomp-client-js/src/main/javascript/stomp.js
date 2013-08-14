@@ -34,7 +34,8 @@ var Stomp = {
       if (headers[Stomp.Headers.CONTENT_LENGTH]) {
         var len = parseInt( headers[Stomp.Headers.CONTENT_LENGTH] );
         var start = divider + 2;
-        body = (''+ data).substring(start, start+len);
+        // content-length is bytes, substring operates on characters
+        body = Stomp.bytes_to_chars(Stomp.chars_to_bytes('' + data).substring(start, start+len))
       } else {
         // Parse body, stopping at the first \0 found.
         var chr = null;
@@ -66,13 +67,13 @@ var Stomp = {
         var out = command + '\n';
         if (headers) {
           for (header in headers) {
-            if (headers.hasOwnProperty(header)) {
+            if (header != 'content-length' && headers.hasOwnProperty(header)) {
               out = out + header + ':' + headers[header] + '\n';
             }
           }
         }
         if (body) {
-          out = out + 'content-length:' + body.length + '\n';
+          out = out + 'content-length:' + Stomp.chars_to_bytes(body).length + '\n';
         }
         out = out + '\n';
         if (body) {
@@ -82,8 +83,26 @@ var Stomp = {
       }
     }
   },
+
+  chars_to_bytes: function(chars) {
+    return unescape(encodeURIComponent(chars));
+  },
+
+  bytes_to_chars: function(bytes) {
+    return decodeURIComponent(escape(bytes));
+  },
+
+  logger: ( function() {
+    if (typeof(console) == 'undefined') {
+      return { log: function() { }, debug: function() { } };
+    } else {
+      return console;
+    }
+  } )()
   
 };
+
+Stomp
 
 
 Stomp.Client = function(host, port, secure) {
@@ -174,7 +193,7 @@ Stomp.Client.prototype = {
   },
   
   connectionFailed: function() {
-    console.log( "unable to connect" );
+    Stomp.logger.log( "unable to connect" );
   },
   
   disconnect: function(disconnectCallback) {
@@ -183,10 +202,6 @@ Stomp.Client.prototype = {
     if (disconnectCallback) {
       disconnectCallback();
     }
-  },
-
-  waitForDisconnect: function() {
-    this._transport.waitForClosedState();
   },
   
   send: function(destination, headers, body) {
@@ -312,14 +327,13 @@ Stomp.Transport.WebSocket.prototype = {
   
   _issueConnect: function() {
     var headers = {};
-    this._ws.onerror = this.client.onerror;
     if ( this._login ) {
       headers['login'] = this._login;
     }
     if ( this._passcode ) {
       headers['passcode'] = this._passcode;
     }
-    console.debug( this.client );
+    Stomp.logger.debug( this.client );
     headers[Stomp.Headers.ACCEPT_VERSION] = this.client.supportedVersions();
     this.transmit( "CONNECT", headers)
   },
@@ -822,7 +836,7 @@ Stomp.Transport.HTTP.prototype = {
         transport.client.processMessage( message );
       };
     } catch (err) {
-      console.debug( err );
+      Stomp.logger.debug( err );
       this._eventSource.close();
       this._eventSource = undefined;
       this.connectLongPoll();
@@ -884,14 +898,14 @@ Stomp.Transport.HTTP.prototype = {
     var request = new XMLHttpRequest();
     request.open( "POST", this._url(), true );
     request.withCredentials = true;
-    console.debug( request );
+    Stomp.logger.debug( request );
     if ( callbacks['load'] ) {
       request.onload = function() {
         callbacks['load'](request);
       }
     }
     if ( callbacks['error'] ) {
-      requrest.onerror = function() {
+      request.onerror = function() {
         callbacks['error'](request);
       }
     }

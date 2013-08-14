@@ -35,3 +35,14 @@ var log = function(msg) {
 };
 
 var alert = log;
+var console = {
+  log: alert,
+  debug: alert
+};
+
+// Some stubs needed to get swfobject loading in the tests
+var document = {};
+var navigator = {
+  'userAgent': '',
+  'platform': '',
+};
