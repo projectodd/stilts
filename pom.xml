@@ -22,7 +22,7 @@
   <scm>
     <connection>scm:git:git://github.com/projectodd/stilts.git</connection>
     <developerConnection>scm:git:ssh://git@github.com/projectodd/stilts.git</developerConnection>
-    <url>http://github.com/projectodd/stilts</url>
+    <url>${stilts.scm.url}</url>
   </scm>
 
   <developers>
@@ -34,6 +34,7 @@
   </developers>
 
   <properties>
+    <stilts.scm.url>http://github.com/projectodd/stilts</stilts.scm.url>
     <version.cobertura>2.5</version.cobertura>
     <version.el-api>2.2</version.el-api>
     <version.hamcrest>1.1</version.hamcrest>
@@ -365,6 +366,9 @@
               <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
               <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
             </manifest>
+            <manifestEntries>
+              <Scm-Url>${stilts.scm.url}</Scm-Url>
+            </manifestEntries>
           </archive>
         </configuration>
       </plugin>
