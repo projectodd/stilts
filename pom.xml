@@ -365,6 +365,9 @@
               <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
               <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
             </manifest>
+            <manifestEntries>
+              <Git-SHA-1>${buildNumber}</Git-SHA-1>
+            </manifestEntries>
           </archive>
         </configuration>
       </plugin>
@@ -404,6 +407,18 @@
             </excludes>
           </instrumentation>
         </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>buildnumber-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>validate</phase>
+            <goals>
+              <goal>create</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
 
