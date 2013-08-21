@@ -809,7 +809,7 @@ Stomp.Transport.HTTP.prototype = {
     var timeoutHandle = setTimeout( function() {
       if ( request.readyState != 0 && request.readyState != 4 ) {
         request.abort();
-        errorCallack();
+        errorCallback();
       }
     }, 5000 );
     
