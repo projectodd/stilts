@@ -162,7 +162,7 @@ Stomp.Client.prototype = {
   _buildConnector: function(transports, i) {
     var callback = this._connectCallback;
     var client = this;
-    if ( i+1 < transports.length ) {
+    if ( i < transports.length ) {
       return function() {
         var fallback = client._buildConnector( transports, i+1, callback );
         try {
@@ -174,22 +174,8 @@ Stomp.Client.prototype = {
           fallback();
         }
       };
-    } else if ( i < transports.length ) {
-      return function() {
-        var fallback = client.connectionFailed.bind( this );
-        try {
-          transports[i].connect( function() {
-            client._transport = transports[i];
-            callback();
-          }, client.connectionFailed.bind( this ) );
-        } catch(err) {
-          fallback();
-        }
-      };
     } else {
-      return function() {
-        client.connectionFailed(this);
-      };
+      return client.connectionFailed.bind(this);
     }
   },
   
