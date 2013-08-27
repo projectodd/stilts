@@ -10,7 +10,7 @@
 
   <groupId>org.projectodd.stilts</groupId>
   <artifactId>stilts</artifactId>
-  <version>0.1.39-SNAPSHOT</version>
+  <version>0.1.40-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>Stilts</name>
   <url>http://www.jboss.org/</url>
@@ -23,6 +23,7 @@
     <connection>scm:git:git://github.com/projectodd/stilts.git</connection>
     <developerConnection>scm:git:ssh://git@github.com/projectodd/stilts.git</developerConnection>
     <url>${stilts.scm.url}</url>
+    <tag>HEAD</tag>
   </scm>
 
   <developers>
