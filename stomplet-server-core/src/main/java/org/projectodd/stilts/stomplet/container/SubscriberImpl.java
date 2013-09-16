@@ -132,7 +132,7 @@ public class SubscriberImpl implements Subscriber {
         return this.parameters.get(  name  );
     }
     
-    public Map<String,String> getParamters() {
+    public Map<String,String> getParameters() {
         return this.parameters;
     }
     
