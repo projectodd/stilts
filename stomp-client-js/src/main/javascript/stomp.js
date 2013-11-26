@@ -143,11 +143,11 @@ Stomp.Client.prototype = {
       this._errorCallback = arguments[3];
     }
     
-    this._connectTransport(callback);
+    this._connectTransport();
     
   },
   
-  _connectTransport: function(callback) {
+  _connectTransport: function() {
     var transports = [];
     for ( i = 0 ; i < Stomp.Transports.length ; ++i ) {
        var t = new Stomp.Transports[i]( this._host, this._port, this._secure );
@@ -155,13 +155,14 @@ Stomp.Client.prototype = {
        transports.push( t );
      }
      
-     this._buildConnector( transports, 0, callback )();
+     this._buildConnector( transports, 0 )();
   },
   
   
-  _buildConnector: function(transports, i, callback) {
+  _buildConnector: function(transports, i) {
+    var callback = this._connectCallback;
     var client = this;
-    if ( i+1 < transports.length ) {
+    if ( i < transports.length ) {
       return function() {
         var fallback = client._buildConnector( transports, i+1, callback );
         try {
@@ -173,27 +174,20 @@ Stomp.Client.prototype = {
           fallback();
         }
       };
-    } else if ( i < transports.length ) {
-      return function() {
-        var fallback = client.connectionFailed.bind( this );
-        try {
-          transports[i].connect( function() {
-            client._transport = transports[i];
-            callback();
-          }, client.connectionFailed.bind( this ) );
-        } catch(err) {
-          fallback();
-        }
-      };
     } else {
-      return function() {
-        client.connectionFailed(this);
-      };
+      return client.connectionFailed.bind(this);
     }
   },
   
   connectionFailed: function() {
-    Stomp.logger.log( "unable to connect" );
+    if (this._errorCallback)
+    {
+    	this._errorCallback.apply(this._errorCallback, arguments);
+    }
+    else
+    {
+    	Stomp.logger.log( "unable to connect" );
+    }
   },
   
   disconnect: function(disconnectCallback) {
@@ -801,7 +795,7 @@ Stomp.Transport.HTTP.prototype = {
     var timeoutHandle = setTimeout( function() {
       if ( request.readyState != 0 && request.readyState != 4 ) {
         request.abort();
-        errorCallack();
+        errorCallback();
       }
     }, 5000 );
     
