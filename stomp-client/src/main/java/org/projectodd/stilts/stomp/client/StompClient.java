@@ -118,7 +118,7 @@ public class StompClient {
             if (authenticationTokens.length == 2) {
                 this.useAuthentication = true;
                 this.authenticationUser = authenticationTokens[0];
-                this.authentiactionPassword = authenticationTokens[1];
+                this.authenticationPassword = authenticationTokens[1];
             }
         }
 
@@ -133,8 +133,8 @@ public class StompClient {
         return this.authenticationUser;
     }
 
-    public String getAuthentiactionPassword() {
-        return this.authentiactionPassword;
+    public String getAuthenticationPassword() {
+        return this.authenticationPassword;
     }
 
     public boolean isSecure() {
@@ -512,7 +512,7 @@ public class StompClient {
     private boolean useSSL = false;
     private boolean useAuthentication = false;
     private String authenticationUser;
-    private String authentiactionPassword;
+    private String authenticationPassword;
     private Class<? extends Handshake> webSocketHandshakeClass = Ietf17Handshake.class;
     private SSLContext sslContext;
 

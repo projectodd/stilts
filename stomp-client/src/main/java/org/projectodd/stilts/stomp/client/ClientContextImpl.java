@@ -93,7 +93,7 @@ class ClientContextImpl implements ClientContext {
 
     @Override
     public String getPassword() {
-        return client.getAuthentiactionPassword();
+        return client.getAuthenticationPassword();
     }
 
     private StompClient client;
