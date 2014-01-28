@@ -112,7 +112,30 @@ public class StompClient {
             }
             
         }
+
+        String userInfo = uri.getUserInfo();
+        if (userInfo != null) {
+            int firstColonIndex = userInfo.indexOf(":");
+            if (firstColonIndex > -1 && firstColonIndex < (userInfo.length() - 1)) {
+                this.useAuthentication = true;
+                this.authenticationUser = userInfo.substring(0, firstColonIndex);
+                this.authenticationPassword = userInfo.substring(firstColonIndex + 1);
+            }
+        }
+
         this.serverAddress = new InetSocketAddress( host, port );
+    }
+
+    public boolean isAuthenticated() {
+        return this.useAuthentication;
+    }
+
+    public String getAuthenticationUser() {
+        return this.authenticationUser;
+    }
+
+    public String getAuthenticationPassword() {
+        return this.authenticationPassword;
     }
 
     public boolean isSecure() {
@@ -488,6 +511,9 @@ public class StompClient {
     private Version version = Version.VERSION_1_0;
     private boolean useWebSockets = false;
     private boolean useSSL = false;
+    private boolean useAuthentication = false;
+    private String authenticationUser;
+    private String authenticationPassword;
     private Class<? extends Handshake> webSocketHandshakeClass = Ietf17Handshake.class;
     private SSLContext sslContext;
 

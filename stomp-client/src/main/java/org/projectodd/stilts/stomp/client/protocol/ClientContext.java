@@ -32,7 +32,11 @@ public interface ClientContext {
     
     boolean isSecure();
     SSLContext getSSLContext();
-    
+
+    boolean isAuthenticated();
+    String getUsername();
+    String getPassword();
+
     void setConnectionState(State state);
     void setVersion(Version version);
     

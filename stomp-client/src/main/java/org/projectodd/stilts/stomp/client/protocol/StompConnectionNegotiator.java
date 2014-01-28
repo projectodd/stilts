@@ -34,6 +34,10 @@ public class StompConnectionNegotiator extends AbstractClientControlFrameHandler
         StompControlFrame frame = new StompControlFrame( Command.CONNECT );
         frame.setHeader( Header.HOST, this.host );
         frame.setHeader( Header.ACCEPT_VERSION, Version.supportedVersions() );
+        if(getClientContext().isAuthenticated()) {
+            frame.setHeader( Header.LOGIN, getClientContext().getUsername() );
+            frame.setHeader( Header.PASSCODE, getClientContext().getPassword() );
+        }
 
         Channels.write( context.getChannel(), frame );
     }

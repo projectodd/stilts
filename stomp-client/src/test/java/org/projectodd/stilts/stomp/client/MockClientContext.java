@@ -36,7 +36,22 @@ public class MockClientContext implements ClientContext {
 	public SSLContext getSSLContext() {
 		return this.sslContext;
 	}
-	
+
+    @Override
+    public boolean isAuthenticated() {
+        return this.authenticated;
+    }
+
+    @Override
+    public String getUsername() {
+        return this.user;
+    }
+
+    @Override
+    public String getPassword() {
+        return this.password;
+    }
+
     @Override
     public State getConnectionState() {
         return this.state;
@@ -90,6 +105,9 @@ public class MockClientContext implements ClientContext {
     private Version version = Version.VERSION_1_0;
     private boolean secure = false;
     private SSLContext sslContext;
+    private boolean authenticated = false;
+    private String user;
+    private String password;
     
     
     private List<String> receipts = new ArrayList<String>();

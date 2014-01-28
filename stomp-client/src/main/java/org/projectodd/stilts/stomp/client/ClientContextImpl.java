@@ -81,6 +81,21 @@ class ClientContextImpl implements ClientContext {
     	return this.client.getSSLContext();
     }
 
+    @Override
+    public boolean isAuthenticated() {
+        return client.isAuthenticated();
+    }
+
+    @Override
+    public String getUsername() {
+        return client.getAuthenticationUser();
+    }
+
+    @Override
+    public String getPassword() {
+        return client.getAuthenticationPassword();
+    }
+
     private StompClient client;
 
 }
