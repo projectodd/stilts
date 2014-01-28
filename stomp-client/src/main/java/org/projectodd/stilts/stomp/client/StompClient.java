@@ -113,12 +113,13 @@ public class StompClient {
             
         }
 
-        if (uri.getUserInfo() != null) {
-            String[] authenticationTokens = uri.getUserInfo().split(":");
-            if (authenticationTokens.length == 2) {
+        String userInfo = uri.getUserInfo();
+        if (userInfo != null) {
+            int firstColonIndex = userInfo.indexOf(":");
+            if (firstColonIndex > -1 && firstColonIndex < (userInfo.length() - 1)) {
                 this.useAuthentication = true;
-                this.authenticationUser = authenticationTokens[0];
-                this.authenticationPassword = authenticationTokens[1];
+                this.authenticationUser = userInfo.substring(0, firstColonIndex);
+                this.authenticationPassword = userInfo.substring(firstColonIndex + 1);
             }
         }
 
