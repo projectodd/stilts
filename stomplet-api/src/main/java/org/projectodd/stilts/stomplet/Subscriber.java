@@ -33,6 +33,6 @@ public interface Subscriber extends AcknowledgeableMessageSink {
     AckMode getAckMode();
     StompSession getSession();
     String getParameter(String name);
-    Map<String,String> getParamters();
+    Map<String,String> getParameters();
 
 }
