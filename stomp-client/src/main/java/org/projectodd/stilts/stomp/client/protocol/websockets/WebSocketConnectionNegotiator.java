@@ -1,6 +1,5 @@
 package org.projectodd.stilts.stomp.client.protocol.websockets;
 
-import java.net.InetSocketAddress;
 import java.net.URI;
 import java.security.NoSuchAlgorithmException;
 
@@ -20,27 +19,26 @@ import org.projectodd.stilts.stomp.protocol.websocket.Handshake;
 import org.projectodd.stilts.stomp.protocol.websocket.WebSocketDisconnectionNegotiator;
 
 /** WebSockets protocol connection negotiator.
- * 
+ *
  * <p>This handler reacts to Netty's CONNECTED event and handles the handshake
  * of the WebSockets HTTP upgrade handshake.  Upon successful completion, it forwards
  * a CONNECTED event upstream to the underlying protocol making use of the websocket
  * transport. For instance, STOMP.</p>
- * 
+ *
  * @author Bob McWhirter
  */
 public class WebSocketConnectionNegotiator extends SimpleChannelUpstreamHandler {
-    
 
-    public WebSocketConnectionNegotiator(InetSocketAddress serverAddress, Handshake handshake, boolean useSSL) throws NoSuchAlgorithmException {
-        this.serverAddress = serverAddress;
+
+    public WebSocketConnectionNegotiator(URI webSocketAddress, Handshake handshake) throws NoSuchAlgorithmException {
+        this.webSocketAddress = webSocketAddress;
         this.handshake = handshake;
-        this.useSSL = useSSL;
     }
 
     @Override
     public void channelConnected(ChannelHandlerContext context, ChannelStateEvent e) throws Exception {
-        URI uri = new URI( ( this.useSSL ? "wss" : "ws" ) + "://" + this.serverAddress.getHostName() + ":" + this.serverAddress.getPort() + "/" );
-        HttpRequest request = this.handshake.generateRequest( uri );
+
+        HttpRequest request = this.handshake.generateRequest( this.webSocketAddress );
         this.connectedEvent = e;
         Channel channel = context.getChannel();
         Channels.write( channel, request );
@@ -50,7 +48,7 @@ public class WebSocketConnectionNegotiator extends SimpleChannelUpstreamHandler 
     public void messageReceived(ChannelHandlerContext context, MessageEvent e) throws Exception {
         if (e.getMessage() instanceof HttpResponse) {
             HttpResponse response = (HttpResponse) e.getMessage();
-            
+
             if ( this.handshake.isComplete( response) ) {
                 ChannelPipeline pipeline = context.getPipeline();
                 if (pipeline.get( WebSocketHttpResponseDecoder.class ) != null) {
@@ -63,15 +61,15 @@ public class WebSocketConnectionNegotiator extends SimpleChannelUpstreamHandler 
                 } else {
                     pipeline.addAfter( "websockets-decoder", "websockets-encoder", this.handshake.newEncoder() );
                 }
-                
+
                 ChannelHandler[] additionalHandlers = this.handshake.newAdditionalHandlers();
                 String currentTail = "websockets-decoder";
                 for ( ChannelHandler each : additionalHandlers ) {
                     String handlerName = "additional-" + each.getClass().getSimpleName();
-                    pipeline.addAfter( currentTail, handlerName, each); 
+                    pipeline.addAfter( currentTail, handlerName, each);
                     currentTail = handlerName;
                 }
-                
+
                 context.sendUpstream( this.connectedEvent );
                 pipeline.replace( this, "websocket-disconnection-negotiator", new WebSocketDisconnectionNegotiator() );
             }
@@ -81,8 +79,7 @@ public class WebSocketConnectionNegotiator extends SimpleChannelUpstreamHandler 
     }
 
     private static final Logger log = Logger.getLogger( "stomp.proto.client.websocket" );
-    private InetSocketAddress serverAddress;
-    private boolean useSSL;
+    private final URI webSocketAddress;
     private Handshake handshake;
     private ChannelStateEvent connectedEvent;
 
