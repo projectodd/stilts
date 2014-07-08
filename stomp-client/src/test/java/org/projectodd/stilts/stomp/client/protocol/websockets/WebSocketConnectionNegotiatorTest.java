@@ -4,7 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
-import java.net.InetSocketAddress;
+import java.net.URI;
 
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
@@ -28,7 +28,7 @@ public class WebSocketConnectionNegotiatorTest {
         Ietf00Handshake handshake = new Ietf00Handshake();
         HandlerEmbedder handler = new HandlerEmbedder( false,
                 new WebSocketHttpResponseDecoder( handshake ),
-                new WebSocketConnectionNegotiator( new InetSocketAddress( "localhost", 8675 ), handshake, false ) );
+                new WebSocketConnectionNegotiator( URI.create( "ws://localhost:8675/" ), handshake ) );
 
         ChannelPipeline pipeline = handler.getPipeline();
 
@@ -68,7 +68,7 @@ public class WebSocketConnectionNegotiatorTest {
         Ietf00Handshake handshake = new Ietf00Handshake();
         HandlerEmbedder handler = new HandlerEmbedder( false,
                 new WebSocketHttpResponseDecoder( handshake ),
-                new WebSocketConnectionNegotiator( new InetSocketAddress( "localhost", 8675 ) , handshake, false ) );
+                new WebSocketConnectionNegotiator( URI.create( "ws://localhost:8675/" ), handshake ) );
 
         ChannelPipeline pipeline = handler.getPipeline();
 
