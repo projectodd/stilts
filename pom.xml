@@ -63,7 +63,7 @@
     <version.shrinkwrap>1.0.0-beta-1</version.shrinkwrap>
     <version.weld-core>1.1.1.Final</version.weld-core>
     <version.weld-spi>1.1.Final</version.weld-spi>
-    <version.org.apache.httpcomponents>4.3-alpha1</version.org.apache.httpcomponents>
+    <version.org.apache.httpcomponents>4.3.6</version.org.apache.httpcomponents>
 
 
     
