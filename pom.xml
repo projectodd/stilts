@@ -39,7 +39,7 @@
     <version.cobertura>2.5</version.cobertura>
     <version.el-api>2.2</version.el-api>
     <version.hamcrest>1.1</version.hamcrest>
-    <version.hibernate-validator>4.2.0.CR1</version.hibernate-validator>
+    <version.hibernate-validator>6.0.23.Final</version.hibernate-validator>
     <version.hornetq>2.2.2.Final</version.hornetq>
     <version.ironjacamar>1.0.0.CR3</version.ironjacamar>
     <version.jboss.arquillian>1.0.0.CR4</version.jboss.arquillian>
